@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'business.dart';
-import 'landing.dart';
-import 'calendar.dart';
+import 'recreation.dart';
+import 'event.dart';
 import 'hike.dart';
+
+// ThemeData Colors
+MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
+MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
+MaterialColor colorBackground = createMaterialColor(Color(0xFFB4D4ED));
 
 void main() {
   runApp(MyApp());
@@ -24,9 +29,11 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primaryColor: colorPrimary,
+        accentColor: colorAccent,
+        // canvasColor: colorBackground,
       ),
-      home: MyHomePage(title: 'Landing Page'),
+      home: MyHomePage(title: 'Vanderhoof Commerce'),
     );
   }
 }
@@ -52,10 +59,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _children = [
-    Landing(),
-    Hike(),
     Business(),
-    Calendar(),
+    Event(),
+    Hike(),
+    Recreation(),
   ];
 
   void _onTabTapped(int index) {
@@ -80,29 +87,56 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: _children[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_walk),
-            label: 'Hike',
-          ),
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
             label: 'Businesses',
+            backgroundColor: colorPrimary, // option 2
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_walk),
+            label: 'Hiking',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_bike),
+            label: 'Recreational',
           )
         ],
         currentIndex: _selectedIndex,
         onTap: _onTabTapped,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+
+        // option 1 - white background
+        // selectedItemColor: colorAccent,
+        // unselectedItemColor: colorPrimary,
+
+        // option 2 - blue background
+        selectedItemColor: colorAccent,
+        unselectedItemColor: Colors.white,
       ),
     );
   }
+}
+
+MaterialColor createMaterialColor(Color color) {
+  List strengths = <double>[.05];
+  Map swatch = <int, Color>{};
+  final int r = color.red, g = color.green, b = color.blue;
+
+  for (int i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
+  }
+  strengths.forEach((strength) {
+    final double ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  });
+  return MaterialColor(color.value, swatch);
 }
