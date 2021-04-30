@@ -12,7 +12,6 @@ MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
 MaterialColor colorBackground = createMaterialColor(Color(0xFFB4D4ED));
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
