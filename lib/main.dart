@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
             label: 'Businesses',
-            backgroundColor: colorPrimary, // option 2
+            backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
@@ -117,12 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onTabTapped,
-
-        // option 1 - white background
-        // selectedItemColor: colorAccent,
-        // unselectedItemColor: colorPrimary,
-
-        // option 2 - blue background
         selectedItemColor: colorAccent,
         unselectedItemColor: Colors.white,
       ),
