@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Business extends StatelessWidget {
   @override
@@ -9,22 +11,10 @@ class Business extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20.0),
       child: new MyHomePage(),
-      // child: ListView(children: [
-      //   Container(
-      //     padding: EdgeInsets.all(20.0),
-      //     child: Text('Business Page'),
-      //   ),
-      //   Text('Business Page')
-      // ])
     );
   }
 }
 
-// class BusinessContainer extends Container {
-//   BusinessContainer(String name, String address, String description) {
-//     this.
-//   }
-// }
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 
@@ -33,32 +23,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<User>> _getUsers() async {
-    var data = await http
-        .get("http://www.json-generator.com/api/json/get/bTNxwmMawi?indent=2");
+  Future _getBusinesses() async {
+    List<BusinessCard> businesses = [];
+    CollectionReference fireStore =
+        FirebaseFirestore.instance.collection('businesses');
 
-    var jsonData = json.decode(data.body);
+    await fireStore.get().then((QuerySnapshot snap) {
+      snap.docs.forEach((doc) {
+        BusinessCard b =
+            BusinessCard(doc['name'], doc['address'], doc["description"]);
+        businesses.add(b);
+      });
+    });
 
-    List<User> users = [];
-
-    for (var u in jsonData) {
-      User user =
-          User(u["index"], u["about"], u["name"], u["email"], u["picture"]);
-
-      users.add(user);
-    }
-
-    print(users.length);
-
-    return users;
+    return businesses;
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: AppBar(title: Text("Category")),
       body: Container(
         child: FutureBuilder(
-          future: _getUsers(),
+          future: _getBusinesses(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             print(snapshot.data);
             if (snapshot.data == null) {
@@ -68,12 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(snapshot.data[index].picture),
-                    ),
+                    // leading: CircleAvatar(
+                    //   backgroundImage:
+                    //       NetworkImage(snapshot.data[index].picture),
+                    // ),
                     title: Text(snapshot.data[index].name),
-                    subtitle: Text(snapshot.data[index].email),
+                    subtitle: Text(snapshot.data[index].address),
                     onTap: () {
                       Navigator.push(
                           context,
@@ -93,34 +80,25 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DetailPage extends StatelessWidget {
-  final User user;
+  final BusinessCard b;
 
-  DetailPage(this.user);
+  DetailPage(this.b);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-      title: Text(user.name),
-    ));
+      appBar: AppBar(
+        title: Text("Description"),
+      ),
+      body: Text(b.description),
+    );
   }
 }
 
-class User {
-  final int index;
-  final String about;
+class BusinessCard {
   final String name;
-  final String email;
-  final String picture;
+  final String address;
+  final String description;
 
-  User(this.index, this.about, this.name, this.email, this.picture);
+  BusinessCard(this.name, this.address, this.description);
 }
-
-// class Business {
-//   final int index;
-//   final String name;
-//   final String address;
-//   final String description;
-//
-//   Business(this.index, this.name, this.address, this.description);
-// }
