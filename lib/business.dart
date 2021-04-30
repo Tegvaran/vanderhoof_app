@@ -7,19 +7,19 @@ class Business extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20.0),
-      child: new MyHomePage(),
+      child: new MyBusinessPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+class MyBusinessPage extends StatefulWidget {
+  MyBusinessPage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyBusinessPage> {
   Future _getBusinesses() async {
     List<BusinessCard> businesses = [];
     CollectionReference fireStore =
@@ -32,7 +32,6 @@ class _MyHomePageState extends State<MyHomePage> {
         businesses.add(b);
       });
     });
-
     return businesses;
   }
 
@@ -74,6 +73,5 @@ class BusinessCard {
   final String name;
   final String address;
   final String description;
-
   BusinessCard(this.name, this.address, this.description);
 }
