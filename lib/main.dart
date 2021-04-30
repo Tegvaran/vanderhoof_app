@@ -88,14 +88,17 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+            backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_walk),
             label: 'Hiking',
+            backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_bike),
             label: 'Recreational',
+            backgroundColor: colorPrimary,
           )
         ],
         currentIndex: _selectedIndex,
