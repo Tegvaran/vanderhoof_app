@@ -42,9 +42,6 @@ class _BusinessPageState extends State<Business> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(widget.title),
-      // ),
       appBar: AppBar(
         title: !isSearching
             ? Text(widget.title)
