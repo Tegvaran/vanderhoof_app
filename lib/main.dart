@@ -91,11 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: _children[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
@@ -107,14 +102,17 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.event),
             label: 'Events',
+            backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_walk),
             label: 'Hiking',
+            backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.directions_bike),
             label: 'Recreational',
+            backgroundColor: colorPrimary,
           )
         ],
         currentIndex: _selectedIndex,
