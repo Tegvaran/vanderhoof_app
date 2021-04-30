@@ -129,8 +129,8 @@ class _BusinessPageState extends State<Business> {
           children: [
             // insert widgets here wrapped in `Expanded` as a child
             // note: play around with flex int value to adjust vertical spaces between widgets
-            Expanded(flex: 0, child: Text("first child - future map widget")),
-            Expanded(flex: 6, child: _businessesListBuild()),
+            Expanded(flex: 1, child: Text("first child - future map widget")),
+            Expanded(flex: 11, child: _businessesListBuild()),
           ],
         ),
       ),
