@@ -2,30 +2,35 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Business extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20.0),
-      child: new MyBusinessPage(),
-    );
-  }
+// Business object
+class BusinessCard {
+  final String name;
+  final String address;
+  final String description;
+  BusinessCard(this.name, this.address, this.description);
 }
 
-class MyBusinessPage extends StatefulWidget {
-  MyBusinessPage({Key key}) : super(key: key);
+class Business extends StatefulWidget {
+  Business({Key key}) : super(key: key);
+
+  final title = "Businesses";
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _BusinessPageState createState() => new _BusinessPageState();
 }
 
-class _MyHomePageState extends State<MyBusinessPage> {
+class _BusinessPageState extends State<Business> {
+  List<BusinessCard> businesses = [];
+  List<BusinessCard> filteredBusinesses = [];
+  bool isSearching = false;
+
+  // firebase async get data
   Future _getBusinesses() async {
-    List<BusinessCard> businesses = [];
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('businesses');
 
     await fireStore.get().then((QuerySnapshot snap) {
+      businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
         BusinessCard b =
             BusinessCard(doc['name'], doc['address'], doc["description"]);
@@ -36,42 +41,99 @@ class _MyHomePageState extends State<MyBusinessPage> {
   }
 
   @override
+  void initState() {
+    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
+    // this method gets firebase data and populates into list of businesses
+    _getBusinesses().then((data) {
+      setState(() {
+        businesses = filteredBusinesses = data;
+      });
+    });
+    super.initState();
+  }
+
+  // This method does the logic for search and changes filteredBusinesses to search results
+  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
+  void _filterSearchItems(value) {
+    setState(() {
+      filteredBusinesses = businesses
+          .where((businessCard) =>
+              businessCard.name.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
+  }
+
+  Widget _businessesListBuild() {
+    return new Container(
+        child: ListView.builder(
+      itemCount: filteredBusinesses.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ExpansionTile(
+          // leading: CircleAvatar(
+          //   backgroundImage:
+          //       NetworkImage(snapshot.data[index].picture),
+          // ),
+          title: Text(filteredBusinesses[index].name),
+          subtitle: Text(filteredBusinesses[index].address),
+          children: <Widget>[Text(filteredBusinesses[index].description)],
+        );
+      },
+    ));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(title: Text("Category")),
-      body: Container(
-        child: FutureBuilder(
-          future: _getBusinesses(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            print(snapshot.data);
-            if (snapshot.data == null) {
-              return Container(child: Center(child: Text("Loading...")));
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ExpansionTile(
-                    // leading: CircleAvatar(
-                    //   backgroundImage:
-                    //       NetworkImage(snapshot.data[index].picture),
-                    // ),
-                    title: Text(snapshot.data[index].name),
-                    subtitle: Text(snapshot.data[index].address),
-                    children: <Widget>[Text(snapshot.data[index].description)],
-                  );
+    return Scaffold(
+      appBar: AppBar(
+        title: !isSearching
+            ? Text(widget.title)
+            : TextField(
+                onChanged: (value) {
+                  // search logic here
+                  _filterSearchItems(value);
                 },
-              );
-            }
-          },
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Search Businesses",
+                    hintStyle: TextStyle(color: Colors.white70)),
+              ),
+        actions: <Widget>[
+          isSearching
+              ? IconButton(
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = false;
+                      filteredBusinesses = businesses;
+                    });
+                  },
+                )
+              : IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = true;
+                    });
+                  },
+                )
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // insert widgets here wrapped in `Expanded` as a child
+            // note: play around with flex int value to adjust vertical spaces between widgets
+            Expanded(flex: 0, child: Text("first child - future map widget")),
+            Expanded(flex: 6, child: _businessesListBuild()),
+          ],
         ),
       ),
     );
   }
-}
-
-class BusinessCard {
-  final String name;
-  final String address;
-  final String description;
-  BusinessCard(this.name, this.address, this.description);
 }
