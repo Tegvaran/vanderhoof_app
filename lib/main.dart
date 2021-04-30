@@ -4,29 +4,57 @@ import 'recreation.dart';
 import 'event.dart';
 import 'hike.dart';
 
+// Import the firebase_core plugin
+import 'package:firebase_core/firebase_core.dart';
+
 // ThemeData Colors
 MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
 MaterialColor colorBackground = createMaterialColor(Color(0xFFB4D4ED));
 
-void main() {
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  // Create the initialization Future outside of `build`:
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Vanderhoof App Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        primarySwatch: colorPrimary,
-        primaryColor: colorPrimary,
-        accentColor: colorAccent,
-        // canvasColor: colorBackground,
-      ),
-      home: MyHomePage(title: 'VanderApp'),
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return new Text(
+              "Something went wrong: ${snapshot.hasError.toString()}",
+              textDirection: TextDirection.ltr);
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            title: 'Vanderhoof App Flutter Demo',
+            theme: ThemeData(
+              // This is the theme of your application.
+              primarySwatch: colorPrimary,
+              primaryColor: colorPrimary,
+              accentColor: colorAccent,
+              // canvasColor: colorBackground,
+            ),
+            home: MyHomePage(title: 'Landing Page'),
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
