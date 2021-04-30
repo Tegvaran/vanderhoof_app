@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         accentColor: colorAccent,
         // canvasColor: colorBackground,
       ),
-      home: MyHomePage(title: 'Vanderhoof Commerce'),
+      home: MyHomePage(title: 'VanderApp'),
     );
   }
 }
