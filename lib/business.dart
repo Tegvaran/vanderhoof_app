@@ -51,20 +51,14 @@ class _MyHomePageState extends State<MyHomePage> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
+                  return ExpansionTile(
                     // leading: CircleAvatar(
                     //   backgroundImage:
                     //       NetworkImage(snapshot.data[index].picture),
                     // ),
                     title: Text(snapshot.data[index].name),
                     subtitle: Text(snapshot.data[index].address),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailPage(snapshot.data[index])));
-                    },
+                    children: <Widget>[Text(snapshot.data[index].description)],
                   );
                 },
               );
@@ -72,22 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       ),
-    );
-  }
-}
-
-class DetailPage extends StatelessWidget {
-  final BusinessCard b;
-
-  DetailPage(this.b);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Description"),
-      ),
-      body: Text(b.description),
     );
   }
 }
