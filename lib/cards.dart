@@ -5,9 +5,9 @@ import 'hikingInformation.dart';
 
 class HikeCard extends StatelessWidget {
   final String name;
-  final double distance;
+  final String distance;
   final String rating;
-  final int time;
+  final String time;
   final String wheelchair;
 
   static const double TITLE_SIZE = 26;
@@ -71,7 +71,7 @@ class HikeCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
                 child: Text(
-                  "Distance: ${this.distance} km",
+                  "Distance: ${this.distance}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
                   ),
@@ -98,7 +98,7 @@ class HikeCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
                 child: Text(
-                  "Time: ${this.time} min",
+                  "Time: ${this.time}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
                   ),
