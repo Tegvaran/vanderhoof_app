@@ -18,7 +18,7 @@ class _HikePageState extends State<Hike> {
 
   Future _getHikes() async {
     CollectionReference fireStore =
-    FirebaseFirestore.instance.collection('trails');
+        FirebaseFirestore.instance.collection('trails');
 
     await fireStore.get().then((QuerySnapshot snap) {
       snap.docs.forEach((doc) {
@@ -48,7 +48,7 @@ class _HikePageState extends State<Hike> {
     setState(() {
       filteredHikes = hikes
           .where((hikeCard) =>
-          hikeCard.name.toLowerCase().contains(value.toLowerCase()))
+              hikeCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
@@ -60,38 +60,38 @@ class _HikePageState extends State<Hike> {
         title: !isSearching
             ? Text(widget.title)
             : TextField(
-          onChanged: (value) {
-            // search logic here
-            _filterSearchItems(value);
-          },
-          style: TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
+                onChanged: (value) {
+                  // search logic here
+                  _filterSearchItems(value);
+                },
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                    icon: Icon(
+                      Icons.search,
+                      color: Colors.white,
+                    ),
+                    hintText: "Search Hiking Trails",
+                    hintStyle: TextStyle(color: Colors.white70)),
               ),
-              hintText: "Search Hiking Trails",
-              hintStyle: TextStyle(color: Colors.white70)),
-        ),
         actions: <Widget>[
           isSearching
               ? IconButton(
-            icon: Icon(Icons.cancel),
-            onPressed: () {
-              setState(() {
-                this.isSearching = false;
-                filteredHikes = hikes;
-              });
-            },
-          )
+                  icon: Icon(Icons.cancel),
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = false;
+                      filteredHikes = hikes;
+                    });
+                  },
+                )
               : IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              setState(() {
-                this.isSearching = true;
-              });
-            },
-          )
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      this.isSearching = true;
+                    });
+                  },
+                )
         ],
       ),
       body: Container(
