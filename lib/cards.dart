@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vanderhoof_app/main.dart';
 
 import 'hikingInformation.dart';
 
@@ -13,16 +14,21 @@ class HikeCard extends StatelessWidget {
   static const double TITLE_SIZE = 26;
   static const double BODY_SIZE = 20;
 
+  final Color textColor = Colors.grey[300];
+  final Color greenColor = Colors.lightGreenAccent[400];
+  final Color orangeColor = colorAccent;
+  final Color redColor = Colors.red[500];
+
   HikeCard(this.name, this.distance, this.rating, this.time, this.wheelchair);
 
   Color getDifficultyColor() {
     Color difficultyColor;
     if (this.rating == "Easy") {
-      difficultyColor = Colors.green[800];
+      difficultyColor = greenColor;
     } else if (this.rating == "Medium") {
-      difficultyColor = Colors.orange[700];
+      difficultyColor = orangeColor;
     } else {
-      difficultyColor = Colors.red[900];
+      difficultyColor = redColor;
     }
     return difficultyColor;
   }
@@ -30,9 +36,9 @@ class HikeCard extends StatelessWidget {
   Color getAccessibilityColor() {
     Color accessibilityColor;
     if (this.wheelchair == "Accessible") {
-      accessibilityColor = Colors.green[800];
+      accessibilityColor = greenColor;
     } else {
-      accessibilityColor = Colors.red[900];
+      accessibilityColor = redColor;
     }
     return accessibilityColor;
   }
@@ -40,17 +46,18 @@ class HikeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey[400],
+      color: colorPrimary,
       margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: ExpansionTile(
         title: Text(
           this.name,
-          style: TextStyle(fontSize: TITLE_SIZE, color: Colors.black),
+          style: TextStyle(fontSize: TITLE_SIZE, color: textColor),
         ),
         children: <Widget>[
           Divider(
             height: 10,
             thickness: 2,
+            color: Colors.grey[500],
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,6 +71,7 @@ class HikeCard extends StatelessWidget {
                     fontSize: BODY_SIZE,
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.underline,
+                    color: textColor,
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -74,6 +82,7 @@ class HikeCard extends StatelessWidget {
                   "Distance: ${this.distance}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
+                    color: textColor,
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -82,8 +91,7 @@ class HikeCard extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
                 child: RichText(
                     text: TextSpan(
-                        style:
-                            TextStyle(fontSize: BODY_SIZE, color: Colors.black),
+                        style: TextStyle(fontSize: BODY_SIZE, color: textColor),
                         children: <TextSpan>[
                       TextSpan(text: 'Difficulty: '),
                       TextSpan(
@@ -101,6 +109,7 @@ class HikeCard extends StatelessWidget {
                   "Time: ${this.time}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
+                    color: textColor,
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -114,7 +123,7 @@ class HikeCard extends StatelessWidget {
                     RichText(
                         text: TextSpan(
                             style: TextStyle(
-                                fontSize: BODY_SIZE, color: Colors.black),
+                                fontSize: BODY_SIZE, color: textColor),
                             children: <TextSpan>[
                           TextSpan(text: 'Wheelchair: '),
                           TextSpan(

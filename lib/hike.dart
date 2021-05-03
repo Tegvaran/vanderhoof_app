@@ -124,3 +124,15 @@ class _HikePageState extends State<Hike> {
             }));
   }
 }
+
+class HikeTrail {
+  final String name;
+  final String distance;
+  final String rating;
+  final String time;
+  final String wheelchair;
+  final String description;
+
+  HikeTrail(this.name, this.distance, this.rating, this.time, this.wheelchair,
+      this.description);
+}
