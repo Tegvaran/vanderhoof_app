@@ -6,6 +6,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:vanderhoof_app/main.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AddBusinessPage extends StatefulWidget {
   @override
   _AddBusinessPageSate createState() => _AddBusinessPageSate();
@@ -99,19 +101,6 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
     );
   }
 
-  void _onSubmitPressed() {
-    print("-------------------------");
-
-    final validationSuccess = _formKey.currentState.validate();
-    if (validationSuccess) {
-      _formKey.currentState.save();
-      print(_formKey.currentState.value);
-      _formKey.currentState.value.forEach((key, value) {
-        print("${key}  and  ${value}");
-      });
-    }
-  }
-
   Widget _getTextField(
       String name, String labelText, String hintText, Icon icon,
       {email = false, url = false, phone = false}) {
@@ -161,14 +150,27 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
       ),
     );
   }
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     appBar: AppBar(
-  //       title: Text("Add")
-  //     )
-  //       title: "Add a New Business",
-  //       home: Scaffold(
-  //         body: FormBuilder(key: ),
-  //       ));
-  // }
+
+  void _onSubmitPressed() {
+    CollectionReference business =
+        FirebaseFirestore.instance.collection('businesses');
+    Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+      return business
+          .add(businessInfo)
+          .then((value) => {
+                print("Business Added:  ${value.id}"),
+                business.doc(value.id).update({"id": value.id})
+              })
+          .catchError((error) => print("Failed to add Business: $error"));
+    }
+
+    print("-------------------------");
+
+    final validationSuccess = _formKey.currentState.validate();
+    if (validationSuccess) {
+      _formKey.currentState.save();
+      print(_formKey.currentState.value);
+      addBusiness(_formKey.currentState.value);
+    }
+  }
 }
