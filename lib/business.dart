@@ -106,6 +106,7 @@ class _BusinessPageState extends State<Business> {
             leading: Icon(Icons.add, size: 50),
             title: Text("Add a Business"),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                   context,
                   MaterialPageRoute(
