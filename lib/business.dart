@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:vanderhoof_app/main.dart';
+// import 'package:web_scraper/web_scraper.dart';
+
+import 'addBusinessPage.dart';
 
 // Business object
 class BusinessCard {
@@ -84,6 +88,33 @@ class _BusinessPageState extends State<Business> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Drawer: Hamberguer menu for Admin
+      drawer: Drawer(
+          child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Container(
+            height: 100,
+            margin: EdgeInsets.all(0),
+            padding: EdgeInsets.all(0),
+            child: DrawerHeader(
+              child: Text("Admin Menu"),
+              decoration: BoxDecoration(color: colorPrimary),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.add, size: 50),
+            title: Text("Add a Business"),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddBusinessPage(),
+                  ));
+            },
+          )
+        ],
+      )),
       appBar: AppBar(
         title: !isSearching
             ? Text(widget.title)
