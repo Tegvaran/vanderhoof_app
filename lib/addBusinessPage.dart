@@ -74,25 +74,11 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                       Icon(Icons.description_outlined)),
                                   SizedBox(height: 20),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      print("-------------------------");
-
-                                      final validationSuccess =
-                                          _formKey.currentState.validate();
-                                      if (validationSuccess) {
-                                        _formKey.currentState.save();
-                                        print(_formKey.currentState.value);
-                                        _formKey.currentState.value
-                                            .forEach((key, value) {
-                                          print("${key}  and  ${value}");
-                                        });
-                                      }
-                                    },
+                                    onPressed: _onSubmitPressed,
                                     child: Text('Submit'),
                                   )
                                 ],
                               ),
-                              onChanged: () => print('changed'),
                               autovalidateMode: null,
                               onWillPop: null,
                               initialValue: null,
@@ -111,6 +97,19 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
         ],
       ),
     );
+  }
+
+  void _onSubmitPressed() {
+    print("-------------------------");
+
+    final validationSuccess = _formKey.currentState.validate();
+    if (validationSuccess) {
+      _formKey.currentState.save();
+      print(_formKey.currentState.value);
+      _formKey.currentState.value.forEach((key, value) {
+        print("${key}  and  ${value}");
+      });
+    }
   }
 
   Widget _getTextField(
