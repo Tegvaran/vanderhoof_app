@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:open_mail_app/open_mail_app.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -140,6 +139,7 @@ class HikeCard extends StatelessWidget {
                           icon: Icon(
                             Icons.article_outlined,
                             size: 50,
+                            color: textColor,
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -209,26 +209,11 @@ class BusinessCard extends StatelessWidget {
               msg: "Could not set up a call for $phoneNumber",
               toastLength: Toast.LENGTH_SHORT);
 
-  // onPressed code reference: https://pub.dev/packages/open_mail_app
-  void showNoMailAppsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Open Mail App"),
-          content: Text("No mail apps installed"),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
+  void _launchMailURL(String email) async => await canLaunch('mailto:$email')
+      ? launch('mailto:$email')
+      : Fluttertoast.showToast(
+          msg: "Could not open the email app for $email",
+          toastLength: Toast.LENGTH_SHORT);
 
   @override
   Widget build(BuildContext context) {
@@ -269,6 +254,7 @@ class BusinessCard extends StatelessWidget {
                                 _launchWebsiteURL(business.website);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                       (business.phoneNumber != "")
@@ -278,36 +264,18 @@ class BusinessCard extends StatelessWidget {
                                 _launchPhoneURL(business.phoneNumber);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                       (business.email != "")
                           ? IconButton(
                               icon: Icon(Icons.email),
                               // onPressed code reference: https://pub.dev/packages/open_mail_app
-                              onPressed: () async {
-                                // Android: Will open mail app or show native picker.
-                                // iOS: Will open mail app if single mail app found.
-                                var result = await OpenMailApp.openMailApp();
-
-                                // If no mail apps found, show error
-                                if (!result.didOpen && !result.canOpen) {
-                                  showNoMailAppsDialog(context);
-
-                                  // iOS: if multiple mail apps found, show dialog to select.
-                                  // There is no native intent/default app system in iOS so
-                                  // you have to do it yourself.
-                                } else if (!result.didOpen && result.canOpen) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return MailAppPickerDialog(
-                                        mailApps: result.options,
-                                      );
-                                    },
-                                  );
-                                }
+                              onPressed: () {
+                                _launchMailURL(business.email);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                       (business.socialMedia["facebook"] != "")
@@ -318,6 +286,7 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["facebook"]);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                       (business.socialMedia["instagram"] != "")
@@ -328,6 +297,7 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["instagram"]);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                       (business.socialMedia["twitter"] != "")
@@ -338,6 +308,7 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["twitter"]);
                               },
                               iconSize: ICON_SIZE,
+                              color: textColor,
                             )
                           : Container(),
                     ])
