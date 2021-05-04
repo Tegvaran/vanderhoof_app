@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -189,8 +190,8 @@ class BusinessCard extends StatelessWidget {
               toastLength: Toast.LENGTH_SHORT);
 
   void _launchFacebookURL(username) async =>
-      await canLaunch("facebook.com/$username/")
-          ? launch("facebook.com/$username/")
+      await canLaunch("https://www.facebook.com/$username/")
+          ? launch("https://www.facebook.com/$username/")
           : Fluttertoast.showToast(
               msg: "Could not open profile: $username",
               toastLength: Toast.LENGTH_SHORT);
@@ -231,6 +232,11 @@ class BusinessCard extends StatelessWidget {
                 thickness: 2,
                 color: Colors.grey[500],
               ),
+              (business.imgURL != "" && business.imgURL != null)
+                  ? Image(
+                      image: NetworkImage(business.imgURL),
+                    )
+                  : Container(),
               Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -247,9 +253,9 @@ class BusinessCard extends StatelessWidget {
                       ),
                     ),
                     Row(children: <Widget>[
-                      (business.website != "")
+                      (business.website != "" && business.website != null)
                           ? IconButton(
-                              icon: Icon(Icons.arrow_circle_down_outlined),
+                              icon: FaIcon(FontAwesomeIcons.globe),
                               onPressed: () {
                                 _launchWebsiteURL(business.website);
                               },
@@ -257,7 +263,8 @@ class BusinessCard extends StatelessWidget {
                               color: textColor,
                             )
                           : Container(),
-                      (business.phoneNumber != "")
+                      (business.phoneNumber != "" &&
+                              business.phoneNumber != null)
                           ? IconButton(
                               icon: Icon(Icons.phone),
                               onPressed: () {
@@ -267,7 +274,7 @@ class BusinessCard extends StatelessWidget {
                               color: textColor,
                             )
                           : Container(),
-                      (business.email != "")
+                      (business.email != "" && business.email != null)
                           ? IconButton(
                               icon: Icon(Icons.email),
                               // onPressed code reference: https://pub.dev/packages/open_mail_app
@@ -278,9 +285,10 @@ class BusinessCard extends StatelessWidget {
                               color: textColor,
                             )
                           : Container(),
-                      (business.socialMedia["facebook"] != "")
+                      (business.socialMedia["facebook"] != "" &&
+                              business.socialMedia['facebook'] != null)
                           ? IconButton(
-                              icon: Icon(Icons.tag_faces_outlined),
+                              icon: FaIcon(FontAwesomeIcons.facebook),
                               onPressed: () {
                                 _launchFacebookURL(
                                     business.socialMedia["facebook"]);
@@ -289,9 +297,10 @@ class BusinessCard extends StatelessWidget {
                               color: textColor,
                             )
                           : Container(),
-                      (business.socialMedia["instagram"] != "")
+                      (business.socialMedia["instagram"] != "" &&
+                              business.socialMedia['instagram'] != null)
                           ? IconButton(
-                              icon: Icon(Icons.arrow_circle_down_outlined),
+                              icon: FaIcon(FontAwesomeIcons.instagram),
                               onPressed: () {
                                 _launchInstaURL(
                                     business.socialMedia["instagram"]);
@@ -300,9 +309,10 @@ class BusinessCard extends StatelessWidget {
                               color: textColor,
                             )
                           : Container(),
-                      (business.socialMedia["twitter"] != "")
+                      (business.socialMedia["twitter"] != "" &&
+                              business.socialMedia['twitter'] != null)
                           ? IconButton(
-                              icon: Icon(Icons.bike_scooter_rounded),
+                              icon: FaIcon(FontAwesomeIcons.twitter),
                               onPressed: () {
                                 _launchTwitterURL(
                                     business.socialMedia["twitter"]);

@@ -36,6 +36,7 @@ dependencies:
   url_launcher: ^6.0.3
   fluttertoast: ^8.0.6
   open_mail_app: ^0.1.1
+  font_awesome_flutter: ^9.0.0
 
 dev_dependencies:
   flutter_test:

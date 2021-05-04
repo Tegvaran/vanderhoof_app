@@ -21,14 +21,23 @@ class _BusinessPageState extends State<BusinessState> {
   // firebase async get data
   Future _getBusinesses() async {
     CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('businesses');
+        FirebaseFirestore.instance.collection('debug_businesses');
 
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
-        Business b = Business(doc['name'], doc['address'], doc['LatLng'],
-            doc["description"], doc['phone'], doc['email'], doc['socialMedia'], doc['website']);
+        Business b = Business(
+            doc['name'],
+            doc['address'],
+            doc['LatLng'],
+            doc["description"],
+            doc['phone'],
+            doc['email'],
+            doc['socialMedia'],
+            doc['website'],
+            doc['imgURL']);
         businesses.add(b);
+        ;
       });
     });
     return businesses;
