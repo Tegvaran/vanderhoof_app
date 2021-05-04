@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/main.dart';
-// import 'package:web_scraper/web_scraper.dart';
 
 import 'addBusinessPage.dart';
+import 'package:web_scraper/web_scraper.dart';
 
 // Business object
 class BusinessCard {
@@ -77,9 +77,9 @@ class _BusinessPageState extends State<Business> {
           //   backgroundImage:
           //       NetworkImage(snapshot.data[index].picture),
           // ),
-          title: Text(filteredBusinesses[index].name),
-          subtitle: Text(filteredBusinesses[index].address),
-          children: <Widget>[Text(filteredBusinesses[index].description)],
+          title: _nullText(filteredBusinesses[index].name),
+          subtitle: _nullText(filteredBusinesses[index].address),
+          children: <Widget>[_nullText(filteredBusinesses[index].description)],
         );
       },
     ));
@@ -103,7 +103,7 @@ class _BusinessPageState extends State<Business> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.add, size: 50),
+            leading: Icon(Icons.add_circle_outline),
             title: Text("Add a Business"),
             onTap: () {
               Navigator.pop(context);
@@ -113,6 +113,11 @@ class _BusinessPageState extends State<Business> {
                     builder: (context) => AddBusinessPage(),
                   ));
             },
+          ),
+          ListTile(
+            leading: Icon(Icons.ac_unit),
+            title: Text("Test Scraper"),
+            onTap: () => scrap(false),
           )
         ],
       )),
@@ -167,5 +172,101 @@ class _BusinessPageState extends State<Business> {
         ),
       ),
     );
+  }
+
+  Widget _nullText(String str) {
+    if (str != null) {
+      return Text(str);
+    } else {
+      return Text("empty");
+    }
+  }
+
+  Future<void> scrap(bool activate) async {
+    if (!activate) {
+      print("----------scraping deactivated");
+    } else {
+      print("----------------scrap------------");
+
+      final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
+
+      if (await webScraper.loadWebPage('/membership/business-directory')) {
+        List<String> elements =
+            webScraper.getElementTitle('#businesslist > div');
+
+        var n = webScraper.getElementTitle('#businesslist > div > h3').iterator;
+        var p = webScraper
+            .getElementTitle('#businesslist > div > p.phone')
+            .iterator;
+        var a = webScraper
+            .getElementTitle('#businesslist > div > p.address')
+            .iterator;
+        var d = webScraper
+            .getElementTitle('#businesslist > div > div.description')
+            .iterator;
+        var e = webScraper
+            .getElementTitle('#businesslist > div > p.email')
+            .iterator;
+        var w = webScraper
+            .getElementTitle('#businesslist > div > p.website')
+            .iterator;
+
+        n.moveNext();
+        p.moveNext();
+        a.moveNext();
+        d.moveNext();
+        e.moveNext();
+        w.moveNext();
+        List<Map> all = [];
+
+        String check(String value, var iterator) {
+          try {
+            if (iterator.current != null && value.contains(iterator.current)) {
+              iterator.moveNext();
+              return iterator.current;
+            } else {
+              return null;
+            }
+          } catch (e) {
+            print("error catch---");
+            print(value);
+            print(iterator.current);
+            print("error end");
+            print(e);
+          }
+        }
+
+        for (int i = 0; i < elements.length; i++) {
+          Map b = {
+            'name': check(elements[i], n),
+            'address': check(elements[i], a),
+            'phone': check(elements[i], p),
+            'email': check(elements[i], e),
+            'website': check(elements[i], w),
+            'description': check(elements[i], d),
+          };
+          all.add(b);
+        }
+
+        print("-----------end");
+        print(all.length);
+
+        CollectionReference business =
+            FirebaseFirestore.instance.collection('testbusiness');
+        Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+          return business
+              .add(businessInfo)
+              .then((value) => {
+                    print("Business Added:  ${value.id}"),
+                    business.doc(value.id).update({"id": value.id})
+                  })
+              .catchError((error) => print("Failed to add Business: $error"));
+        }
+
+        for (int i = 0; i < all.length; i++) {
+          addBusiness(Map<String, dynamic>.from(all[i]));
+        }
+      }
+    }
   }
 }
