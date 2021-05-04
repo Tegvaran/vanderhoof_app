@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'cards.dart';
+import 'fireStoreObjects.dart';
 
-// Business object
-class BusinessCard {
-  final String name;
-  final String address;
-  final String description;
-  BusinessCard(this.name, this.address, this.description);
-}
-
-class Business extends StatefulWidget {
-  Business({Key key}) : super(key: key);
+class BusinessState extends StatefulWidget {
+  BusinessState({Key key}) : super(key: key);
 
   final title = "Businesses";
 
@@ -19,9 +13,9 @@ class Business extends StatefulWidget {
   _BusinessPageState createState() => new _BusinessPageState();
 }
 
-class _BusinessPageState extends State<Business> {
-  List<BusinessCard> businesses = [];
-  List<BusinessCard> filteredBusinesses = [];
+class _BusinessPageState extends State<BusinessState> {
+  List<Business> businesses = [];
+  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // firebase async get data
@@ -32,8 +26,8 @@ class _BusinessPageState extends State<Business> {
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
-        BusinessCard b =
-            BusinessCard(doc['name'], doc['address'], doc["description"]);
+        Business b = Business(doc['name'], doc['address'], doc['LatLng'],
+            doc["description"], doc['phone'], doc['email'], doc['socialMedia'], doc['website']);
         businesses.add(b);
       });
     });
@@ -68,15 +62,7 @@ class _BusinessPageState extends State<Business> {
         child: ListView.builder(
       itemCount: filteredBusinesses.length,
       itemBuilder: (BuildContext context, int index) {
-        return ExpansionTile(
-          // leading: CircleAvatar(
-          //   backgroundImage:
-          //       NetworkImage(snapshot.data[index].picture),
-          // ),
-          title: Text(filteredBusinesses[index].name),
-          subtitle: Text(filteredBusinesses[index].address),
-          children: <Widget>[Text(filteredBusinesses[index].description)],
-        );
+        return BusinessCard(filteredBusinesses[index]);
       },
     ));
   }

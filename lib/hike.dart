@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vanderhoof_app/cards.dart';
 
+import 'fireStoreObjects.dart';
+
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
 
@@ -12,8 +14,8 @@ class Hike extends StatefulWidget {
 }
 
 class _HikePageState extends State<Hike> {
-  List<HikeCard> hikes = [];
-  List<HikeCard> filteredHikes = [];
+  List<HikeTrail> hikes = [];
+  List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
 
   Future _getHikes() async {
@@ -22,8 +24,15 @@ class _HikePageState extends State<Hike> {
 
     await fireStore.get().then((QuerySnapshot snap) {
       snap.docs.forEach((doc) {
-        HikeCard h = HikeCard(doc['name'], doc['distance'], doc['difficulty'],
-            doc['time'], doc['wheelchair']);
+        HikeTrail h = HikeTrail(
+            doc['name'],
+            doc['address'],
+            doc['location'],
+            doc['distance'],
+            doc['difficulty'],
+            doc['time'],
+            doc['wheelchair'],
+            doc['description']);
         hikes.add(h);
       });
     });
@@ -115,24 +124,7 @@ class _HikePageState extends State<Hike> {
         child: ListView.builder(
             itemCount: filteredHikes.length,
             itemBuilder: (BuildContext context, int index) {
-              return HikeCard(
-                  filteredHikes[index].name,
-                  filteredHikes[index].distance,
-                  filteredHikes[index].rating,
-                  filteredHikes[index].time,
-                  filteredHikes[index].wheelchair);
+              return HikeCard(filteredHikes[index]);
             }));
   }
-}
-
-class HikeTrail {
-  final String name;
-  final String distance;
-  final String rating;
-  final String time;
-  final String wheelchair;
-  final String description;
-
-  HikeTrail(this.name, this.distance, this.rating, this.time, this.wheelchair,
-      this.description);
 }
