@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
-// import 'package:ffb_tutorial/screens/basics/formbuilder/examples/onWillPop.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:vanderhoof_app/main.dart';
 
@@ -48,7 +47,7 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                   ),
                                   SizedBox(height: 20),
                                   _getTextField(
-                                      "bus_name",
+                                      "name",
                                       "Name",
                                       "Vanderhoof Chamber of Commerce",
                                       Icon(Icons.account_balance)),
@@ -75,10 +74,33 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                       "description of business",
                                       Icon(Icons.description_outlined)),
                                   SizedBox(height: 20),
-                                  ElevatedButton(
-                                    onPressed: _onSubmitPressed,
-                                    child: Text('Submit'),
-                                  )
+                                  Row(
+                                    children: [
+                                      const Spacer(),
+                                      Expanded(
+                                          child: Center(
+                                              child: ElevatedButton(
+                                        onPressed: _onSubmitPressed,
+                                        child: Text('Submit'),
+                                      ))),
+                                      Expanded(
+                                          child: Center(
+                                              child: ElevatedButton(
+                                        onPressed: () {
+                                          _formKey.currentState.reset();
+                                          // unfocus keyboard
+                                          FocusScope.of(context).unfocus();
+                                        },
+                                        child: Text('Reset'),
+                                      ))),
+                                      Expanded(
+                                          child: Center(
+                                              child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('Cancel'),
+                                      )))
+                                    ],
+                                  ),
                                 ],
                               ),
                               autovalidateMode: null,
@@ -152,8 +174,13 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
   }
 
   void _onSubmitPressed() {
+    print("-------------Submit clicked------------");
+
     CollectionReference business =
         FirebaseFirestore.instance.collection('businesses');
+    //=========================================
+    //Method to add business to FireStore
+    //=========================================
     Future<void> addBusiness(Map<String, dynamic> businessInfo) {
       return business
           .add(businessInfo)
@@ -164,13 +191,19 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
           .catchError((error) => print("Failed to add Business: $error"));
     }
 
-    print("-------------------------");
-
+    //=========================================
+    //Validate fields. If successful, then addBusiness()
+    //=========================================
     final validationSuccess = _formKey.currentState.validate();
     if (validationSuccess) {
       _formKey.currentState.save();
       print(_formKey.currentState.value);
       addBusiness(_formKey.currentState.value);
+
+      //=========================================
+      //Navigate back to Business Page
+      //=========================================
+      Navigator.pop(context);
     }
   }
 }
