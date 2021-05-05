@@ -1,16 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vanderhoof_app/main.dart';
+import 'package:vanderhoof_app/fireStoreObjects.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'hikingInformation.dart';
 
 class HikeCard extends StatelessWidget {
-  final String name;
-  final String distance;
-  final String rating;
-  final String time;
-  final String wheelchair;
-
+  final HikeTrail hikeTrail;
   static const double TITLE_SIZE = 26;
   static const double BODY_SIZE = 20;
 
@@ -19,13 +18,13 @@ class HikeCard extends StatelessWidget {
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[500];
 
-  HikeCard(this.name, this.distance, this.rating, this.time, this.wheelchair);
+  HikeCard(this.hikeTrail);
 
   Color getDifficultyColor() {
     Color difficultyColor;
-    if (this.rating == "Easy") {
+    if (hikeTrail.rating == "Easy") {
       difficultyColor = greenColor;
-    } else if (this.rating == "Medium") {
+    } else if (hikeTrail.rating == "Medium") {
       difficultyColor = orangeColor;
     } else {
       difficultyColor = redColor;
@@ -35,7 +34,7 @@ class HikeCard extends StatelessWidget {
 
   Color getAccessibilityColor() {
     Color accessibilityColor;
-    if (this.wheelchair == "Accessible") {
+    if (hikeTrail.wheelchair == "Accessible") {
       accessibilityColor = greenColor;
     } else {
       accessibilityColor = redColor;
@@ -50,7 +49,7 @@ class HikeCard extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: ExpansionTile(
         title: Text(
-          this.name,
+          hikeTrail.name,
           style: TextStyle(fontSize: TITLE_SIZE, color: textColor),
         ),
         children: <Widget>[
@@ -79,7 +78,7 @@ class HikeCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
                 child: Text(
-                  "Distance: ${this.distance}",
+                  "Distance: ${hikeTrail.distance}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
                     color: textColor,
@@ -95,7 +94,7 @@ class HikeCard extends StatelessWidget {
                         children: <TextSpan>[
                       TextSpan(text: 'Difficulty: '),
                       TextSpan(
-                        text: '${this.rating}',
+                        text: '${hikeTrail.rating}',
                         style: TextStyle(
                           fontSize: BODY_SIZE,
                           color: getDifficultyColor(),
@@ -106,7 +105,7 @@ class HikeCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
                 child: Text(
-                  "Time: ${this.time}",
+                  "Time: ${hikeTrail.time}",
                   style: TextStyle(
                     fontSize: BODY_SIZE,
                     color: textColor,
@@ -127,7 +126,7 @@ class HikeCard extends StatelessWidget {
                             children: <TextSpan>[
                           TextSpan(text: 'Wheelchair: '),
                           TextSpan(
-                            text: '${this.wheelchair}',
+                            text: '${hikeTrail.wheelchair}',
                             style: TextStyle(
                               fontSize: BODY_SIZE,
                               color: getAccessibilityColor(),
@@ -141,6 +140,7 @@ class HikeCard extends StatelessWidget {
                           icon: Icon(
                             Icons.article_outlined,
                             size: 50,
+                            color: textColor,
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -160,5 +160,169 @@ class HikeCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class BusinessCard extends StatelessWidget {
+  final Business business;
+  static const double TITLE_SIZE = 26;
+  static const double BODY_SIZE = 20;
+  static const double ICON_SIZE = 45;
+
+  final Color textColor = Colors.grey[300];
+  final Color greenColor = Colors.lightGreenAccent[400];
+  final Color orangeColor = colorAccent;
+  final Color redColor = Colors.red[500];
+
+  BusinessCard(this.business);
+
+  void _launchWebsiteURL(String website) async => await canLaunch(website)
+      ? launch(website)
+      : Fluttertoast.showToast(
+          msg: "Could not open website $website",
+          toastLength: Toast.LENGTH_SHORT);
+
+  void _launchInstaURL(String username) async =>
+      await canLaunch("instagram.com/$username/")
+          ? launch("instagram.com/$username/")
+          : Fluttertoast.showToast(
+              msg: "Could not open profile: $username",
+              toastLength: Toast.LENGTH_SHORT);
+
+  void _launchFacebookURL(username) async =>
+      await canLaunch("https://www.facebook.com/$username/")
+          ? launch("https://www.facebook.com/$username/")
+          : Fluttertoast.showToast(
+              msg: "Could not open profile: $username",
+              toastLength: Toast.LENGTH_SHORT);
+
+  void _launchTwitterURL(username) async =>
+      await canLaunch("twitter.com/$username/")
+          ? launch("twitter.com/$username/")
+          : Fluttertoast.showToast(
+              msg: "Could not open profile: $username",
+              toastLength: Toast.LENGTH_SHORT);
+
+  void _launchPhoneURL(String phoneNumber) async =>
+      await canLaunch('tel:$phoneNumber')
+          ? launch('tel:$phoneNumber')
+          : Fluttertoast.showToast(
+              msg: "Could not set up a call for $phoneNumber",
+              toastLength: Toast.LENGTH_SHORT);
+
+  void _launchMailURL(String email) async => await canLaunch('mailto:$email')
+      ? launch('mailto:$email')
+      : Fluttertoast.showToast(
+          msg: "Could not open the email app for $email",
+          toastLength: Toast.LENGTH_SHORT);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        color: colorPrimary,
+        margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: ExpansionTile(
+            title: Text(
+              business.name,
+              style: TextStyle(fontSize: TITLE_SIZE, color: textColor),
+            ),
+            children: <Widget>[
+              Divider(
+                height: 10,
+                thickness: 2,
+                color: Colors.grey[500],
+              ),
+              (business.imgURL != "" && business.imgURL != null)
+                  ? Image(
+                      image: NetworkImage(business.imgURL),
+                    )
+                  : Container(),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+                      child: Text(
+                        "${business.description}",
+                        style: TextStyle(
+                          fontSize: BODY_SIZE,
+                          color: textColor,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    Row(children: <Widget>[
+                      (business.website != "" && business.website != null)
+                          ? IconButton(
+                              icon: FaIcon(FontAwesomeIcons.globe),
+                              onPressed: () {
+                                _launchWebsiteURL(business.website);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                      (business.phoneNumber != "" &&
+                              business.phoneNumber != null)
+                          ? IconButton(
+                              icon: Icon(Icons.phone),
+                              onPressed: () {
+                                _launchPhoneURL(business.phoneNumber);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                      (business.email != "" && business.email != null)
+                          ? IconButton(
+                              icon: Icon(Icons.email),
+                              // onPressed code reference: https://pub.dev/packages/open_mail_app
+                              onPressed: () {
+                                _launchMailURL(business.email);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                      (business.socialMedia["facebook"] != "" &&
+                              business.socialMedia['facebook'] != null)
+                          ? IconButton(
+                              icon: FaIcon(FontAwesomeIcons.facebook),
+                              onPressed: () {
+                                _launchFacebookURL(
+                                    business.socialMedia["facebook"]);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                      (business.socialMedia["instagram"] != "" &&
+                              business.socialMedia['instagram'] != null)
+                          ? IconButton(
+                              icon: FaIcon(FontAwesomeIcons.instagram),
+                              onPressed: () {
+                                _launchInstaURL(
+                                    business.socialMedia["instagram"]);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                      (business.socialMedia["twitter"] != "" &&
+                              business.socialMedia['twitter'] != null)
+                          ? IconButton(
+                              icon: FaIcon(FontAwesomeIcons.twitter),
+                              onPressed: () {
+                                _launchTwitterURL(
+                                    business.socialMedia["twitter"]);
+                              },
+                              iconSize: ICON_SIZE,
+                              color: textColor,
+                            )
+                          : Container(),
+                    ])
+                  ])
+            ]));
   }
 }

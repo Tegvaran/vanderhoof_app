@@ -3,6 +3,10 @@
    <application
         android:label="vanderhoof_app"
         android:icon="@mipmap/ic_launcher">
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyAhsQrVxFGMXYq4b6t8WPbfeiPaxQBdTBw"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

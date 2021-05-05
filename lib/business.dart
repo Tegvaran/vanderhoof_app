@@ -1,21 +1,17 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vanderhoof_app/main.dart';
-
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:vanderhoof_app/map.dart';
+import 'cards.dart';
+import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'package:web_scraper/web_scraper.dart';
 
-// Business object
-class BusinessCard {
-  final String name;
-  final String address;
-  final String description;
-  BusinessCard(this.name, this.address, this.description);
-}
-
-class Business extends StatefulWidget {
-  Business({Key key}) : super(key: key);
+class BusinessState extends StatefulWidget {
+  BusinessState({Key key}) : super(key: key);
 
   final title = "Businesses";
 
@@ -23,21 +19,29 @@ class Business extends StatefulWidget {
   _BusinessPageState createState() => new _BusinessPageState();
 }
 
-class _BusinessPageState extends State<Business> {
-  List<BusinessCard> businesses = [];
-  List<BusinessCard> filteredBusinesses = [];
+class _BusinessPageState extends State<BusinessState> {
+  List<Business> businesses = [];
+  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // firebase async get data
   Future _getBusinesses() async {
     CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('businesses');
+        FirebaseFirestore.instance.collection('debug_businesses');
 
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
-        BusinessCard b =
-            BusinessCard(doc['name'], doc['address'], doc["description"]);
+        Business b = Business(
+            doc['name'],
+            doc['address'],
+            doc['LatLng'],
+            doc["description"],
+            doc['phone'],
+            doc['email'],
+            doc['socialMedia'],
+            doc['website'],
+            doc['imgURL']);
         businesses.add(b);
       });
     });
@@ -65,6 +69,8 @@ class _BusinessPageState extends State<Business> {
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+
+    resetMarkers(_markers, filteredBusinesses);
   }
 
   Widget _businessesListBuild() {
@@ -72,18 +78,36 @@ class _BusinessPageState extends State<Business> {
         child: ListView.builder(
       itemCount: filteredBusinesses.length,
       itemBuilder: (BuildContext context, int index) {
-        return ExpansionTile(
-          // leading: CircleAvatar(
-          //   backgroundImage:
-          //       NetworkImage(snapshot.data[index].picture),
-          // ),
-          title: _nullText(filteredBusinesses[index].name),
-          subtitle: _nullText(filteredBusinesses[index].address),
-          children: <Widget>[_nullText(filteredBusinesses[index].description)],
-        );
+        return BusinessCard(filteredBusinesses[index]);
       },
     ));
   }
+
+  Set<Marker> _markers = HashSet<Marker>();
+  GoogleMapController _mapController;
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    //run marker adapter
+    setState(() {
+      for (int i = 0; i < filteredBusinesses.length; i++) {
+        _markers.add(
+          Marker(
+              markerId: MarkerId(i.toString()),
+              position: filteredBusinesses[i].location,
+              infoWindow: InfoWindow(
+                title: filteredBusinesses[i].name,
+                snippet: filteredBusinesses[i].description,
+              )),
+        );
+      }
+    });
+  }
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(54.0117956, -124.0177679),
+    zoom: 13,
+  );
+  var maptype = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +190,16 @@ class _BusinessPageState extends State<Business> {
           children: [
             // insert widgets here wrapped in `Expanded` as a child
             // note: play around with flex int value to adjust vertical spaces between widgets
-            Expanded(flex: 1, child: Text("first child - future map widget")),
-            Expanded(flex: 11, child: _businessesListBuild()),
+            Expanded(
+              flex: 3,
+              child: GoogleMap(
+                mapType: maptype,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: _onMapCreated,
+                markers: _markers,
+              ),
+            ),
+            Expanded(flex: 3, child: _businessesListBuild()),
           ],
         ),
       ),

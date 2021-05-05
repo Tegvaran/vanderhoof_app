@@ -1,6 +1,12 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/cards.dart';
+
+import 'fireStoreObjects.dart';
+import 'map.dart';
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -12,8 +18,8 @@ class Hike extends StatefulWidget {
 }
 
 class _HikePageState extends State<Hike> {
-  List<HikeCard> hikes = [];
-  List<HikeCard> filteredHikes = [];
+  List<HikeTrail> hikes = [];
+  List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
 
   Future _getHikes() async {
@@ -22,8 +28,15 @@ class _HikePageState extends State<Hike> {
 
     await fireStore.get().then((QuerySnapshot snap) {
       snap.docs.forEach((doc) {
-        HikeCard h = HikeCard(doc['name'], doc['distance'], doc['difficulty'],
-            doc['time'], doc['wheelchair']);
+        HikeTrail h = HikeTrail(
+            doc['name'],
+            doc['address'],
+            doc['location'],
+            doc['distance'],
+            doc['difficulty'],
+            doc['time'],
+            doc['wheelchair'],
+            doc['description']);
         hikes.add(h);
       });
     });
@@ -51,7 +64,35 @@ class _HikePageState extends State<Hike> {
               hikeCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+
+    resetMarkers(_markers, filteredHikes);
   }
+
+  Set<Marker> _markers = HashSet<Marker>();
+  GoogleMapController _mapController;
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    //run marker adapter
+    setState(() {
+      for (int i = 0; i < hikes.length; i++) {
+        _markers.add(
+          Marker(
+              markerId: MarkerId(i.toString()),
+              position: hikes[i].location,
+              infoWindow: InfoWindow(
+                title: hikes[i].name,
+                snippet: hikes[i].description,
+              )),
+        );
+      }
+    });
+  }
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(54.0117956, -124.0177679),
+    zoom: 13,
+  );
+  var maptype = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -101,9 +142,15 @@ class _HikePageState extends State<Hike> {
           children: [
             // insert widgets here
             Expanded(
-                flex: 1,
-                child: Text("Hiking page - first child Future map widget")),
-            Expanded(flex: 11, child: _hikeTrailListBuild()),
+              flex: 3,
+              child: GoogleMap(
+                mapType: maptype,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: _onMapCreated,
+                markers: _markers,
+              ),
+            ),
+            Expanded(flex: 3, child: _hikeTrailListBuild()),
           ],
         ),
       ),
@@ -115,27 +162,7 @@ class _HikePageState extends State<Hike> {
         child: ListView.builder(
             itemCount: filteredHikes.length,
             itemBuilder: (BuildContext context, int index) {
-              return HikeCard(
-                  filteredHikes[index].name,
-                  filteredHikes[index].distance,
-                  filteredHikes[index].rating,
-                  filteredHikes[index].time,
-                  filteredHikes[index].wheelchair);
+              return HikeCard(filteredHikes[index]);
             }));
   }
-}
-
-class HikeTrail {
-  final String name;
-  final String address;
-  final String lat;
-  final String long;
-  final String distance;
-  final String rating;
-  final String time;
-  final String wheelchair;
-  final String description;
-
-  HikeTrail(this.name, this.address, this.lat, this.long, this.distance,
-      this.rating, this.time, this.wheelchair, this.description);
 }
