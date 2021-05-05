@@ -93,36 +93,50 @@ class _BusinessPageState extends State<Business> {
     ItemScrollController _scrollController = ItemScrollController();
     double scrollAlignment = 0.1;
 
-    return new Container(
-        child: ScrollablePositionedList.builder(
-      itemScrollController: _scrollController,
-      itemCount: filteredBusinesses.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ExpansionTile(
-          // leading: CircleAvatar(
-          //   backgroundImage:
-          //       NetworkImage(snapshot.data[index].picture),
-          // ),
-          onExpansionChanged: (_isExpanded) {
-            if (_isExpanded) {
-              // check if Expanded
-              // let ExpansionTile expand, then scroll Tile to top of the list
-              Future.delayed(Duration(milliseconds: 250)).then((value) {
-                _scrollController.scrollTo(
-                  index: index,
-                  duration: Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  alignment: scrollAlignment,
-                );
-              });
-            }
-          },
-          title: _nullText(filteredBusinesses[index].name),
-          subtitle: _nullText(filteredBusinesses[index].address),
-          children: <Widget>[_nullText(filteredBusinesses[index].description)],
-        );
-      },
-    ));
+    return new Scaffold(
+      body: Container(
+          child: ScrollablePositionedList.builder(
+        itemScrollController: _scrollController,
+        itemCount: filteredBusinesses.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ExpansionTile(
+            // leading: CircleAvatar(
+            //   backgroundImage:
+            //       NetworkImage(snapshot.data[index].picture),
+            // ),
+            onExpansionChanged: (_isExpanded) {
+              if (_isExpanded) {
+                // check if Expanded
+                // let ExpansionTile expand, then scroll Tile to top of the list
+                Future.delayed(Duration(milliseconds: 250)).then((value) {
+                  _scrollController.scrollTo(
+                    index: index,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    alignment: scrollAlignment,
+                  );
+                });
+              }
+            },
+            title: _nullText(filteredBusinesses[index].name),
+            subtitle: _nullText(filteredBusinesses[index].address),
+            children: <Widget>[
+              _nullText(filteredBusinesses[index].description)
+            ],
+          );
+        },
+      )),
+      floatingActionButton: FloatingActionButton(
+          // scroll to top of the list
+          child: Icon(Icons.arrow_upward),
+          onPressed: () {
+            _scrollController.scrollTo(
+              index: 0,
+              duration: Duration(seconds: 1),
+              curve: Curves.easeInOut,
+            );
+          }),
+    );
   }
 
   @override
