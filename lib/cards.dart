@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -165,16 +166,19 @@ class HikeCard extends StatelessWidget {
 
 class BusinessCard extends StatelessWidget {
   final Business business;
+  final ItemScrollController scrollController;
+  final int scrollIndex;
   static const double TITLE_SIZE = 26;
   static const double BODY_SIZE = 20;
   static const double ICON_SIZE = 45;
+  static const double SCROLL_ALIGNMENT = 0;
 
   final Color textColor = Colors.grey[300];
   final Color greenColor = Colors.lightGreenAccent[400];
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[500];
 
-  BusinessCard(this.business);
+  BusinessCard(this.business, this.scrollController, this.scrollIndex);
 
   void _launchWebsiteURL(String website) async => await canLaunch(website)
       ? launch(website)
@@ -222,6 +226,20 @@ class BusinessCard extends StatelessWidget {
         color: colorPrimary,
         margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
         child: ExpansionTile(
+            onExpansionChanged: (_isExpanded) {
+              if (_isExpanded) {
+                // check if Expanded
+                // let ExpansionTile expand, then scroll Tile to top of the list
+                Future.delayed(Duration(milliseconds: 250)).then((value) {
+                  scrollController.scrollTo(
+                    index: scrollIndex,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    alignment: SCROLL_ALIGNMENT,
+                  );
+                });
+              }
+            },
             title: Text(
               business.name,
               style: TextStyle(fontSize: TITLE_SIZE, color: textColor),

@@ -9,6 +9,7 @@ import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'package:web_scraper/web_scraper.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
 
@@ -22,9 +23,17 @@ class BusinessState extends StatefulWidget {
 }
 
 class _BusinessPageState extends State<BusinessState> {
+  // list of businesses populated from firebase
   List<Business> businesses = [];
+
+  // list of businesses with search filters - this is whats shown in ListView
   List<Business> filteredBusinesses = [];
   bool isSearching = false;
+
+  // Controllers to check scroll position of ListView
+  ItemScrollController _scrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  bool _isScrollButtonVisible = false;
 
   // firebase async get data
   Future _getBusinesses() async {
@@ -52,9 +61,9 @@ class _BusinessPageState extends State<BusinessState> {
 
   @override
   void initState() {
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
     // this method gets firebase data and populates into list of businesses
     // also loads in the map markers
+    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
     _getBusinesses().then((data) {
       setState(() {
         businesses = filteredBusinesses = data;
@@ -74,16 +83,6 @@ class _BusinessPageState extends State<BusinessState> {
           .toList();
       resetMarkers(_markers, filteredBusinesses);
     });
-  }
-
-  Widget _businessesListBuild() {
-    return new Container(
-        child: ListView.builder(
-      itemCount: filteredBusinesses.length,
-      itemBuilder: (BuildContext context, int index) {
-        return BusinessCard(filteredBusinesses[index]);
-      },
-    ));
   }
 
   Set<Marker> _markers = HashSet<Marker>();
@@ -112,10 +111,64 @@ class _BusinessPageState extends State<BusinessState> {
   );
   var maptype = MapType.normal;
 
+  // old build for ListView of Businesses - Teg and Ben
+  Widget _businessesListBuild_old() {
+    return new Container(
+        child: ListView.builder(
+      itemCount: filteredBusinesses.length,
+      itemBuilder: (BuildContext context, int index) {
+        return BusinessCard(
+            filteredBusinesses[index], _scrollController, index);
+      },
+    ));
+  }
+
+  Widget _businessesListBuild() {
+    // listener for the current scroll position
+    // if scroll position is not near the very top, set FloatingActionButton visibility to true
+    _itemPositionsListener.itemPositions.addListener(() {
+      int firstPositionIndex =
+          _itemPositionsListener.itemPositions.value.first.index;
+      setState(() {
+        firstPositionIndex >
+                0 //todo: when populating real businesses from firestore, replace 0 back to 5
+            ? _isScrollButtonVisible = true
+            : _isScrollButtonVisible = false;
+      });
+    });
+
+    // build widget for businesses ListView + FloatingActionButton for jumpTo index 0
+    return new Scaffold(
+      body: Container(
+          child: ScrollablePositionedList.builder(
+        itemScrollController: _scrollController,
+        itemPositionsListener: _itemPositionsListener,
+        itemCount: filteredBusinesses.length,
+        itemBuilder: (BuildContext context, int index) {
+          return BusinessCard(
+              filteredBusinesses[index], _scrollController, index);
+        },
+      )),
+      floatingActionButton: _isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: Icon(Icons.arrow_upward),
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Drawer: Hamberguer menu for Admin
+      // Drawer: Hamburger menu for Admin
       drawer: Drawer(
           child: ListView(
         padding: EdgeInsets.zero,
@@ -191,8 +244,8 @@ class _BusinessPageState extends State<BusinessState> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // insert widgets here wrapped in `Expanded` as a child
-            // note: play around with flex int value to adjust vertical spaces between widgets
+            // insert widgets here as a child widget wrapped in `Expanded` class
+            // note: play around with flex int value to change how much vertical space each widget occupies
             Expanded(
               flex: 2,
               child: GoogleMap(
