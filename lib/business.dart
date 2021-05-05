@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/main.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'addBusinessPage.dart';
-import 'package:web_scraper/web_scraper.dart';
+import 'scraper.dart';
 
 // Business object
 class BusinessCard {
@@ -119,11 +119,6 @@ class _BusinessPageState extends State<Business> {
             title: Text("Test Scraper"),
             onTap: () => scrap(true),
           ),
-          ListTile(
-            leading: Icon(Icons.ac_unit),
-            title: Text("Test Scraper2"),
-            onTap: () => scrap2(true),
-          )
         ],
       )),
       appBar: AppBar(
@@ -184,201 +179,6 @@ class _BusinessPageState extends State<Business> {
       return Text(str);
     } else {
       return Text("empty");
-    }
-  }
-
-  Future<void> scrap(bool activate) async {
-    if (!activate) {
-      print("----------scraping deactivated");
-    } else {
-      print("----------------scrap------------");
-
-      final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
-
-      if (await webScraper.loadWebPage('/membership/business-directory')) {
-        List<String> elements =
-            webScraper.getElementTitle('#businesslist > div');
-
-        var n = webScraper.getElementTitle('#businesslist > div > h3').iterator;
-        var p = webScraper
-            .getElementTitle('#businesslist > div > p.phone')
-            .iterator;
-        var a = webScraper
-            .getElementTitle('#businesslist > div > p.address')
-            .iterator;
-        var d = webScraper
-            .getElementTitle('#businesslist > div > div.description')
-            .iterator;
-        var e = webScraper
-            .getElementTitle('#businesslist > div > p.email')
-            .iterator;
-        var w = webScraper
-            .getElementTitle('#businesslist > div > p.website')
-            .iterator;
-
-        n.moveNext();
-        p.moveNext();
-        a.moveNext();
-        d.moveNext();
-        e.moveNext();
-        w.moveNext();
-        List<Map> all = [];
-
-        String check(String value, var iterator) {
-          try {
-            if (iterator.current != null && value.contains(iterator.current)) {
-              iterator.moveNext();
-              return iterator.current;
-            } else {
-              return null;
-            }
-          } catch (e) {
-            print("error catch---");
-            print(value);
-            print(iterator.current);
-            print("error end");
-            print(e);
-          }
-        }
-
-        for (int i = 0; i < elements.length; i++) {
-          Map b = {
-            'name': check(elements[i], n),
-            'address': check(elements[i], a),
-            'phone': check(elements[i], p),
-            'email': check(elements[i], e),
-            'website': check(elements[i], w),
-            'description': check(elements[i], d),
-          };
-          all.add(b);
-        }
-
-        print("-----------end");
-        print(all.length);
-
-        CollectionReference business =
-            FirebaseFirestore.instance.collection('testbus');
-
-        Future<void> addBusiness(Map<String, dynamic> businessInfo, int docID) {
-          return business
-              .doc("$docID")
-              .set(businessInfo)
-              .then((value) => {
-                    print("Business Added:  ${docID}"),
-                  })
-              .catchError((error) => print("Failed to add Business: $error"));
-        }
-
-        for (int i = 0; i < all.length - 1; i++) {
-          //need to check for null name
-          // if (all[i]['name'] == null) {
-          //   print("null at ${i},   ${all[i]}");
-          // }
-          // all[i]['index'] = i;
-          // print(all[i]);
-          addBusiness(Map<String, dynamic>.from(all[i]), i);
-        }
-      }
-    }
-  }
-
-  //==================
-  //===================
-  //===================
-  Future<void> scrap2(bool activate) async {
-    if (!activate) {
-      print("----------scraping deactivated");
-    } else {
-      print("----------------scrap------------");
-
-      //==================================
-      // Assistance Methods
-      //==================================
-
-      CollectionReference business =
-          FirebaseFirestore.instance.collection('businesses');
-      Future<void> addBusiness(
-          Map<String, dynamic> businessInfo, String docID) {
-        if (docID.contains("/")) {
-          docID = docID.replaceAll('/', '|');
-        }
-        return business
-            .doc("$docID")
-            .set(businessInfo)
-            .then((value) => {
-                  print("Business Added:  ${docID}"),
-                })
-            .catchError((error) => print("Failed to add Business: $error"));
-      }
-
-      String _check(List element) {
-        if (element.isNotEmpty) {
-          return element[0];
-        } else {
-          return null;
-        }
-      }
-
-      String _checkElement(List element, String tag) {
-        if (element.isNotEmpty) {
-          return element[0]['attributes'][tag];
-        } else {
-          return null;
-        }
-      }
-
-      String _checkPhone(List element) {
-        if (element.isNotEmpty) {
-          String s = element[0].replaceAll(RegExp(r'[-.() ]'), '');
-          s = s.substring(0, 10) + "\n" + s.substring(10);
-          return s;
-        } else {
-          return null;
-        }
-      }
-      //==================================
-      // End of Assistance Methods
-      //==================================
-
-      int count = 0;
-      final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
-
-      if (await webScraper.loadWebPage('/membership/business-directory')) {
-        var elements =
-            webScraper.getElement('#businesslist > div >h3>a', ['href']);
-        elements.forEach((element) async {
-          String page = element['attributes']['href'].substring(33);
-          if (await webScraper.loadWebPage(page)) {
-            var name = webScraper.getElementTitle('h1.entry-title');
-            var phone = webScraper.getElementTitle('p.phone');
-            var desc = webScraper.getElementTitle('#business > p');
-            var address = webScraper.getElementTitle('p.address');
-            var email = webScraper.getElementTitle('p.email > a');
-            var web = webScraper.getElement('p.website>a', ['href']);
-            var img = webScraper.getElement('div.entry-content >img', ['src']);
-
-            String n = _check(name);
-            String p = _checkPhone(phone);
-            String d = _check(desc);
-            String a = _check(address);
-            String e = _check(email);
-            String w = _checkElement(web, 'href');
-            String i = _checkElement(img, 'src');
-
-            addBusiness({
-              'name': n,
-              'address': a,
-              'phone': p,
-              'email': e,
-              'website': w,
-              'description': d,
-              'imgURL': i,
-              'indexRef': count,
-            }, n);
-            count++;
-          }
-        });
-      }
     }
   }
 }
