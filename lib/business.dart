@@ -105,17 +105,14 @@ class _BusinessPageState extends State<Business> {
     // if scroll position is not near the very top,
     // set FloatingActionButton visibility to true
     _itemPositionsListener.itemPositions.addListener(() {
-      final firstPositionIndex =
+      int firstPositionIndex =
           _itemPositionsListener.itemPositions.value.first.index;
-      if (firstPositionIndex > 5) {
-        setState(() {
-          _isScrollButtonVisible = true;
-        });
-      } else {
-        setState(() {
-          _isScrollButtonVisible = false;
-        });
-      }
+
+      setState(() {
+        firstPositionIndex > 5
+            ? _isScrollButtonVisible = true
+            : _isScrollButtonVisible = false;
+      });
     });
 
     return new Scaffold(
@@ -248,8 +245,8 @@ class _BusinessPageState extends State<Business> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // insert widgets here wrapped in `Expanded` as a child
-            // note: play around with flex int value to adjust vertical spaces between widgets
+            // insert widgets here as a child widget wrapped in `Expanded` class
+            // note: play around with flex int value to change how much vertical space each widget occupies
             Expanded(flex: 1, child: Text("first child - future map widget")),
             Expanded(flex: 11, child: _businessesListBuild()),
           ],
