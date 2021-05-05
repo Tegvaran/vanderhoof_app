@@ -54,6 +54,7 @@ class _BusinessPageState extends State<BusinessState> {
   void initState() {
     // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
     // this method gets firebase data and populates into list of businesses
+    // also loads in the map markers
     _getBusinesses().then((data) {
       setState(() {
         businesses = filteredBusinesses = data;
@@ -71,9 +72,8 @@ class _BusinessPageState extends State<BusinessState> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
+      resetMarkers(_markers, filteredBusinesses);
     });
-
-    resetMarkers(_markers, filteredBusinesses);
   }
 
   Widget _businessesListBuild() {
