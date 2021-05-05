@@ -5,6 +5,7 @@ import 'package:vanderhoof_app/main.dart';
 
 import 'addBusinessPage.dart';
 import 'package:web_scraper/web_scraper.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 // Business object
 class BusinessCard {
@@ -44,10 +45,10 @@ class _BusinessPageState extends State<Business> {
     return businesses;
   }
 
+  // this method gets firebase data and populates into list of businesses
+  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   @override
   void initState() {
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-    // this method gets firebase data and populates into list of businesses
     _getBusinesses().then((data) {
       setState(() {
         businesses = filteredBusinesses = data;
@@ -67,7 +68,8 @@ class _BusinessPageState extends State<Business> {
     });
   }
 
-  Widget _businessesListBuild() {
+  // old build for ListView of Businesses
+  Widget _businessesListBuild_old() {
     return new Container(
         child: ListView.builder(
       itemCount: filteredBusinesses.length,
@@ -85,10 +87,48 @@ class _BusinessPageState extends State<Business> {
     ));
   }
 
+  // new build for ListView of Businesses
+  // uses a scroll controller to scroll expandedTiles to the top of the view
+  Widget _businessesListBuild() {
+    ItemScrollController _scrollController = ItemScrollController();
+    double scrollAlignment = 0.1;
+
+    return new Container(
+        child: ScrollablePositionedList.builder(
+      itemScrollController: _scrollController,
+      itemCount: filteredBusinesses.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ExpansionTile(
+          // leading: CircleAvatar(
+          //   backgroundImage:
+          //       NetworkImage(snapshot.data[index].picture),
+          // ),
+          onExpansionChanged: (value) {
+            if (value) {
+              // check if expanded
+              // let ExpansionTile expand, then scroll Tile to top of the list
+              Future.delayed(Duration(milliseconds: 250)).then((value) {
+                _scrollController.scrollTo(
+                  index: index,
+                  duration: Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  alignment: scrollAlignment,
+                );
+              });
+            }
+          },
+          title: _nullText(filteredBusinesses[index].name),
+          subtitle: _nullText(filteredBusinesses[index].address),
+          children: <Widget>[_nullText(filteredBusinesses[index].description)],
+        );
+      },
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Drawer: Hamberguer menu for Admin
+      // Drawer: Hamburger menu for Admin
       drawer: Drawer(
           child: ListView(
         padding: EdgeInsets.zero,
