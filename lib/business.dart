@@ -25,9 +25,17 @@ class Business extends StatefulWidget {
 }
 
 class _BusinessPageState extends State<Business> {
+  // list of businesses populated from firebase
   List<BusinessCard> businesses = [];
+
+  // list of businesses with search filters - this is whats shown in ListView
   List<BusinessCard> filteredBusinesses = [];
   bool isSearching = false;
+
+  // Controllers to check scroll position of ListView
+  ItemScrollController _scrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  bool _isScrollButtonVisible = false;
 
   // firebase async get data
   Future _getBusinesses() async {
@@ -89,53 +97,75 @@ class _BusinessPageState extends State<Business> {
 
   // new build for ListView of Businesses
   // uses a scroll controller to scroll expandedTiles to the top of the view
+  // this build also has a floating action button that scrolls to the top of the list
   Widget _businessesListBuild() {
-    ItemScrollController _scrollController = ItemScrollController();
     double scrollAlignment = 0.1;
+
+    // listener for the current scroll position
+    // if scroll position is not near the very top,
+    // set FloatingActionButton visibility to true
+    _itemPositionsListener.itemPositions.addListener(() {
+      final firstPositionIndex =
+          _itemPositionsListener.itemPositions.value.first.index;
+      if (firstPositionIndex > 5) {
+        setState(() {
+          _isScrollButtonVisible = true;
+        });
+      } else {
+        setState(() {
+          _isScrollButtonVisible = false;
+        });
+      }
+    });
 
     return new Scaffold(
       body: Container(
-          child: ScrollablePositionedList.builder(
-        itemScrollController: _scrollController,
-        itemCount: filteredBusinesses.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ExpansionTile(
-            // leading: CircleAvatar(
-            //   backgroundImage:
-            //       NetworkImage(snapshot.data[index].picture),
-            // ),
-            onExpansionChanged: (_isExpanded) {
-              if (_isExpanded) {
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the list
-                Future.delayed(Duration(milliseconds: 250)).then((value) {
-                  _scrollController.scrollTo(
-                    index: index,
-                    duration: Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                    alignment: scrollAlignment,
-                  );
-                });
-              }
-            },
-            title: _nullText(filteredBusinesses[index].name),
-            subtitle: _nullText(filteredBusinesses[index].address),
-            children: <Widget>[
-              _nullText(filteredBusinesses[index].description)
-            ],
-          );
-        },
-      )),
-      floatingActionButton: FloatingActionButton(
-          // scroll to top of the list
-          child: Icon(Icons.arrow_upward),
-          onPressed: () {
-            _scrollController.scrollTo(
-              index: 0,
-              duration: Duration(seconds: 1),
-              curve: Curves.easeInOut,
+        child: ScrollablePositionedList.builder(
+          itemScrollController: _scrollController,
+          itemPositionsListener: _itemPositionsListener,
+          itemCount: filteredBusinesses.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ExpansionTile(
+              // leading: CircleAvatar(
+              //   backgroundImage:
+              //       NetworkImage(snapshot.data[index].picture),
+              // ),
+              onExpansionChanged: (_isExpanded) {
+                if (_isExpanded) {
+                  // check if Expanded
+                  // let ExpansionTile expand, then scroll Tile to top of the list
+                  Future.delayed(Duration(milliseconds: 250)).then((value) {
+                    _scrollController.scrollTo(
+                      index: index,
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.easeInOut,
+                      alignment: scrollAlignment,
+                    );
+                  });
+                }
+              },
+              title: _nullText(filteredBusinesses[index].name),
+              subtitle: _nullText(filteredBusinesses[index].address),
+              children: <Widget>[
+                _nullText(filteredBusinesses[index].description)
+              ],
             );
-          }),
+          },
+        ),
+      ),
+      floatingActionButton: _isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: Icon(Icons.arrow_upward),
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null, // hide button if already at top of the list
     );
   }
 
