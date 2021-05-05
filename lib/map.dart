@@ -20,7 +20,7 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   return outList;
 }
 
-List<Marker> resetMarkers(markers, filteredFireStoreObjects) {
+HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   markers.clear();
   for (int i = 0; i < filteredFireStoreObjects.length; i++) {
     markers.add(
@@ -35,7 +35,6 @@ List<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   }
   return markers;
 }
-
 
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
