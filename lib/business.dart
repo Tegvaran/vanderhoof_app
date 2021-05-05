@@ -87,14 +87,14 @@ class _BusinessPageState extends State<BusinessState> {
     _mapController = controller;
     //run marker adapter
     setState(() {
-      for (int i = 0; i < businesses.length; i++) {
+      for (int i = 0; i < filteredBusinesses.length; i++) {
         _markers.add(
           Marker(
               markerId: MarkerId(i.toString()),
-              position: businesses[i].location,
+              position: filteredBusinesses[i].location,
               infoWindow: InfoWindow(
-                title: businesses[i].name,
-                snippet: businesses[i].description,
+                title: filteredBusinesses[i].name,
+                snippet: filteredBusinesses[i].description,
               )),
         );
       }

@@ -15,7 +15,7 @@ abstract class FireStoreObject {
     this.description = description;
     double lat = geoLocation.latitude;
     double lng = geoLocation.longitude;
-    this.location = new LatLng(lat, lng);
+    this.location = LatLng(lat, lng);
   }
 }
 
