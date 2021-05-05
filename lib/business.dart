@@ -60,7 +60,6 @@ class _BusinessPageState extends State<BusinessState> {
         resetMarkers(_markers, filteredBusinesses);
       });
     });
-    // resetMarkers(_markers, filteredBusinesses);
     super.initState();
   }
 
