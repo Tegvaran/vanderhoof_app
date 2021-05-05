@@ -103,9 +103,9 @@ class _BusinessPageState extends State<Business> {
           //   backgroundImage:
           //       NetworkImage(snapshot.data[index].picture),
           // ),
-          onExpansionChanged: (value) {
-            if (value) {
-              // check if expanded
+          onExpansionChanged: (_isExpanded) {
+            if (_isExpanded) {
+              // check if Expanded
               // let ExpansionTile expand, then scroll Tile to top of the list
               Future.delayed(Duration(milliseconds: 250)).then((value) {
                 _scrollController.scrollTo(
