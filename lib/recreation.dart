@@ -81,11 +81,14 @@ class _RecreationPageState extends State<Recreation> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // insert widgets here
+            // insert widgets here - map and listview
+            // changelog: - i made maps flex property a 2, and listview widget flex property a 4
+            //            - seems to be better for layout, gives listview more space
+            //            - see `business.dart` or `hike.dart`
             Text("Recreation page - first child"),
             Text("another text widget - second child"),
             Text("a third text widget - third child"),

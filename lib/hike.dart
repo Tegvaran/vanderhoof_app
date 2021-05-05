@@ -136,13 +136,13 @@ class _HikePageState extends State<Hike> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // insert widgets here
             Expanded(
-              flex: 3,
+              flex: 2,
               child: GoogleMap(
                 mapType: maptype,
                 initialCameraPosition: _kGooglePlex,
@@ -150,7 +150,7 @@ class _HikePageState extends State<Hike> {
                 markers: _markers,
               ),
             ),
-            Expanded(flex: 3, child: _hikeTrailListBuild()),
+            Expanded(flex: 4, child: _hikeTrailListBuild()),
           ],
         ),
       ),
