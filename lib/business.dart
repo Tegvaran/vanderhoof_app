@@ -1,6 +1,10 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 
@@ -37,7 +41,6 @@ class _BusinessPageState extends State<BusinessState> {
             doc['website'],
             doc['imgURL']);
         businesses.add(b);
-        ;
       });
     });
     return businesses;
@@ -64,6 +67,8 @@ class _BusinessPageState extends State<BusinessState> {
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+
+    resetMarkers(_markers, filteredBusinesses);
   }
 
   Widget _businessesListBuild() {
@@ -75,6 +80,32 @@ class _BusinessPageState extends State<BusinessState> {
       },
     ));
   }
+
+  Set<Marker> _markers = HashSet<Marker>();
+  GoogleMapController _mapController;
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    //run marker adapter
+    setState(() {
+      for (int i = 0; i < businesses.length; i++) {
+        _markers.add(
+          Marker(
+              markerId: MarkerId(i.toString()),
+              position: businesses[i].location,
+              infoWindow: InfoWindow(
+                title: businesses[i].name,
+                snippet: businesses[i].description,
+              )),
+        );
+      }
+    });
+  }
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(54.0117956, -124.0177679),
+    zoom: 13,
+  );
+  var maptype = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -124,8 +155,16 @@ class _BusinessPageState extends State<BusinessState> {
           children: [
             // insert widgets here wrapped in `Expanded` as a child
             // note: play around with flex int value to adjust vertical spaces between widgets
-            Expanded(flex: 1, child: Text("first child - future map widget")),
-            Expanded(flex: 11, child: _businessesListBuild()),
+            Expanded(
+              flex: 3,
+              child: GoogleMap(
+                mapType: maptype,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: _onMapCreated,
+                markers: _markers,
+              ),
+            ),
+            Expanded(flex: 3, child: _businessesListBuild()),
           ],
         ),
       ),

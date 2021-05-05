@@ -1,8 +1,12 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
+import 'map.dart';
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -60,7 +64,35 @@ class _HikePageState extends State<Hike> {
               hikeCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
+
+    resetMarkers(_markers, filteredHikes);
   }
+
+  Set<Marker> _markers = HashSet<Marker>();
+  GoogleMapController _mapController;
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    //run marker adapter
+    setState(() {
+      for (int i = 0; i < hikes.length; i++) {
+        _markers.add(
+          Marker(
+              markerId: MarkerId(i.toString()),
+              position: hikes[i].location,
+              infoWindow: InfoWindow(
+                title: hikes[i].name,
+                snippet: hikes[i].description,
+              )),
+        );
+      }
+    });
+  }
+
+  static final CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(54.0117956, -124.0177679),
+    zoom: 13,
+  );
+  var maptype = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -110,9 +142,15 @@ class _HikePageState extends State<Hike> {
           children: [
             // insert widgets here
             Expanded(
-                flex: 1,
-                child: Text("Hiking page - first child Future map widget")),
-            Expanded(flex: 11, child: _hikeTrailListBuild()),
+              flex: 3,
+              child: GoogleMap(
+                mapType: maptype,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: _onMapCreated,
+                markers: _markers,
+              ),
+            ),
+            Expanded(flex: 3, child: _hikeTrailListBuild()),
           ],
         ),
       ),
