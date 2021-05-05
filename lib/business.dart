@@ -10,6 +10,8 @@ import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'package:web_scraper/web_scraper.dart';
 
+import 'main.dart';
+
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
 
@@ -276,28 +278,29 @@ class _BusinessPageState extends State<BusinessState> {
             'email': check(elements[i], e),
             'website': check(elements[i], w),
             'description': check(elements[i], d),
-          };
+          } as Map;
           all.add(b);
         }
 
         print("-----------end");
         print(all.length);
-
-        CollectionReference business =
-            FirebaseFirestore.instance.collection('testbusiness');
-        Future<void> addBusiness(Map<String, dynamic> businessInfo) {
-          return business
-              .add(businessInfo)
-              .then((value) => {
-                    print("Business Added:  ${value.id}"),
-                    business.doc(value.id).update({"id": value.id})
-                  })
-              .catchError((error) => print("Failed to add Business: $error"));
-        }
-
-        for (int i = 0; i < all.length; i++) {
-          addBusiness(Map<String, dynamic>.from(all[i]));
-        }
+        
+        // TODO Dont know what is wrong here, plzz help Jack the saviour!
+        //       CollectionReference business =
+        //           FirebaseFirestore.instance.collection('testbusiness');
+        //       Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+        //         return business
+        //             .add(businessInfo)
+        //             .then((value) => {
+        //                   print("Business Added:  ${value.id}"),
+        //                   business.doc(value.id).update({"id": value.id})
+        //                 })
+        //             .catchError((error) => print("Failed to add Business: $error"));
+        //       }
+        //
+        //       for (int i = 0; i < all.length; i++) {
+        //         addBusiness(Map<String, dynamic>.from(all[i]));
+        //       }
       }
     }
   }
