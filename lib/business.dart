@@ -284,7 +284,7 @@ class _BusinessPageState extends State<BusinessState> {
 
         print("-----------end");
         print(all.length);
-        
+
         // TODO Dont know what is wrong here, plzz help Jack the saviour!
         //       CollectionReference business =
         //           FirebaseFirestore.instance.collection('testbusiness');
