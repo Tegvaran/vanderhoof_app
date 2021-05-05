@@ -57,8 +57,10 @@ class _BusinessPageState extends State<BusinessState> {
     _getBusinesses().then((data) {
       setState(() {
         businesses = filteredBusinesses = data;
+        resetMarkers(_markers, filteredBusinesses);
       });
     });
+    // resetMarkers(_markers, filteredBusinesses);
     super.initState();
   }
 
@@ -186,14 +188,14 @@ class _BusinessPageState extends State<BusinessState> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(0.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // insert widgets here wrapped in `Expanded` as a child
             // note: play around with flex int value to adjust vertical spaces between widgets
             Expanded(
-              flex: 3,
+              flex: 2,
               child: GoogleMap(
                 mapType: maptype,
                 initialCameraPosition: _kGooglePlex,
@@ -201,7 +203,7 @@ class _BusinessPageState extends State<BusinessState> {
                 markers: _markers,
               ),
             ),
-            Expanded(flex: 3, child: _businessesListBuild()),
+            Expanded(flex: 4, child: _businessesListBuild()),
           ],
         ),
       ),
