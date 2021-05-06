@@ -266,6 +266,9 @@ class _BusinessPageState extends State<BusinessState> {
               _selectedIndex = i;
               print(_options[i]);
               _filterSearchItemsByCategory(_options[i]);
+            } else {
+              _selectedIndex = null;
+              filteredBusinesses = businesses;
             }
           });
         },
