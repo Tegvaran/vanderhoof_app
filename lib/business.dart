@@ -118,8 +118,7 @@ class _BusinessPageState extends State<BusinessState> {
       int firstPositionIndex =
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
-        firstPositionIndex >
-                5 //todo: when populating real businesses from firestore, replace 0 back to 5
+        firstPositionIndex > 5
             ? _isScrollButtonVisible = true
             : _isScrollButtonVisible = false;
       });
@@ -232,6 +231,8 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
+  // Method to build the ChoiceChips for filtering businesses by category.
+  //
   Widget _buildChips() {
     List<Widget> chips = [];
     void _filterSearchItemsByCategory(value) {
