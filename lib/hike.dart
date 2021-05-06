@@ -47,7 +47,8 @@ class _HikePageState extends State<Hike> {
 
   @override
   void initState() {
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
+    // this method gets firebase data and populates into list of businesses
+    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart\
     future = _getHikes();
     super.initState();
   }
