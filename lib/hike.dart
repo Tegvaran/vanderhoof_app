@@ -21,7 +21,7 @@ class _HikePageState extends State<Hike> {
   List<HikeTrail> hikes = [];
   List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
-  Future tester;
+  Future future;
 
   Future _getHikes() async {
     CollectionReference fireStore =
@@ -48,9 +48,7 @@ class _HikePageState extends State<Hike> {
   @override
   void initState() {
     // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-
-    tester = _getHikes();
-    resetMarkers(_markers, filteredHikes);
+    future = _getHikes();
     super.initState();
   }
 
@@ -122,7 +120,7 @@ class _HikePageState extends State<Hike> {
       body: Container(
         padding: EdgeInsets.all(0.0),
         child: FutureBuilder(
-          future: tester,
+          future: future,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
