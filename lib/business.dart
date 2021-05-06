@@ -253,18 +253,15 @@ class _BusinessPageState extends State<BusinessState> {
     for (int i = 0; i < _options.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(_options[i], style: TextStyle(color: Colors.white)),
-        avatar: FlutterLogo(),
+        label: Text(_options[i], style: TextStyle(color: Colors.black)),
         elevation: 5,
         pressElevation: 5,
         shadowColor: Colors.teal,
-        backgroundColor: Colors.black54,
         selectedColor: Colors.blue,
         onSelected: (bool selected) {
           setState(() {
             if (selected) {
               _selectedIndex = i;
-              print(_options[i]);
               _filterSearchItemsByCategory(_options[i]);
             } else {
               _selectedIndex = null;
@@ -378,10 +375,7 @@ class _BusinessPageState extends State<BusinessState> {
                       flex: 4,
                       child: Map(filteredBusinesses, _markers),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: _buildChips(),
-                    ),
+                    Expanded(flex: 1, child: _buildChips()),
                     Expanded(flex: 8, child: _businessesListBuild()),
                   ],
                 );
