@@ -7,23 +7,6 @@ Future<void> scrap(bool activate) async {
     print("----------scraping deactivated");
   } else {
     print("----------------scrap------------");
-    //================
-    // Future<GeoPoint> toLatLng(String addr) async {
-    //   print("geocode");
-    //   var address = await Geocoder.local.findAddressesFromQuery(addr);
-    //   var first = address.first;
-    //   var coor = first.coordinates;
-    //   var lat = coor.latitude;
-    //   var lng = coor.longitude;
-    //   print(lat);
-    //   // print(GeoPoint(lat, lng));
-    //   GeoPoint x = GeoPoint(lat, lng);
-    //   print(x.longitude);
-    //   return GeoPoint(lat, lng);
-    // }
-    //
-    // toLatLng('2112 Recreation AvenueVanderhoof, BC V0J3A0 Canada');
-    // print(await toLatLng('5960 Nelson ave, Burnaby, BC, Canada').then(value));
     //==================================
     // Assistance Methods
     //==================================
