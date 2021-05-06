@@ -29,9 +29,9 @@ class _BusinessPageState extends State<BusinessState> {
   List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
-  // Async Future variable that hold the connected database's data and functions
+  // Async Future variable that holds FireStore's data and functions
   Future future;
-  //FireStore reference
+  // FireStore reference
   CollectionReference fireStore =
       FirebaseFirestore.instance.collection('businesses');
   // Controllers to check scroll position of ListView
