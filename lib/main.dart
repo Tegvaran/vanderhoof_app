@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'business.dart';
+import 'map.dart';
 import 'recreation.dart';
 import 'event.dart';
 import 'hike.dart';
@@ -14,7 +16,12 @@ MaterialColor colorBackground = createMaterialColor(Color(0xFFB4D4ED));
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => InfoWindowModel(),
+    child: MyApp(),
+  ),
+  );
+  //runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

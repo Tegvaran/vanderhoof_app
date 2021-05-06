@@ -141,7 +141,7 @@ class _HikePageState extends State<Hike> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 2,
-                      child: Map(filteredHikes, _markers),
+                      child: GMap(filteredHikes, _markers),
                     ),
                     Expanded(flex: 4, child: _hikeTrailListBuild()),
                   ],
