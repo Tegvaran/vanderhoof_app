@@ -55,7 +55,6 @@ Future<void> scrap(bool activate) async {
     // End of Assistance Methods
     //==================================
 
-    int count = 0;
     final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
 
     if (await webScraper.loadWebPage('/membership/business-directory')) {
@@ -71,6 +70,7 @@ Future<void> scrap(bool activate) async {
           var email = webScraper.getElementTitle('p.email > a');
           var web = webScraper.getElement('p.website>a', ['href']);
           var img = webScraper.getElement('div.entry-content >img', ['src']);
+          var category = webScraper.getElementTitle('p.categories > a');
 
           String n = _check(name);
           String p = _checkPhone(phone);
@@ -79,6 +79,7 @@ Future<void> scrap(bool activate) async {
           String e = _check(email);
           String w = _checkElement(web, 'href');
           String i = _checkElement(img, 'src');
+          String c = _check(category);
 
           addBusiness({
             'name': n,
@@ -88,9 +89,8 @@ Future<void> scrap(bool activate) async {
             'website': w,
             'description': d,
             'imgURL': i,
-            'indexRef': count,
+            'category': c,
           }, n);
-          count++;
         }
       });
     }
