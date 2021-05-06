@@ -30,8 +30,8 @@ class _BusinessPageState extends State<BusinessState> {
   List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
-  // Futrure variable that hold the functions that will get data from the database.
-  Future tester;
+  // Async Future variable that hold the connected database's data and functions
+  Future future;
 
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
@@ -67,7 +67,7 @@ class _BusinessPageState extends State<BusinessState> {
     // this method gets firebase data and populates into list of businesses
     // also loads in the map markers
     // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-    tester = _getBusinesses();
+    future = _getBusinesses();
     super.initState();
   }
 
@@ -216,7 +216,7 @@ class _BusinessPageState extends State<BusinessState> {
       body: Container(
         padding: EdgeInsets.all(0.0),
         child: FutureBuilder(
-          future: tester,
+          future: future,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
