@@ -41,6 +41,11 @@ class _BusinessPageState extends State<BusinessState> {
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
+
+  // Choice Chips for Category
+  int _selectedIndex;
+  List<String> _options = ['Construction', 'Media', 'Food'];
+
   // firebase async get data
   Future _getBusinesses() async {
     await fireStore.get().then((QuerySnapshot snap) {
@@ -203,6 +208,42 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
+  Widget _buildChips() {
+    List<Widget> chips = [];
+
+    for (int i = 0; i < _options.length; i++) {
+      ChoiceChip choiceChip = ChoiceChip(
+        selected: _selectedIndex == i,
+        label: Text(_options[i], style: TextStyle(color: Colors.white)),
+        avatar: FlutterLogo(),
+        elevation: 10,
+        pressElevation: 5,
+        shadowColor: Colors.teal,
+        backgroundColor: Colors.black54,
+        selectedColor: Colors.blue,
+        onSelected: (bool selected) {
+          setState(() {
+            if (selected) {
+              _selectedIndex = i;
+            }
+          });
+        },
+      );
+
+      chips.add(Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
+    }
+
+    return ListView(
+      // This next line does the trick.
+      scrollDirection: Axis.horizontal,
+      children: chips,
+    );
+  }
+
+  //=========================
+  // Start of Build Methods
+  //=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -290,10 +331,14 @@ class _BusinessPageState extends State<BusinessState> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 2,
+                      flex: 4,
                       child: Map(filteredBusinesses, _markers),
                     ),
-                    Expanded(flex: 4, child: _businessesListBuild()),
+                    Expanded(
+                      flex: 1,
+                      child: _buildChips(),
+                    ),
+                    Expanded(flex: 8, child: _businessesListBuild()),
                   ],
                 );
               default:
