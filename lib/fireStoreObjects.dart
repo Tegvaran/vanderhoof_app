@@ -25,9 +25,11 @@ class HikeTrail extends FireStoreObject {
   final String rating;
   final String time;
   final String wheelchair;
+  var pointsOfInterest;
+  final String imgURL;
 
   HikeTrail(name, address, location, this.distance, this.rating, this.time,
-      this.wheelchair, description)
+      this.wheelchair, description, this.pointsOfInterest, this.imgURL)
       : super(name, address, location, description);
 }
 
