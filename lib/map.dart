@@ -50,7 +50,7 @@ Future<LatLng> toLatLng(String addr) async {
 class Map extends StatefulWidget {
   List<FireStoreObject> listOfFireStoreObjects;
   Set<Marker> _markers = HashSet<Marker>();
-  Map(fireStoreObjects, _markers);
+  Map(this.listOfFireStoreObjects, this._markers);
 
   @override
   State<Map> createState() => MapState(listOfFireStoreObjects, _markers);
@@ -58,7 +58,6 @@ class Map extends StatefulWidget {
 
 class MapState extends State<Map> {
   Set<Marker> _markers;
-  GoogleMapController _mapController;
   MapType mapType = MapType.normal;
   List<FireStoreObject> listOfFireStoreObjects;
   MapState(this.listOfFireStoreObjects, this._markers);
@@ -69,7 +68,6 @@ class MapState extends State<Map> {
   );
 
   void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
     //run marker adapter
     setState(() {
       for (int i = 0; i < listOfFireStoreObjects.length; i++) {

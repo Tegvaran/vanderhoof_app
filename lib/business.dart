@@ -30,6 +30,9 @@ class _BusinessPageState extends State<BusinessState> {
   List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
+  // Futrure variable that hold the functions that will get data from the database.
+  Future tester;
+
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -64,12 +67,7 @@ class _BusinessPageState extends State<BusinessState> {
     // this method gets firebase data and populates into list of businesses
     // also loads in the map markers
     // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-    _getBusinesses().then((data) {
-      setState(() {
-        businesses = filteredBusinesses = data;
-        resetMarkers(_markers, filteredBusinesses);
-      });
-    });
+    tester = _getBusinesses();
     super.initState();
   }
 
@@ -86,30 +84,6 @@ class _BusinessPageState extends State<BusinessState> {
   }
 
   Set<Marker> _markers = HashSet<Marker>();
-  GoogleMapController _mapController;
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    //run marker adapter
-    setState(() {
-      for (int i = 0; i < filteredBusinesses.length; i++) {
-        _markers.add(
-          Marker(
-              markerId: MarkerId(i.toString()),
-              position: filteredBusinesses[i].location,
-              infoWindow: InfoWindow(
-                title: filteredBusinesses[i].name,
-                snippet: filteredBusinesses[i].description,
-              )),
-        );
-      }
-    });
-  }
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(54.0117956, -124.0177679),
-    zoom: 13,
-  );
-  var maptype = MapType.normal;
 
   // old build for ListView of Businesses - Teg and Ben
   Widget _businessesListBuild_old() {
@@ -240,23 +214,33 @@ class _BusinessPageState extends State<BusinessState> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // insert widgets here as a child widget wrapped in `Expanded` class
-            // note: play around with flex int value to change how much vertical space each widget occupies
-            Expanded(
-              flex: 2,
-              child: GoogleMap(
-                mapType: maptype,
-                initialCameraPosition: _kGooglePlex,
-                onMapCreated: _onMapCreated,
-                markers: _markers,
-              ),
-            ),
-            Expanded(flex: 4, child: _businessesListBuild()),
-          ],
+        padding: EdgeInsets.all(20.0),
+        child: FutureBuilder(
+          future: tester,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('non');
+              case ConnectionState.active:
+              case ConnectionState.waiting:
+                return Text('Active or waiting');
+              case ConnectionState.done:
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // insert widgets here wrapped in `Expanded` as a child
+                    // note: play around with flex int value to adjust vertical spaces between widgets
+                    Expanded(
+                      flex: 2,
+                      child: Map(filteredBusinesses, _markers),
+                    ),
+                    Expanded(flex: 4, child: _businessesListBuild()),
+                  ],
+                );
+              default:
+                return Text("Default");
+            }
+          },
         ),
       ),
     );
