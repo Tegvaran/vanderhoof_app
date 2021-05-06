@@ -66,7 +66,7 @@ class _HikePageState extends State<Hike> {
           .toList();
     });
 
-    resetMarkers(_markers, filteredHikes);
+    //resetMarkers(_markers, filteredHikes);
   }
 
   Widget _hikeTrailListBuild() {

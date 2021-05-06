@@ -25,21 +25,21 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   return outList;
 }
 
-HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
-  markers.clear();
-  for (int i = 0; i < filteredFireStoreObjects.length; i++) {
-    markers.add(
-      Marker(
-          markerId: MarkerId(i.toString()),
-          position: filteredFireStoreObjects[i].location,
-          infoWindow: InfoWindow(
-            title: filteredFireStoreObjects[i].name,
-            snippet: filteredFireStoreObjects[i].description,
-          )),
-    );
-  }
-  return markers;
-}
+// HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
+//   markers.clear();
+//   for (int i = 0; i < filteredFireStoreObjects.length; i++) {
+//     markers.add(
+//       Marker(
+//           markerId: MarkerId(i.toString()),
+//           position: filteredFireStoreObjects[i].location,
+//           infoWindow: InfoWindow(
+//             title: filteredFireStoreObjects[i].name,
+//             snippet: filteredFireStoreObjects[i].description,
+//           )),
+//     );
+//   }
+//   return markers;
+// }
 
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
@@ -126,22 +126,15 @@ class MapState extends State<GMap> {
     _mapController = controller;
     //run marker adapter
     setState(() {
-      for (int i = 0; i < listOfFireStoreObjects.length; i++) {
-        _markers.add(
-          Marker(
-              markerId: MarkerId(i.toString()),
-              position: listOfFireStoreObjects[i].location,
-              infoWindow: InfoWindow(
-                title: listOfFireStoreObjects[i].name,
-                snippet: listOfFireStoreObjects[i].description,
-              )),
-        );
-      }
+
     });
   }
 
+  BuildContext cntxt;
+
   @override
   Widget build(BuildContext context) {
+    cntxt = context;
     final providerObject = Provider.of<InfoWindowModel>(context, listen: false);
     for (int i = 0; i < listOfFireStoreObjects.length; i++) {
       _markers.add(

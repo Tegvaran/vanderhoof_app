@@ -81,7 +81,7 @@ class _BusinessPageState extends State<BusinessState> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      resetMarkers(_markers, filteredBusinesses);
+      //resetMarkers(_markers, filteredBusinesses);
     });
   }
 
