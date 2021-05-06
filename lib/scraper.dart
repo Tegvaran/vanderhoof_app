@@ -99,7 +99,6 @@ Future<void> scrap(bool activate) async {
           String c = _check(category);
 
           Future<GeoPoint> toLatLng(String addr) async {
-            print("geocode");
             var address = await Geocoder.local.findAddressesFromQuery(addr);
             var first = address.first;
             var coor = first.coordinates;
