@@ -1,12 +1,29 @@
 import 'package:web_scraper/web_scraper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geocoder/geocoder.dart';
 
 Future<void> scrap(bool activate) async {
   if (!activate) {
     print("----------scraping deactivated");
   } else {
     print("----------------scrap------------");
-
+    //================
+    // Future<GeoPoint> toLatLng(String addr) async {
+    //   print("geocode");
+    //   var address = await Geocoder.local.findAddressesFromQuery(addr);
+    //   var first = address.first;
+    //   var coor = first.coordinates;
+    //   var lat = coor.latitude;
+    //   var lng = coor.longitude;
+    //   print(lat);
+    //   // print(GeoPoint(lat, lng));
+    //   GeoPoint x = GeoPoint(lat, lng);
+    //   print(x.longitude);
+    //   return GeoPoint(lat, lng);
+    // }
+    //
+    // toLatLng('2112 Recreation AvenueVanderhoof, BC V0J3A0 Canada');
+    // print(await toLatLng('5960 Nelson ave, Burnaby, BC, Canada').then(value));
     //==================================
     // Assistance Methods
     //==================================
@@ -81,16 +98,37 @@ Future<void> scrap(bool activate) async {
           String i = _checkElement(img, 'src');
           String c = _check(category);
 
-          addBusiness({
-            'name': n,
-            'address': a,
-            'phone': p,
-            'email': e,
-            'website': w,
-            'description': d,
-            'imgURL': i,
-            'category': c,
-          }, n);
+          Future<GeoPoint> toLatLng(String addr) async {
+            print("geocode");
+            var address = await Geocoder.local.findAddressesFromQuery(addr);
+            var first = address.first;
+            var coor = first.coordinates;
+            var lat = coor.latitude;
+            var lng = coor.longitude;
+            return GeoPoint(lat, lng);
+          }
+
+          toLatLng(a)
+              .then((geopoint) => {
+                    addBusiness({
+                      'name': n,
+                      'address': a,
+                      'phone': p,
+                      'email': e,
+                      'website': w,
+                      'description': d,
+                      'imgURL': i,
+                      'category': c,
+                      'LatLng': geopoint,
+                      'socialMedia': {
+                        'facebook': ".",
+                        'instagram': ".",
+                        'twitter': "."
+                      },
+                    }, n)
+                  })
+              .catchError((error) => print("Failed to get GeoPoint: $error"));
+          ;
         }
       });
     }
