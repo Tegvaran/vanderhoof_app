@@ -33,7 +33,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   //FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('debug_businesses');
+      FirebaseFirestore.instance.collection('businesses');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -96,6 +96,87 @@ class _BusinessPageState extends State<BusinessState> {
       });
     });
 
+    //=========================
+    //Assistance Method
+    //=========================
+
+    Future<void> _showDialog(
+        String businessName, VoidCallback confirmationCallback) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Deletion'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Are you sure you want to delete:'),
+                  Center(
+                      child: Text(businessName,
+                          style: TextStyle(fontWeight: FontWeight.bold))),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  confirmationCallback();
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    Widget _dismissibleTile(Widget child, int index) {
+      final item = filteredBusinesses[index];
+      return Dismissible(
+          direction: DismissDirection.endToStart,
+          // Each Dismissible must contain a Key. Keys allow Flutter to
+          // uniquely identify widgets.
+          key: Key(item.name),
+          // Provide a function that tells the app
+          // what to do after an item has been swiped away.
+          confirmDismiss: (direction) async {
+            _showDialog(item.name, () {
+              //=====================================
+              // Remove the item from the data source.
+              setState(() {
+                filteredBusinesses.removeAt(index);
+              });
+              // Delete from fireStore
+              String docID = item.name.replaceAll('/', '|');
+              fireStore
+                  .doc(docID)
+                  .delete()
+                  .then((value) => print("${item.name} Deleted"))
+                  .catchError(
+                      (error) => print("Failed to delete user: $error"));
+
+              // Then show a snackbar.
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${item.name} deleted")));
+              //  =============================================
+            });
+          },
+          background: Container(color: Colors.red),
+          child: child);
+    }
+
+    //=========================
+    // End of Assistance Method
+    //=========================
+
     // build widget for businesses ListView + FloatingActionButton for jumpTo index 0
     return new Scaffold(
       body: Container(
@@ -105,30 +186,9 @@ class _BusinessPageState extends State<BusinessState> {
         itemCount: filteredBusinesses.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          final item = filteredBusinesses[index];
-          return Dismissible(
-            // Each Dismissible must contain a Key. Keys allow Flutter to
-            // uniquely identify widgets.
-            key: Key(item.name),
-            // Provide a function that tells the app
-            // what to do after an item has been swiped away.
-            onDismissed: (direction) {
-              // Remove the item from the data source.
-              setState(() {
-                filteredBusinesses.removeAt(index);
-              });
-              // Delete from fireStore
-
-              // Then show a snackbar.
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("${item.name} deleted")));
-            },
-            background: Container(color: Colors.red),
-            child: BusinessCard(
-                filteredBusinesses[index], _scrollController, index),
-          );
-          // return BusinessCard(
-          //     filteredBusinesses[index], _scrollController, index);
+          return _dismissibleTile(
+              BusinessCard(filteredBusinesses[index], _scrollController, index),
+              index);
         },
       )),
       floatingActionButton: _isScrollButtonVisible
