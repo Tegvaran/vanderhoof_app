@@ -11,15 +11,18 @@ import 'hikingInformation.dart';
 
 class HikeCard extends StatelessWidget {
   final HikeTrail hikeTrail;
+  final ItemScrollController scrollController;
+  final int scrollIndex;
   static const double TITLE_SIZE = 26;
   static const double BODY_SIZE = 20;
+  static const double SCROLL_ALIGNMENT = 0;
 
   final Color textColor = Colors.grey[300];
   final Color greenColor = Colors.lightGreenAccent[400];
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[500];
 
-  HikeCard(this.hikeTrail);
+  HikeCard(this.hikeTrail, this.scrollController, this.scrollIndex);
 
   Color getDifficultyColor() {
     Color difficultyColor;
@@ -49,6 +52,20 @@ class HikeCard extends StatelessWidget {
       color: colorPrimary,
       margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: ExpansionTile(
+        onExpansionChanged: (_isExpanded) {
+          if (_isExpanded) {
+            // check if Expanded
+            // let ExpansionTile expand, then scroll Tile to top of the list
+            Future.delayed(Duration(milliseconds: 250)).then((value) {
+              scrollController.scrollTo(
+                index: scrollIndex,
+                duration: Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                alignment: SCROLL_ALIGNMENT,
+              );
+            });
+          }
+        },
         title: Text(
           hikeTrail.name,
           style: TextStyle(fontSize: TITLE_SIZE, color: textColor),

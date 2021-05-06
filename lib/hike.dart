@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
@@ -22,6 +23,7 @@ class _HikePageState extends State<Hike> {
   List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
   Future future;
+  ItemScrollController _scrollController = ItemScrollController();
 
   Future _getHikes() async {
     CollectionReference fireStore =
@@ -54,12 +56,15 @@ class _HikePageState extends State<Hike> {
   }
 
   Widget _hikeTrailListBuild() {
-    return new Container(
-        child: ListView.builder(
-            itemCount: filteredHikes.length,
-            itemBuilder: (BuildContext context, int index) {
-              return HikeCard(filteredHikes[index]);
-            }));
+    return new Scaffold(
+        body: Container(
+            child: ScrollablePositionedList.builder(
+                itemScrollController: _scrollController,
+                itemCount: filteredHikes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return HikeCard(
+                      filteredHikes[index], _scrollController, index);
+                })));
   }
 
   // This method does the logic for search
