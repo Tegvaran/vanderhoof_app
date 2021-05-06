@@ -44,7 +44,30 @@ class _BusinessPageState extends State<BusinessState> {
 
   // Choice Chips for Category
   int _selectedIndex;
-  List<String> _options = ['Construction', 'Media', 'Food'];
+  List<String> _options = [
+    'Environmental',
+    'Industry',
+    'Professional Services',
+    'Business Services',
+    'Forestry Related',
+    'Automotive',
+    'Food & Dining',
+    'Health Services',
+    'Retail Sales',
+    'Construction',
+    'Technical',
+    'Agriculture & Animal',
+    'Employment Services & Education',
+    'Financial Services',
+    'Entertainment',
+    'Media & Design',
+    'Government Services',
+    'Accommodation',
+    'Non-Profit Groups & Clubs',
+    'Restaurant',
+    'Real Estate',
+    'Trades',
+  ];
 
   // firebase async get data
   Future _getBusinesses() async {
@@ -60,7 +83,8 @@ class _BusinessPageState extends State<BusinessState> {
             doc['email'],
             doc['socialMedia'],
             doc['website'],
-            doc['imgURL']);
+            doc['imgURL'],
+            doc['category']);
         businesses.add(b);
       });
     });
@@ -95,7 +119,7 @@ class _BusinessPageState extends State<BusinessState> {
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
         firstPositionIndex >
-                0 //todo: when populating real businesses from firestore, replace 0 back to 5
+                5 //todo: when populating real businesses from firestore, replace 0 back to 5
             ? _isScrollButtonVisible = true
             : _isScrollButtonVisible = false;
       });
@@ -210,13 +234,27 @@ class _BusinessPageState extends State<BusinessState> {
 
   Widget _buildChips() {
     List<Widget> chips = [];
+    void _filterSearchItemsByCategory(value) {
+      setState(() {
+        filteredBusinesses = businesses.where((businessCard) {
+          if (businessCard.category != null) {
+            return businessCard.category
+                .toLowerCase()
+                .contains(value.toLowerCase());
+          } else {
+            return false;
+          }
+        }).toList();
+        resetMarkers(_markers, filteredBusinesses);
+      });
+    }
 
     for (int i = 0; i < _options.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
         label: Text(_options[i], style: TextStyle(color: Colors.white)),
         avatar: FlutterLogo(),
-        elevation: 10,
+        elevation: 5,
         pressElevation: 5,
         shadowColor: Colors.teal,
         backgroundColor: Colors.black54,
@@ -225,6 +263,8 @@ class _BusinessPageState extends State<BusinessState> {
           setState(() {
             if (selected) {
               _selectedIndex = i;
+              print(_options[i]);
+              _filterSearchItemsByCategory(_options[i]);
             }
           });
         },
