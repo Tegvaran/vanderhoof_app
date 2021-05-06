@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -186,51 +187,77 @@ class _HikeInformationState extends State<HikeInformation> {
               ),
             ),
             Container(
-                margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: colorAccent,
-                          borderRadius: BorderRadius.circular(15)),
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        "Points of Interest",
-                        style: TextStyle(
-                          fontSize: BODY_SIZE,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                          color: textColor,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    for (var i = 1; i <= hikeTrail.pointsOfInterest.length; i++)
-                      RichText(
-                          text: TextSpan(
-                              style: TextStyle(
-                                  fontSize: BODY_SIZE, color: textColor),
-                              children: <TextSpan>[
-                            TextSpan(
-                                text:
-                                    '$i) ${hikeTrail.pointsOfInterest[i - 1]['name']} ',
-                                style: TextStyle(
-                                    color: greenColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: BODY_SIZE)),
-                            TextSpan(
-                              text:
-                                  '${hikeTrail.pointsOfInterest[i - 1]['description']}\n',
-                              style: TextStyle(
-                                fontSize: BODY_SIZE,
-                              ),
-                            ),
-                          ])),
-                  ],
-                ))
+              decoration: BoxDecoration(
+                  color: colorAccent, borderRadius: BorderRadius.circular(15)),
+              padding: EdgeInsets.all(5),
+              child: Text(
+                "Points of Interest",
+                style: TextStyle(
+                  fontSize: BODY_SIZE,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  color: textColor,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CarouselSlider(
+                items: getAsList(),
+                options: CarouselOptions(
+                    scrollDirection: Axis.horizontal,
+                    enlargeCenterPage: true,
+                    enableInfiniteScroll: true,
+                    pageSnapping: true),
+              ),
+            ),
           ],
         )));
+  }
+
+  getAsList() {
+    List<Widget> listOfPoI = [];
+    for (var i = 1; i <= hikeTrail.pointsOfInterest.length; i++) {
+      Container test = Container(
+        decoration: BoxDecoration(
+            color: orangeColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(3, 0)),
+            ],
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Text(
+                  '$i) ${hikeTrail.pointsOfInterest[i - 1]['name']} \n',
+                  style: TextStyle(
+                    color: greenColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: BODY_SIZE,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                Text('${hikeTrail.pointsOfInterest[i - 1]['description']}\n',
+                    style: TextStyle(
+                      fontSize: BODY_SIZE,
+                    ),
+                    textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      listOfPoI.add(test);
+    }
+    print(listOfPoI);
+    return listOfPoI;
   }
 }
