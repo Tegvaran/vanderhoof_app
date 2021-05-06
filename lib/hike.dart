@@ -6,7 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
-import 'map.dart';
+import 'package:vanderhoof_app/map.dart';
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -21,12 +21,14 @@ class _HikePageState extends State<Hike> {
   List<HikeTrail> hikes = [];
   List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
+  Future tester;
 
   Future _getHikes() async {
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('trails');
 
     await fireStore.get().then((QuerySnapshot snap) {
+      hikes = filteredHikes = [];
       snap.docs.forEach((doc) {
         HikeTrail h = HikeTrail(
             doc['name'],
@@ -47,12 +49,18 @@ class _HikePageState extends State<Hike> {
   void initState() {
     // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
 
-    _getHikes().then((data) {
-      setState(() {
-        hikes = filteredHikes = data;
-      });
-    });
+    tester = _getHikes();
+    resetMarkers(_markers, filteredHikes);
     super.initState();
+  }
+
+  Widget _hikeTrailListBuild() {
+    return new Container(
+        child: ListView.builder(
+            itemCount: filteredHikes.length,
+            itemBuilder: (BuildContext context, int index) {
+              return HikeCard(filteredHikes[index]);
+            }));
   }
 
   // This method does the logic for search
@@ -69,30 +77,6 @@ class _HikePageState extends State<Hike> {
   }
 
   Set<Marker> _markers = HashSet<Marker>();
-  GoogleMapController _mapController;
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    //run marker adapter
-    setState(() {
-      for (int i = 0; i < hikes.length; i++) {
-        _markers.add(
-          Marker(
-              markerId: MarkerId(i.toString()),
-              position: hikes[i].location,
-              infoWindow: InfoWindow(
-                title: hikes[i].name,
-                snippet: hikes[i].description,
-              )),
-        );
-      }
-    });
-  }
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(54.0117956, -124.0177679),
-    zoom: 13,
-  );
-  var maptype = MapType.normal;
 
   @override
   Widget build(BuildContext context) {
@@ -136,33 +120,35 @@ class _HikePageState extends State<Hike> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // insert widgets here
-            Expanded(
-              flex: 2,
-              child: GoogleMap(
-                mapType: maptype,
-                initialCameraPosition: _kGooglePlex,
-                onMapCreated: _onMapCreated,
-                markers: _markers,
-              ),
-            ),
-            Expanded(flex: 4, child: _hikeTrailListBuild()),
-          ],
+        padding: EdgeInsets.all(20.0),
+        child: FutureBuilder(
+          future: tester,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('non');
+              case ConnectionState.active:
+              case ConnectionState.waiting:
+                return Text('Active or waiting');
+              case ConnectionState.done:
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // insert widgets here wrapped in `Expanded` as a child
+                    // note: play around with flex int value to adjust vertical spaces between widgets
+                    Expanded(
+                      flex: 2,
+                      child: Map(filteredHikes, _markers),
+                    ),
+                    Expanded(flex: 4, child: _hikeTrailListBuild()),
+                  ],
+                );
+              default:
+                return Text("Default");
+            }
+          },
         ),
       ),
     );
-  }
-
-  Widget _hikeTrailListBuild() {
-    return new Container(
-        child: ListView.builder(
-            itemCount: filteredHikes.length,
-            itemBuilder: (BuildContext context, int index) {
-              return HikeCard(filteredHikes[index]);
-            }));
   }
 }
