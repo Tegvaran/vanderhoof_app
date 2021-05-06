@@ -6,6 +6,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'commonFunction.dart';
 
 class AddBusinessPage extends StatefulWidget {
   @override
@@ -182,11 +183,15 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
     //Method to add business to FireStore
     //=========================================
     Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+      String docID = businessInfo['name'];
+      if (docID.contains("/")) {
+        docID = docID.replaceAll('/', '|');
+      }
       return business
-          .add(businessInfo)
+          .doc("$docID")
+          .set(businessInfo)
           .then((value) => {
-                print("Business Added:  ${value.id}"),
-                business.doc(value.id).update({"id": value.id})
+                print("Business Added:  ${docID}"),
               })
           .catchError((error) => print("Failed to add Business: $error"));
     }
@@ -197,8 +202,18 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
     final validationSuccess = _formKey.currentState.validate();
     if (validationSuccess) {
       _formKey.currentState.save();
-      print(_formKey.currentState.value);
-      addBusiness(_formKey.currentState.value);
+      print("submitted data:  ${_formKey.currentState.value}");
+      String address = _formKey.currentState.value['address'];
+      toLatLng(address).then((geopoint) {
+        Map<String, dynamic> business = {
+          ..._formKey.currentState.value,
+          'imgURL': null,
+          'category': null,
+          'LatLng': geopoint,
+          'socialMedia': {'facebook': ".", 'instagram': ".", 'twitter': "."}
+        };
+        addBusiness(business);
+      });
 
       //=========================================
       //Navigate back to Business Page
