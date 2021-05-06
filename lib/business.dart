@@ -8,7 +8,6 @@ import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
-import 'package:web_scraper/web_scraper.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
@@ -32,7 +31,9 @@ class _BusinessPageState extends State<BusinessState> {
 
   // Async Future variable that hold the connected database's data and functions
   Future future;
-
+  //FireStore reference
+  CollectionReference fireStore =
+      FirebaseFirestore.instance.collection('debug_businesses');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -40,12 +41,8 @@ class _BusinessPageState extends State<BusinessState> {
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
-
   // firebase async get data
   Future _getBusinesses() async {
-    CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('debug_businesses');
-
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
@@ -107,8 +104,31 @@ class _BusinessPageState extends State<BusinessState> {
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredBusinesses.length,
         itemBuilder: (BuildContext context, int index) {
-          return BusinessCard(
-              filteredBusinesses[index], _scrollController, index);
+          //======================
+          final item = filteredBusinesses[index];
+          return Dismissible(
+            // Each Dismissible must contain a Key. Keys allow Flutter to
+            // uniquely identify widgets.
+            key: Key(item.name),
+            // Provide a function that tells the app
+            // what to do after an item has been swiped away.
+            onDismissed: (direction) {
+              // Remove the item from the data source.
+              setState(() {
+                filteredBusinesses.removeAt(index);
+              });
+              // Delete from fireStore
+
+              // Then show a snackbar.
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${item.name} deleted")));
+            },
+            background: Container(color: Colors.red),
+            child: BusinessCard(
+                filteredBusinesses[index], _scrollController, index),
+          );
+          // return BusinessCard(
+          //     filteredBusinesses[index], _scrollController, index);
         },
       )),
       floatingActionButton: _isScrollButtonVisible
@@ -156,11 +176,6 @@ class _BusinessPageState extends State<BusinessState> {
                   ));
             },
           ),
-          ListTile(
-            leading: Icon(Icons.ac_unit),
-            title: Text("Test Scraper"),
-            onTap: () => scrap(false),
-          )
         ],
       )),
       appBar: AppBar(
@@ -232,102 +247,5 @@ class _BusinessPageState extends State<BusinessState> {
         ),
       ),
     );
-  }
-
-  Widget _nullText(String str) {
-    if (str != null) {
-      return Text(str);
-    } else {
-      return Text("empty");
-    }
-  }
-
-  Future<void> scrap(bool activate) async {
-    if (!activate) {
-      print("----------scraping deactivated");
-    } else {
-      print("----------------scrap------------");
-
-      final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
-
-      if (await webScraper.loadWebPage('/membership/business-directory')) {
-        List<String> elements =
-            webScraper.getElementTitle('#businesslist > div');
-
-        var n = webScraper.getElementTitle('#businesslist > div > h3').iterator;
-        var p = webScraper
-            .getElementTitle('#businesslist > div > p.phone')
-            .iterator;
-        var a = webScraper
-            .getElementTitle('#businesslist > div > p.address')
-            .iterator;
-        var d = webScraper
-            .getElementTitle('#businesslist > div > div.description')
-            .iterator;
-        var e = webScraper
-            .getElementTitle('#businesslist > div > p.email')
-            .iterator;
-        var w = webScraper
-            .getElementTitle('#businesslist > div > p.website')
-            .iterator;
-
-        n.moveNext();
-        p.moveNext();
-        a.moveNext();
-        d.moveNext();
-        e.moveNext();
-        w.moveNext();
-        List<Map> all = [];
-
-        String check(String value, var iterator) {
-          try {
-            if (iterator.current != null && value.contains(iterator.current)) {
-              iterator.moveNext();
-              return iterator.current;
-            } else {
-              return null;
-            }
-          } catch (e) {
-            print("error catch---");
-            print(value);
-            print(iterator.current);
-            print("error end");
-            print(e);
-          }
-        }
-
-        for (int i = 0; i < elements.length; i++) {
-          Map b = {
-            'name': check(elements[i], n),
-            'address': check(elements[i], a),
-            'phone': check(elements[i], p),
-            'email': check(elements[i], e),
-            'website': check(elements[i], w),
-            'description': check(elements[i], d),
-          } as Map;
-          all.add(b);
-        }
-
-        print("-----------end");
-        print(all.length);
-
-        // TODO Dont know what is wrong here, plzz help Jack the saviour!
-        //       CollectionReference business =
-        //           FirebaseFirestore.instance.collection('testbusiness');
-        //       Future<void> addBusiness(Map<String, dynamic> businessInfo) {
-        //         return business
-        //             .add(businessInfo)
-        //             .then((value) => {
-        //                   print("Business Added:  ${value.id}"),
-        //                   business.doc(value.id).update({"id": value.id})
-        //                 })
-        //             .catchError((error) => print("Failed to add Business: $error"));
-        //       }
-        //
-        //       for (int i = 0; i < all.length; i++) {
-        //         addBusiness(Map<String, dynamic>.from(all[i]));
-        //       }
-      }
-    }
   }
 }
