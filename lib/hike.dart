@@ -120,7 +120,7 @@ class _HikePageState extends State<Hike> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(0.0),
         child: FutureBuilder(
           future: tester,
           builder: (context, snapshot) {
