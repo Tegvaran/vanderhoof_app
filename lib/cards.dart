@@ -7,7 +7,7 @@ import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'hikingInformation.dart';
+import 'hikeInformation.dart';
 
 class HikeCard extends StatelessWidget {
   final HikeTrail hikeTrail;
@@ -164,7 +164,8 @@ class HikeCard extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => HikingInformation(),
+                                  builder: (context) =>
+                                      HikeInformation(hikeTrail: hikeTrail),
                                 ));
                           },
                         ),
