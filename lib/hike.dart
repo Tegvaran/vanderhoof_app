@@ -24,6 +24,7 @@ class _HikePageState extends State<Hike> {
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
+  Set<Marker> _markers = HashSet<Marker>();
 
   Future _getHikes() async {
     CollectionReference fireStore =
@@ -55,18 +56,6 @@ class _HikePageState extends State<Hike> {
     super.initState();
   }
 
-  Widget _hikeTrailListBuild() {
-    return new Scaffold(
-        body: Container(
-            child: ScrollablePositionedList.builder(
-                itemScrollController: _scrollController,
-                itemCount: filteredHikes.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return HikeCard(
-                      filteredHikes[index], _scrollController, index);
-                })));
-  }
-
   // This method does the logic for search
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   void _filterSearchItems(value) {
@@ -80,7 +69,17 @@ class _HikePageState extends State<Hike> {
     resetMarkers(_markers, filteredHikes);
   }
 
-  Set<Marker> _markers = HashSet<Marker>();
+  Widget _hikeTrailListBuild() {
+    return new Scaffold(
+        body: Container(
+            child: ScrollablePositionedList.builder(
+                itemScrollController: _scrollController,
+                itemCount: filteredHikes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return HikeCard(
+                      filteredHikes[index], _scrollController, index);
+                })));
+  }
 
   @override
   Widget build(BuildContext context) {

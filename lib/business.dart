@@ -23,10 +23,10 @@ class BusinessState extends StatefulWidget {
 }
 
 class _BusinessPageState extends State<BusinessState> {
-  // list of businesses populated from firebase
+  // Businesses populated from firebase
   List<Business> businesses = [];
 
-  // list of businesses with search filters - this is whats shown in ListView
+  // Businesses after filtering search - this is whats shown in ListView
   List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
@@ -37,6 +37,9 @@ class _BusinessPageState extends State<BusinessState> {
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isScrollButtonVisible = false;
+
+  // GoogleMap markers
+  Set<Marker> _markers = HashSet<Marker>();
 
   // firebase async get data
   Future _getBusinesses() async {
@@ -80,20 +83,6 @@ class _BusinessPageState extends State<BusinessState> {
           .toList();
       resetMarkers(_markers, filteredBusinesses);
     });
-  }
-
-  Set<Marker> _markers = HashSet<Marker>();
-
-  // old build for ListView of Businesses - Teg and Ben
-  Widget _businessesListBuild_old() {
-    return new Container(
-        child: ListView.builder(
-      itemCount: filteredBusinesses.length,
-      itemBuilder: (BuildContext context, int index) {
-        return BusinessCard(
-            filteredBusinesses[index], _scrollController, index);
-      },
-    ));
   }
 
   Widget _businessesListBuild() {
