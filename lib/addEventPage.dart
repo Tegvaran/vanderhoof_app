@@ -217,6 +217,7 @@ class _AddEventPageSate extends State<AddEventPage> {
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: FormBuilderTextField(
+        keyboardType: TextInputType.number,
         name: name,
         validator: formValidator,
         decoration: InputDecoration(

@@ -128,17 +128,21 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
       String name, String labelText, String hintText, Icon icon,
       {email = false, url = false, phone = false}) {
     var formValidator;
+    TextInputType inputType = TextInputType.text;
     if (email == true) {
+      inputType = TextInputType.emailAddress;
       formValidator = FormBuilderValidators.compose([
         FormBuilderValidators.required(context),
         FormBuilderValidators.email(context)
       ]);
     } else if (url == true) {
+      inputType = TextInputType.url;
       formValidator = FormBuilderValidators.compose([
         FormBuilderValidators.required(context),
         FormBuilderValidators.url(context)
       ]);
     } else if (phone == true) {
+      inputType = TextInputType.phone;
       formValidator = FormBuilderValidators.compose([
         FormBuilderValidators.required(context),
         (value) {
@@ -158,6 +162,7 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
       child: FormBuilderTextField(
         name: name,
         validator: formValidator,
+        keyboardType: inputType,
         // onTap: () => {},
         decoration: InputDecoration(
           labelText: labelText,
