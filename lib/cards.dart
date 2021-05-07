@@ -237,10 +237,11 @@ class BusinessCard extends StatelessWidget {
           msg: "Could not open the email app for $email",
           toastLength: Toast.LENGTH_SHORT);
 
-  void _launchAddressURL(String address) async => await canLaunch(address)
-      ? launch(address)
+  void _launchAddressURL(address) async => await canLaunch(
+          'https://www.google.com/maps/search/?api=1&query=$address')
+      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
       : Fluttertoast.showToast(
-          msg: "Could not open directions to $address",
+          msg: "Could not open directions for $address.",
           toastLength: Toast.LENGTH_SHORT);
 
   @override
