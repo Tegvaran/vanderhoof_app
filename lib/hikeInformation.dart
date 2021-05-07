@@ -92,7 +92,6 @@ class _HikeInformationState extends State<HikeInformation> {
                       style: TextStyle(
                         fontSize: BODY_SIZE,
                         fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
                         color: textColor,
                       ),
                       textAlign: TextAlign.center,
@@ -194,10 +193,9 @@ class _HikeInformationState extends State<HikeInformation> {
                 style: TextStyle(
                   fontSize: BODY_SIZE,
                   fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
                   color: textColor,
                 ),
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.center,
               ),
             ),
             Container(
