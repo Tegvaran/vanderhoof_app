@@ -44,8 +44,8 @@ Future<void> scrap(bool activate) async {
 
     String _checkPhone(List element) {
       if (element.isNotEmpty) {
-        String s = element[0].replaceAll(RegExp(r'[-.() ]'), '');
-        s = s.substring(0, 10) + "\n" + s.substring(10);
+        String s = element[0].replaceAll(RegExp(r'[^0-9]'), '');
+        s = s.substring(0, 10);
         return s;
       } else {
         return null;
@@ -60,6 +60,10 @@ Future<void> scrap(bool activate) async {
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
           webScraper.getElement('#businesslist > div >h3>a', ['href']);
+      // var images = webScraper.getElement('div.description > a > img', ['src']);
+      // print(images);
+      // print(images.length);
+      // Iterator y = images.reversed.iterator;
       elements.forEach((element) async {
         String page = element['attributes']['href'].substring(33);
         if (await webScraper.loadWebPage(page)) {
@@ -80,7 +84,14 @@ Future<void> scrap(bool activate) async {
           String w = _checkElement(web, 'href');
           String i = _checkElement(img, 'src');
           String c = _check(category);
-
+          if (i != null) {
+            for (int j = i.length - 1; j > 50; j--) {
+              if (i[j] == '-') {
+                i = i.substring(0, j) + '.jpg';
+                break;
+              }
+            }
+          }
           Future<GeoPoint> toLatLng(String addr) async {
             var address = await Geocoder.local.findAddressesFromQuery(addr);
             var first = address.first;
@@ -110,7 +121,6 @@ Future<void> scrap(bool activate) async {
                     }, n)
                   })
               .catchError((error) => print("Failed to get GeoPoint: $error"));
-          ;
         }
       });
     }
