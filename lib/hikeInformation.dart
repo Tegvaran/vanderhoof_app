@@ -19,6 +19,7 @@ class _HikeInformationState extends State<HikeInformation> {
   _HikeInformationState(this.hikeTrail);
   static const double TITLE_SIZE = 40;
   static const double BODY_SIZE = 20;
+  Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
 
   static const Color textColor = Colors.black;
   final Color greenColor = Colors.green[900];
@@ -69,15 +70,12 @@ class _HikeInformationState extends State<HikeInformation> {
                     )
                   : Container(),
             ),
-            Container(
-              width: double.infinity,
-              color: greenColor,
-              child: Text(
-                hikeTrail.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: TITLE_SIZE),
-              ),
+            Text(
+              hikeTrail.name,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: TITLE_SIZE),
             ),
+            cardDivider,
             Container(
               margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
               child: Column(
@@ -86,8 +84,8 @@ class _HikeInformationState extends State<HikeInformation> {
                 children: <Widget>[
                   Container(
                     decoration: BoxDecoration(
-                        color: colorAccent,
-                        borderRadius: BorderRadius.circular(15)),
+                        border: Border(
+                            bottom: BorderSide(color: colorAccent, width: 5))),
                     padding: EdgeInsets.all(5),
                     child: Text(
                       "Trail Details",
@@ -97,7 +95,7 @@ class _HikeInformationState extends State<HikeInformation> {
                         decoration: TextDecoration.underline,
                         color: textColor,
                       ),
-                      textAlign: TextAlign.left,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Text(
@@ -161,15 +159,14 @@ class _HikeInformationState extends State<HikeInformation> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                        color: colorAccent,
-                        borderRadius: BorderRadius.circular(15)),
+                        border: Border(
+                            bottom: BorderSide(color: colorAccent, width: 5))),
                     padding: EdgeInsets.all(5),
                     child: Text(
                       "Trail Description",
                       style: TextStyle(
                         fontSize: BODY_SIZE,
                         fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
                         color: textColor,
                       ),
                       textAlign: TextAlign.left,
@@ -187,8 +184,10 @@ class _HikeInformationState extends State<HikeInformation> {
               ),
             ),
             Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
               decoration: BoxDecoration(
-                  color: colorAccent, borderRadius: BorderRadius.circular(15)),
+                  border:
+                      Border(bottom: BorderSide(color: colorAccent, width: 5))),
               padding: EdgeInsets.all(5),
               child: Text(
                 "Points of Interest",
@@ -201,15 +200,18 @@ class _HikeInformationState extends State<HikeInformation> {
                 textAlign: TextAlign.left,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: CarouselSlider(
-                items: getAsList(),
-                options: CarouselOptions(
-                    scrollDirection: Axis.horizontal,
-                    enlargeCenterPage: true,
-                    enableInfiniteScroll: true,
-                    pageSnapping: true),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CarouselSlider(
+                  items: getAsList(),
+                  options: CarouselOptions(
+                      scrollDirection: Axis.horizontal,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: true,
+                      pageSnapping: true),
+                ),
               ),
             ),
           ],
@@ -221,13 +223,13 @@ class _HikeInformationState extends State<HikeInformation> {
     for (var i = 1; i <= hikeTrail.pointsOfInterest.length; i++) {
       Container test = Container(
         decoration: BoxDecoration(
-            color: orangeColor,
+            color: Colors.grey[300],
             boxShadow: [
               BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 5,
                   blurRadius: 7,
-                  offset: Offset(3, 0)),
+                  offset: Offset(3, 10)),
             ],
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -235,20 +237,28 @@ class _HikeInformationState extends State<HikeInformation> {
           child: Center(
             child: Column(
               children: [
-                Text(
-                  '$i) ${hikeTrail.pointsOfInterest[i - 1]['name']} \n',
-                  style: TextStyle(
-                    color: greenColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: BODY_SIZE,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text('${hikeTrail.pointsOfInterest[i - 1]['description']}\n',
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                  child: Text(
+                    '$i) ${hikeTrail.pointsOfInterest[i - 1]['name']} \n',
                     style: TextStyle(
+                      color: greenColor,
+                      fontWeight: FontWeight.bold,
                       fontSize: BODY_SIZE,
                     ),
-                    textAlign: TextAlign.center),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                cardDivider,
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  child: Text(
+                      '${hikeTrail.pointsOfInterest[i - 1]['description']}\n',
+                      style: TextStyle(
+                        fontSize: BODY_SIZE,
+                      ),
+                      textAlign: TextAlign.center),
+                ),
               ],
             ),
           ),
@@ -257,7 +267,6 @@ class _HikeInformationState extends State<HikeInformation> {
 
       listOfPoI.add(test);
     }
-    print(listOfPoI);
     return listOfPoI;
   }
 }
