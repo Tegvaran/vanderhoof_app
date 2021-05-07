@@ -168,6 +168,11 @@ class _BusinessPageState extends State<BusinessState> {
                 ));
           },
         ),
+        ListTile(
+          leading: Icon(Icons.ac_unit),
+          title: Text("Test Scraper"),
+          onTap: () => scrap(true),
+        ),
       ],
     ));
   }
