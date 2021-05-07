@@ -26,6 +26,7 @@ class _HikePageState extends State<Hike> {
   ItemScrollController _scrollController = ItemScrollController();
   Set<Marker> _markers = HashSet<Marker>();
 
+  // firebase async method to get data
   Future _getHikes() async {
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('trails');
@@ -51,15 +52,15 @@ class _HikePageState extends State<Hike> {
     return hikes;
   }
 
+  // this method gets firebase data and populates into list of hikes
+  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart\
   @override
   void initState() {
-    // this method gets firebase data and populates into list of businesses
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart\
     future = _getHikes();
     super.initState();
   }
 
-  // This method does the logic for search
+  // This method does the logic for search and changes filteredHikes to search results
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   void _filterSearchItems(value) {
     setState(() {
@@ -72,7 +73,50 @@ class _HikePageState extends State<Hike> {
     resetMarkers(_markers, filteredHikes);
   }
 
-  Widget _hikeTrailListBuild() {
+  // Widget build for AppBar with Search
+  Widget _buildSearchAppBar() {
+    return AppBar(
+      title: !isSearching
+          ? Text(widget.title)
+          : TextField(
+              onChanged: (value) {
+                // search logic here
+                _filterSearchItems(value);
+              },
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  hintText: "Search Hiking Trails",
+                  hintStyle: TextStyle(color: Colors.white70)),
+            ),
+      actions: <Widget>[
+        isSearching
+            ? IconButton(
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = false;
+                    filteredHikes = hikes;
+                  });
+                },
+              )
+            : IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = true;
+                  });
+                },
+              )
+      ],
+    );
+  }
+
+  // Widget build for Hikes ListView
+  Widget _buildHikesList() {
     return new Scaffold(
         body: Container(
             child: ScrollablePositionedList.builder(
@@ -87,44 +131,7 @@ class _HikePageState extends State<Hike> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: !isSearching
-            ? Text(widget.title)
-            : TextField(
-                onChanged: (value) {
-                  // search logic here
-                  _filterSearchItems(value);
-                },
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                    ),
-                    hintText: "Search Hiking Trails",
-                    hintStyle: TextStyle(color: Colors.white70)),
-              ),
-        actions: <Widget>[
-          isSearching
-              ? IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = false;
-                      filteredHikes = hikes;
-                    });
-                  },
-                )
-              : IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = true;
-                    });
-                  },
-                )
-        ],
-      ),
+      appBar: _buildSearchAppBar(),
       body: Container(
         padding: EdgeInsets.all(0.0),
         child: FutureBuilder(
@@ -146,7 +153,7 @@ class _HikePageState extends State<Hike> {
                       flex: 2,
                       child: Map(filteredHikes, _markers),
                     ),
-                    Expanded(flex: 4, child: _hikeTrailListBuild()),
+                    Expanded(flex: 4, child: _buildHikesList()),
                   ],
                 );
               default:

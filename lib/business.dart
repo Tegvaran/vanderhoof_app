@@ -71,7 +71,7 @@ class _BusinessPageState extends State<BusinessState> {
     'Trades',
   ];
 
-  // firebase async get data
+  // firebase async method to get data
   Future _getBusinesses() async {
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
@@ -81,7 +81,7 @@ class _BusinessPageState extends State<BusinessState> {
             doc['phone'].substring(3, 6) +
             "-" +
             doc['phone'].substring(6);
-        print(phone);
+        // print(phone);
         Business b = Business(
             doc['name'],
             doc['address'],
@@ -99,10 +99,10 @@ class _BusinessPageState extends State<BusinessState> {
     return businesses;
   }
 
+  // this method gets firebase data and populates into list of businesses
+  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   @override
   void initState() {
-    // this method gets firebase data and populates into list of businesses
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
     future = _getBusinesses();
     super.initState();
   }
@@ -119,7 +119,97 @@ class _BusinessPageState extends State<BusinessState> {
     });
   }
 
-  Widget _businessesListBuild() {
+  // Widget build for Admin Menu Hamburger Drawer
+  Widget _buildAdminDrawer() {
+    return Drawer(
+        child: ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        Container(
+          height: 100,
+          margin: EdgeInsets.all(0),
+          padding: EdgeInsets.all(0),
+          child: DrawerHeader(
+            child: Text("Admin Menu"),
+            decoration: BoxDecoration(color: colorPrimary),
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Business"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddBusinessPage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add an Event"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddEventPage(),
+                ));
+          },
+        ),
+      ],
+    ));
+  }
+
+  // Widget build for AppBar with Search
+  Widget _buildSearchAppBar() {
+    return AppBar(
+      title: !isSearching
+          ? Text(widget.title)
+          : TextField(
+              onChanged: (value) {
+                // search logic here
+                _filterSearchItems(value);
+              },
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  hintText: "Search Businesses",
+                  hintStyle: TextStyle(color: Colors.white70)),
+            ),
+      actions: <Widget>[
+        isSearching
+            ? IconButton(
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = false;
+                    filteredBusinesses = businesses;
+                  });
+                },
+              )
+            : IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = true;
+                  });
+                },
+              )
+      ],
+    );
+  }
+
+  // Widget build for Businesses ListView
+  Widget _buildBusinessesList() {
+    //=================================================
+    // Scrolling Listener + ScrollToTop Button
+    //=================================================
+
     // listener for the current scroll position
     // if scroll position is not near the very top, set FloatingActionButton visibility to true
     _itemPositionsListener.itemPositions.addListener(() {
@@ -132,9 +222,27 @@ class _BusinessPageState extends State<BusinessState> {
       });
     });
 
-    //=========================
-    // Assistance Method
-    //=========================
+    Widget _buildScrollToTopButton() {
+      return _isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null;
+    }
+
+    //=================================================
+    // Assistance Methods + DismissibleTile Widget
+    //=================================================
 
     void _deleteBusiness(String businessName, int index) {
       {
@@ -205,11 +313,9 @@ class _BusinessPageState extends State<BusinessState> {
           child: child);
     }
 
-    //=========================
-    // End of Assistance Method
-    //=========================
-
-    // build widget for businesses ListView + FloatingActionButton for jumpTo index 0
+    //=================================================
+    // Build Widget for BusinessesList
+    //=================================================
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
@@ -223,28 +329,14 @@ class _BusinessPageState extends State<BusinessState> {
               index);
         },
       )),
-      floatingActionButton: _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null,
+      floatingActionButton: _buildScrollToTopButton(),
     );
   }
 
-  // Method to build the ChoiceChips for filtering businesses by category.
-  //
+  // Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
     List<Widget> chips = [];
+
     void _filterSearchItemsByCategory(value) {
       setState(() {
         filteredBusinesses = businesses.where((businessCard) {
@@ -260,6 +352,7 @@ class _BusinessPageState extends State<BusinessState> {
       });
     }
 
+    // get a ChoiceChip widget for each category
     for (int i = 0; i < _options.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
@@ -294,89 +387,14 @@ class _BusinessPageState extends State<BusinessState> {
   }
 
   //=========================
-  // Start of Build Methods
+  // Final Build Widget
   //=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Drawer: Hamburger menu for Admin
-      drawer: Drawer(
-          child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          Container(
-            height: 100,
-            margin: EdgeInsets.all(0),
-            padding: EdgeInsets.all(0),
-            child: DrawerHeader(
-              child: Text("Admin Menu"),
-              decoration: BoxDecoration(color: colorPrimary),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.add_circle_outline),
-            title: Text("Add a Business"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddBusinessPage(),
-                  ));
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.add_circle_outline),
-            title: Text("Add an Event"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddEventPage(),
-                  ));
-            },
-          ),
-        ],
-      )),
-      appBar: AppBar(
-        title: !isSearching
-            ? Text(widget.title)
-            : TextField(
-                onChanged: (value) {
-                  // search logic here
-                  _filterSearchItems(value);
-                },
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                    ),
-                    hintText: "Search Businesses",
-                    hintStyle: TextStyle(color: Colors.white70)),
-              ),
-        actions: <Widget>[
-          isSearching
-              ? IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = false;
-                      filteredBusinesses = businesses;
-                    });
-                  },
-                )
-              : IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = true;
-                    });
-                  },
-                )
-        ],
-      ),
+      drawer: _buildAdminDrawer(),
+      appBar: _buildSearchAppBar(),
       body: Container(
         padding: EdgeInsets.all(0.0),
         child: FutureBuilder(
@@ -399,7 +417,7 @@ class _BusinessPageState extends State<BusinessState> {
                       child: Map(filteredBusinesses, _markers),
                     ),
                     Expanded(flex: 1, child: _buildChips()),
-                    Expanded(flex: 8, child: _businessesListBuild()),
+                    Expanded(flex: 8, child: _buildBusinessesList()),
                   ],
                 );
               default:
