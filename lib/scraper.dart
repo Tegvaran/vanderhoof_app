@@ -45,7 +45,11 @@ Future<void> scrap(bool activate) async {
     String _checkPhone(List element) {
       if (element.isNotEmpty) {
         String s = element[0].replaceAll(RegExp(r'[^0-9]'), '');
-        s = s.substring(0, 10);
+        int length = 10;
+        if (s[0] == '1') {
+          length = length + 1;
+        }
+        s = s.substring(0, length);
         return s;
       } else {
         return null;
@@ -59,9 +63,10 @@ Future<void> scrap(bool activate) async {
 
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
-          webScraper.getElement('#businesslist > div >h3>a', ['href']);
+          webScraper.getElementAttribute('#businesslist > div >h3>a', 'href');
+
       elements.forEach((element) async {
-        String page = element['attributes']['href'].substring(33);
+        String page = element.substring(33);
         if (await webScraper.loadWebPage(page)) {
           var name = webScraper.getElementTitle('h1.entry-title');
           var phone = webScraper.getElementTitle('p.phone');
@@ -89,6 +94,9 @@ Future<void> scrap(bool activate) async {
             }
           }
           Future<GeoPoint> toLatLng(String addr) async {
+            if (addr == null) {
+              return null;
+            }
             var address = await Geocoder.local.findAddressesFromQuery(addr);
             var first = address.first;
             var coor = first.coordinates;
