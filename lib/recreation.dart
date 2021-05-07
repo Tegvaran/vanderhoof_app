@@ -14,7 +14,7 @@ class _RecreationPageState extends State<Recreation> {
   List filteredItems = [];
   bool isSearching = false;
 
-  // this method gets firebase data and populates into list of recreation spots
+  /// this method gets firebase data and populates into list of recreation spots
   // todo: get firebase data and populate into list of items
   @override
   void initState() {
@@ -26,7 +26,7 @@ class _RecreationPageState extends State<Recreation> {
     super.initState();
   }
 
-  // This method does the logic for search and changes filteredRecreationSpots to search results
+  /// This method does the logic for search and changes filteredRecreationSpots to search results
   // todo: replace objClass so value will match with object name (eg. businessCard)
   void _filterSearchItems(value) {
     setState(() {
@@ -37,7 +37,7 @@ class _RecreationPageState extends State<Recreation> {
     });
   }
 
-  // Widget build for AppBar with Search
+  /// Widget build for AppBar with Search
   Widget _buildSearchAppBar() {
     return AppBar(
       title: !isSearching
@@ -79,9 +79,9 @@ class _RecreationPageState extends State<Recreation> {
     );
   }
 
-  //=========================
-  // Final Build Widget
-  //=========================
+  ///=========================
+  /// Final Build Widget
+  ///=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(

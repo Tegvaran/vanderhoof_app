@@ -253,7 +253,7 @@ class BusinessCard extends StatelessWidget {
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
                 // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the list
+                // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,

@@ -12,9 +12,9 @@ class Event extends StatefulWidget {
 class _EventPageState extends State<Event> {
   // todo: events page
 
-  //=========================
-  // Final Build Widget
-  //=========================
+  ///=========================
+  /// Final Build Widget
+  ///=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
