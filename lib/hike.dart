@@ -26,7 +26,7 @@ class _HikePageState extends State<Hike> {
   ItemScrollController _scrollController = ItemScrollController();
   Set<Marker> _markers = HashSet<Marker>();
 
-  // firebase async method to get data
+  /// firebase async method to get data
   Future _getHikes() async {
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('trails');
@@ -52,14 +52,14 @@ class _HikePageState extends State<Hike> {
     return hikes;
   }
 
-  // this method gets firebase data and populates into list of hikes
+  /// this method gets firebase data and populates into list of hikes
   @override
   void initState() {
     future = _getHikes();
     super.initState();
   }
 
-  // This method does the logic for search and changes filteredHikes to search results
+  /// This method does the logic for search and changes filteredHikes to search results
   void _filterSearchItems(value) {
     setState(() {
       filteredHikes = hikes
@@ -71,7 +71,7 @@ class _HikePageState extends State<Hike> {
     resetMarkers(_markers, filteredHikes);
   }
 
-  // Widget build for AppBar with Search
+  /// Widget build for AppBar with Search
   Widget _buildSearchAppBar() {
     return AppBar(
       title: !isSearching
@@ -113,7 +113,7 @@ class _HikePageState extends State<Hike> {
     );
   }
 
-  // Widget build for Hikes ListView
+  /// Widget build for Hikes ListView
   Widget _buildHikesList() {
     return new Scaffold(
         body: Container(
@@ -126,9 +126,9 @@ class _HikePageState extends State<Hike> {
                 })));
   }
 
-  //=========================
-  // Final Build Widget
-  //=========================
+  ///=========================
+  /// Final Build Widget
+  ///=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(

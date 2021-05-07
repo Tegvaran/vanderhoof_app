@@ -71,7 +71,7 @@ class _BusinessPageState extends State<BusinessState> {
     'Trades',
   ];
 
-  // firebase async method to get data
+  /// firebase async method to get data
   Future _getBusinesses() async {
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
@@ -99,7 +99,7 @@ class _BusinessPageState extends State<BusinessState> {
     return businesses;
   }
 
-  // this method gets firebase data and populates into list of businesses
+  /// this method gets firebase data and populates into list of businesses
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   @override
   void initState() {
@@ -107,7 +107,7 @@ class _BusinessPageState extends State<BusinessState> {
     super.initState();
   }
 
-  // This method does the logic for search and changes filteredBusinesses to search results
+  /// This method does the logic for search and changes filteredBusinesses to search results
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   void _filterSearchItems(value) {
     setState(() {
@@ -119,7 +119,7 @@ class _BusinessPageState extends State<BusinessState> {
     });
   }
 
-  // Widget build for Admin Menu Hamburger Drawer
+  /// Widget build for Admin Menu Hamburger Drawer
   Widget _buildAdminDrawer() {
     return Drawer(
         child: ListView(
@@ -162,7 +162,7 @@ class _BusinessPageState extends State<BusinessState> {
     ));
   }
 
-  // Widget build for AppBar with Search
+  /// Widget build for AppBar with Search
   Widget _buildSearchAppBar() {
     return AppBar(
       title: !isSearching
@@ -204,7 +204,7 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
-  // Widget build for Businesses ListView
+  /// Widget build for Businesses ListView
   Widget _buildBusinessesList() {
     //=================================================
     // Scrolling Listener + ScrollToTop Button
@@ -333,7 +333,7 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
-  // Widget build for ChoiceChip for filtering businesses by category
+  /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
     List<Widget> chips = [];
 
@@ -386,9 +386,9 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
-  //=========================
-  // Final Build Widget
-  //=========================
+  ///=========================
+  /// Final Build Widget
+  ///=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
