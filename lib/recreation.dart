@@ -166,6 +166,7 @@ class _RecreationPageState extends State<Recreation> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredRecs = recs;

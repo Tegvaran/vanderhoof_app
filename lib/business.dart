@@ -201,6 +201,7 @@ class _BusinessPageState extends State<BusinessState> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredBusinesses = businesses;
