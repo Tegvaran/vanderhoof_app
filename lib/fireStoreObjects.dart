@@ -33,7 +33,7 @@ class HikeTrail extends FireStoreObject {
       : super(name, address, location, description);
 }
 
-/// Represents a business that is a mumber of the chamber.
+/// Represents a business that is a member of the chamber.
 class Business extends FireStoreObject {
   final String phoneNumber;
   final String email;
