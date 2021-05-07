@@ -53,6 +53,7 @@ class _HikeInformationState extends State<HikeInformation> {
 
   @override
   Widget build(BuildContext context) {
+    print(hikeTrail);
     return Scaffold(
         backgroundColor: colorBackground,
         appBar: AppBar(

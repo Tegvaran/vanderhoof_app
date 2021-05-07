@@ -95,6 +95,7 @@ class _HikePageState extends State<Hike> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredHikes = hikes;
