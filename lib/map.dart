@@ -47,20 +47,20 @@ Future<LatLng> toLatLng(String addr) async {
   return ll;
 }
 
-class Map extends StatefulWidget {
+class Gmap extends StatefulWidget {
   List<FireStoreObject> listOfFireStoreObjects;
   Set<Marker> _markers = HashSet<Marker>();
-  Map(this.listOfFireStoreObjects, this._markers);
+  Gmap(this.listOfFireStoreObjects, this._markers);
 
   @override
-  State<Map> createState() => MapState(listOfFireStoreObjects, _markers);
+  State<Gmap> createState() => GmapState(listOfFireStoreObjects, _markers);
 }
 
-class MapState extends State<Map> {
+class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
   List<FireStoreObject> listOfFireStoreObjects;
-  MapState(this.listOfFireStoreObjects, this._markers);
+  GmapState(this.listOfFireStoreObjects, this._markers);
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(54.0117956, -124.0177679),

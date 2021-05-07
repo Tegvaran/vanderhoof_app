@@ -46,3 +46,13 @@ class Business extends FireStoreObject {
       this.socialMedia, this.website, this.imgURL, this.category)
       : super(name, address, location, description);
 }
+
+class Recreational extends FireStoreObject {
+  final String phoneNumber;
+  final String email;
+  final String website;
+
+  Recreational(name, address, location, description, this.phoneNumber,
+      this.email, this.website)
+      : super(name, address, location, description);
+}

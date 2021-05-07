@@ -410,3 +410,185 @@ class BusinessCard extends StatelessWidget {
             ]));
   }
 }
+
+/// Represents a recreational card that is displayed on the rec page.
+///
+/// Takes the values for Rec which is a recreational object, scrollController, scrollIndex.
+class RecreationalCard extends StatelessWidget {
+  final Recreational rec;
+  final ItemScrollController scrollController;
+  final int scrollIndex;
+  final double scrollAlignment = 0;
+
+  RecreationalCard(this.rec, this.scrollController, this.scrollIndex);
+
+  /// Checks if a give field from the recreational object is empty or not.
+  bool isFieldEmpty(String toCheck) {
+    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+  }
+
+  String parseLongField(String toCheck) {
+    String result = toCheck.trim();
+    if (toCheck.length > 35) {
+      result = toCheck.substring(0, 35) + "...";
+    }
+    return result;
+  }
+
+  void _launchWebsiteURL(String website) async => await canLaunch(website)
+      ? launch(website)
+      : Fluttertoast.showToast(
+          msg: "Could not open website $website",
+          toastLength: Toast.LENGTH_SHORT);
+
+  void _launchPhoneURL(String phoneNumber) async =>
+      await canLaunch('tel:$phoneNumber')
+          ? launch('tel:$phoneNumber')
+          : Fluttertoast.showToast(
+              msg: "Could not set up a call for $phoneNumber",
+              toastLength: Toast.LENGTH_SHORT);
+
+  void _launchMailURL(String email) async => await canLaunch('mailto:$email')
+      ? launch('mailto:$email')
+      : Fluttertoast.showToast(
+          msg: "Could not open the email app for $email",
+          toastLength: Toast.LENGTH_SHORT);
+
+  void _launchAddressURL(address) async => await canLaunch(
+          'https://www.google.com/maps/search/?api=1&query=$address')
+      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
+      : Fluttertoast.showToast(
+          msg: "Could not open directions for $address.",
+          toastLength: Toast.LENGTH_SHORT);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        color: colorBackground,
+        margin: CARD_INSET,
+        child: ExpansionTile(
+            onExpansionChanged: (_isExpanded) {
+              if (_isExpanded) {
+                // check if Expanded
+                // let ExpansionTile expand, then scroll Tile to top of the view
+                Future.delayed(Duration(milliseconds: 250)).then((value) {
+                  scrollController.scrollTo(
+                    index: scrollIndex,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    // alignment: scrollAlignment,
+                  );
+                });
+              }
+            },
+            title: Text(rec.name, style: titleTextStyle),
+            children: <Widget>[
+              cardDivider,
+              // Padding(
+              //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              //     child: DropCapText(
+              //         (!isFieldEmpty(rec.description))
+              //             ? rec.description
+              //             : "",
+              //         style: bodyTextStyle,
+              //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+              //         dropCapPosition: DropCapPosition.end,
+              //         dropCap: (!isFieldEmpty(business.imgURL))
+              //             ? DropCap(
+              //             width: 100,
+              //             height: 100,
+              //             child: Image.network(business.imgURL,
+              //                 fit: BoxFit.fitHeight))
+              //             : DropCap(width: 0, height: 0, child: null))),
+              // (business.imgURL != "" && business.imgURL != null)
+              //     ? Container(
+              //         height: 100,
+              //         alignment: Alignment.topLeft,
+              //         child:
+              //             Image.network(business.imgURL, fit: BoxFit.fitHeight),
+              //       )
+              //     : Container(),
+              Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    // Padding(
+                    //   padding: TEXT_INSET,
+                    //   child: Text(
+                    //     "${business.description}",
+                    //     style: bodyTextStyle,
+                    //     textAlign: TextAlign.left,
+                    //   ),
+                    // ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(rec.address))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.location_on),
+                                onPressed: () {
+                                  _launchAddressURL(rec.address);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(rec.address)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(rec.phoneNumber))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.phone),
+                                onPressed: () {
+                                  _launchPhoneURL(rec.phoneNumber);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(rec.phoneNumber)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(rec.email))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.email),
+                                onPressed: () {
+                                  _launchMailURL(rec.email);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(rec.email)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(rec.website))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: FaIcon(FontAwesomeIcons.globe),
+                                onPressed: () {
+                                  _launchWebsiteURL(rec.website);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(rec.website)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                  ])
+            ]));
+  }
+}

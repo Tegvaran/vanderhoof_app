@@ -423,7 +423,7 @@ class _BusinessPageState extends State<BusinessState> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 4,
-                      child: Map(filteredBusinesses, _markers),
+                      child: Gmap(filteredBusinesses, _markers),
                     ),
                     Expanded(flex: 1, child: _buildChips()),
                     Expanded(flex: 8, child: _buildBusinessesList()),
