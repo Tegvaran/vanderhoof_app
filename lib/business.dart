@@ -11,6 +11,7 @@ import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'scraper.dart';
 
 import 'main.dart';
 
