@@ -53,7 +53,6 @@ class _HikePageState extends State<Hike> {
   }
 
   // this method gets firebase data and populates into list of hikes
-  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart\
   @override
   void initState() {
     future = _getHikes();
@@ -61,7 +60,6 @@ class _HikePageState extends State<Hike> {
   }
 
   // This method does the logic for search and changes filteredHikes to search results
-  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   void _filterSearchItems(value) {
     setState(() {
       filteredHikes = hikes
@@ -128,6 +126,9 @@ class _HikePageState extends State<Hike> {
                 })));
   }
 
+  //=========================
+  // Final Build Widget
+  //=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(

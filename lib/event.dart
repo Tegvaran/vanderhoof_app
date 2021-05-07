@@ -10,35 +10,11 @@ class Event extends StatefulWidget {
 }
 
 class _EventPageState extends State<Event> {
-  List items = [];
-  List filteredSearchItems = [];
-  bool isSearching = false;
+  // todo: events page
 
-  @override
-  void initState() {
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-    // todo: get firebase data and populate into list of items
-
-    // getItems().then((data) {
-    //   setState(() {
-    //     items = filteredSearchItems = data;
-    //   });
-    // });
-    super.initState();
-  }
-
-  // This method does the logic for search
-  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-  // todo: replace objClass so value will match with object name
-  void _filterSearchItems(value) {
-    setState(() {
-      filteredSearchItems = items
-          .where((objClass) =>
-              objClass['name'].toLowerCase().contains(value.toLowerCase()))
-          .toList();
-    });
-  }
-
+  //=========================
+  // Final Build Widget
+  //=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(

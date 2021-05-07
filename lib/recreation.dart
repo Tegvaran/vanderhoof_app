@@ -11,75 +11,81 @@ class Recreation extends StatefulWidget {
 
 class _RecreationPageState extends State<Recreation> {
   List items = [];
-  List filteredSearchItems = [];
+  List filteredItems = [];
   bool isSearching = false;
 
+  // this method gets firebase data and populates into list of recreation spots
+  // todo: get firebase data and populate into list of items
   @override
   void initState() {
-    // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-    // todo: get firebase data and populate into list of items
-
     // getItems().then((data) {
     //   setState(() {
-    //     items = filteredSearchItems = data;
+    //     items = filteredItems = data;
     //   });
     // });
     super.initState();
   }
 
-  // This method does the logic for search
-  // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
-  // todo: replace objClass so value will match with object name
+  // This method does the logic for search and changes filteredRecreationSpots to search results
+  // todo: replace objClass so value will match with object name (eg. businessCard)
   void _filterSearchItems(value) {
     setState(() {
-      filteredSearchItems = items
+      filteredItems = items
           .where((objClass) =>
               objClass['name'].toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
 
+  // Widget build for AppBar with Search
+  Widget _buildSearchAppBar() {
+    return AppBar(
+      title: !isSearching
+          ? Text(widget.title)
+          : TextField(
+              onChanged: (value) {
+                // search logic here
+                _filterSearchItems(value);
+              },
+              style: TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  hintText: "Search Recreation Spots",
+                  hintStyle: TextStyle(color: Colors.white70)),
+            ),
+      actions: <Widget>[
+        isSearching
+            ? IconButton(
+                icon: Icon(Icons.cancel),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = false;
+                    filteredItems = items;
+                  });
+                },
+              )
+            : IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  setState(() {
+                    this.isSearching = true;
+                  });
+                },
+              )
+      ],
+    );
+  }
+
+  //=========================
+  // Final Build Widget
+  //=========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: !isSearching
-            ? Text(widget.title)
-            : TextField(
-                onChanged: (value) {
-                  // search logic here
-                  _filterSearchItems(value);
-                },
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                    icon: Icon(
-                      Icons.search,
-                      color: Colors.white,
-                    ),
-                    hintText: "Search Recreation Spots",
-                    hintStyle: TextStyle(color: Colors.white70)),
-              ),
-        actions: <Widget>[
-          isSearching
-              ? IconButton(
-                  icon: Icon(Icons.cancel),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = false;
-                      filteredSearchItems = items;
-                    });
-                  },
-                )
-              : IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    setState(() {
-                      this.isSearching = true;
-                    });
-                  },
-                )
-        ],
-      ),
+      appBar: _buildSearchAppBar(),
       body: Container(
         padding: EdgeInsets.all(0.0),
         child: Column(
