@@ -125,7 +125,7 @@ class _BusinessPageState extends State<BusinessState> {
     });
 
     //=========================
-    //Assistance Method
+    // Assistance Method
     //=========================
 
     void _deleteBusiness(String businessName, int index) {
