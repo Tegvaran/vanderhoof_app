@@ -73,15 +73,24 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
+    // helper method - parses phone string to correct format
+    String _parsePhoneNumber(String phone) {
+      String parsedPhone = "";
+      if (phone != null && phone.trim() != "" && phone != ".") {
+        parsedPhone = "(" +
+            phone.substring(0, 3) +
+            ") " +
+            phone.substring(3, 6) +
+            "-" +
+            phone.substring(6);
+      }
+      return parsedPhone;
+    }
+
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
-        String phone = doc['phone'].substring(0, 3) +
-            "-" +
-            doc['phone'].substring(3, 6) +
-            "-" +
-            doc['phone'].substring(6);
-        // print(phone);
+        String phone = _parsePhoneNumber(doc['phone']);
         Business b = Business(
             doc['name'],
             doc['address'],
