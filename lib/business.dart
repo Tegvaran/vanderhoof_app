@@ -8,6 +8,7 @@ import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
+import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
@@ -311,6 +312,18 @@ class _BusinessPageState extends State<BusinessState> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddBusinessPage(),
+                  ));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.add_circle_outline),
+            title: Text("Add an Event"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddEventPage(),
                   ));
             },
           ),
