@@ -60,10 +60,6 @@ Future<void> scrap(bool activate) async {
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
           webScraper.getElement('#businesslist > div >h3>a', ['href']);
-      // var images = webScraper.getElement('div.description > a > img', ['src']);
-      // print(images);
-      // print(images.length);
-      // Iterator y = images.reversed.iterator;
       elements.forEach((element) async {
         String page = element['attributes']['href'].substring(33);
         if (await webScraper.loadWebPage(page)) {
@@ -87,7 +83,7 @@ Future<void> scrap(bool activate) async {
           if (i != null) {
             for (int j = i.length - 1; j > 50; j--) {
               if (i[j] == '-') {
-                i = i.substring(0, j) + '.jpg';
+                i = i.substring(0, j) + i.substring(i.length - 4, i.length);
                 break;
               }
             }
