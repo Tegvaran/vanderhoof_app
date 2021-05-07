@@ -9,6 +9,7 @@ import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
+import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
@@ -75,12 +76,18 @@ class _BusinessPageState extends State<BusinessState> {
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
+        String phone = doc['phone'].substring(0, 3) +
+            "-" +
+            doc['phone'].substring(3, 6) +
+            "-" +
+            doc['phone'].substring(6);
+        print(phone);
         Business b = Business(
             doc['name'],
             doc['address'],
             doc['LatLng'],
             doc["description"],
-            doc['phone'],
+            phone,
             doc['email'],
             doc['socialMedia'],
             doc['website'],
@@ -315,6 +322,18 @@ class _BusinessPageState extends State<BusinessState> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => AddBusinessPage(),
+                  ));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.add_circle_outline),
+            title: Text("Add an Event"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddEventPage(),
                   ));
             },
           ),
