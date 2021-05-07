@@ -75,12 +75,18 @@ class _BusinessPageState extends State<BusinessState> {
     await fireStore.get().then((QuerySnapshot snap) {
       businesses = filteredBusinesses = [];
       snap.docs.forEach((doc) {
+        String phone = doc['phone'].substring(0, 3) +
+            "-" +
+            doc['phone'].substring(3, 6) +
+            "-" +
+            doc['phone'].substring(6);
+        print(phone);
         Business b = Business(
             doc['name'],
             doc['address'],
             doc['LatLng'],
             doc["description"],
-            doc['phone'],
+            phone,
             doc['email'],
             doc['socialMedia'],
             doc['website'],
