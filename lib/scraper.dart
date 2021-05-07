@@ -87,6 +87,18 @@ Future<void> scrap(bool activate) async {
           String w = _checkElement(web, 'href');
           String i = _checkElement(img, 'src');
           String c = _check(category);
+
+          // Format address
+          if (a != null) {
+            if (!a.startsWith("Vanderhoof"))
+              a = a.replaceFirst("Vanderhoof", ', Vanderhoof');
+            if (!a.startsWith("Prince George"))
+              a = a.replaceFirst("Prince George", ', Prince George');
+          }
+
+          // Below changes the imgSrc url of cropped imgs to the uncropped by,
+          // by finding the first "-" starting from the end, and cutting
+          // everything out after the "-".
           if (i != null) {
             for (int j = i.length - 1; j > 50; j--) {
               if (i[j] == '-') {
@@ -96,7 +108,7 @@ Future<void> scrap(bool activate) async {
             }
           }
           Future<GeoPoint> toLatLng(String addr) async {
-            if (addr == null) {
+            if (addr == null || addr.startsWith('Vanderhoof')) {
               return null;
             }
             var address = await Geocoder.local.findAddressesFromQuery(addr);
@@ -126,7 +138,8 @@ Future<void> scrap(bool activate) async {
                       },
                     }, n)
                   })
-              .catchError((error) => print("Failed to get GeoPoint: $error"));
+              .catchError(
+                  (error) => print("Failed to get GeoPoint: $error for $a"));
         }
       });
     }
