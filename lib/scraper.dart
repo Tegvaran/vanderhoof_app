@@ -45,11 +45,13 @@ Future<void> scrap(bool activate) async {
     String _checkPhone(List element) {
       if (element.isNotEmpty) {
         String s = element[0].replaceAll(RegExp(r'[^0-9]'), '');
-        int length = 10;
+        // int length = 10;
+        int firstIndex = 0;
         if (s[0] == '1') {
-          length = length + 1;
+          // length = length + 1;
+          firstIndex = 1;
         }
-        s = s.substring(0, length);
+        s = s.substring(firstIndex, 10);
         return s;
       } else {
         return null;
