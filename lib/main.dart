@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'business.dart';
 import 'recreation.dart';
 import 'event.dart';
@@ -95,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            // icon: Icon(Icons.business), // option 1: building
+            icon: Icon(MdiIcons.briefcaseVariant), // option 2: briefcase
             label: 'Businesses',
             backgroundColor: colorPrimary,
           ),
@@ -105,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: colorPrimary,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_walk),
+            icon: Icon(MdiIcons.hiking), // hiking
             label: 'Hiking',
             backgroundColor: colorPrimary,
           ),

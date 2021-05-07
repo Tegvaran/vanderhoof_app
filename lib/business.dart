@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
@@ -218,7 +219,9 @@ class _BusinessPageState extends State<BusinessState> {
       floatingActionButton: _isScrollButtonVisible
           ? FloatingActionButton(
               // scroll to top of the list
-              child: Icon(Icons.arrow_upward),
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
               mini: true,
               onPressed: () {
                 _scrollController.scrollTo(

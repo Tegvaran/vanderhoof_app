@@ -43,6 +43,7 @@ dependencies:
   fluttertoast: ^8.0.6
   open_mail_app: ^0.1.1
   font_awesome_flutter: ^9.0.0
+  material_design_icons_flutter: ^4.0.5955
   geocoder: ^0.2.1
   sticky_headers: ^0.2.0
   flutter_sticky_header: ^0.6.0
