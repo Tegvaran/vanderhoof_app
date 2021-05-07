@@ -34,14 +34,17 @@ class _HikePageState extends State<Hike> {
       hikes = filteredHikes = [];
       snap.docs.forEach((doc) {
         HikeTrail h = HikeTrail(
-            doc['name'],
-            doc['address'],
-            doc['location'],
-            doc['distance'],
-            doc['difficulty'],
-            doc['time'],
-            doc['wheelchair'],
-            doc['description']);
+          doc['name'],
+          doc['address'],
+          doc['location'],
+          doc['distance'],
+          doc['difficulty'],
+          doc['time'],
+          doc['wheelchair'],
+          doc['description'],
+          doc['pointsOfInterest'],
+          doc['imgURL'],
+        );
         hikes.add(h);
       });
     });
