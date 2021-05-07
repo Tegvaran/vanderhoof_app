@@ -8,8 +8,9 @@ import 'package:firebase_core/firebase_core.dart';
 
 // ThemeData Colors
 MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
+MaterialColor colorText = createMaterialColor(Color(0xFF666666));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
-MaterialColor colorBackground = createMaterialColor(Color(0xFFB4D4ED));
+MaterialColor colorBackground = createMaterialColor(Color(0xFFF3F3F3));
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
