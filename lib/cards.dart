@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
