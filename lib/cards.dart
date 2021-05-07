@@ -3,24 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:drop_cap_text/drop_cap_text.dart';
 
 import 'hikeInformation.dart';
+
+const double TITLE_SIZE = 22;
+const double BODY_SIZE = 18;
+const double ICON_SIZE = 24;
+const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 12, 12, 0);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 5, 0, 0);
+
+TextStyle titleTextStyle = TextStyle(
+    fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
+TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
+TextStyle headerTextStyle = TextStyle(
+    fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
+Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
 
 class HikeCard extends StatelessWidget {
   final HikeTrail hikeTrail;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  static const double TITLE_SIZE = 26;
-  static const double BODY_SIZE = 20;
-  static const double SCROLL_ALIGNMENT = 0;
 
-  final Color textColor = Colors.grey[300];
-  final Color greenColor = Colors.lightGreenAccent[400];
+  final Color greenColor = Colors.lightGreen[700];
   final Color orangeColor = colorAccent;
-  final Color redColor = Colors.red[500];
+  final Color redColor = Colors.red[600];
 
   HikeCard(this.hikeTrail, this.scrollController, this.scrollIndex);
 
@@ -49,8 +60,8 @@ class HikeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: colorPrimary,
-      margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+      color: colorBackground,
+      margin: CARD_INSET,
       child: ExpansionTile(
         onExpansionChanged: (_isExpanded) {
           if (_isExpanded) {
@@ -61,115 +72,100 @@ class HikeCard extends StatelessWidget {
                 index: scrollIndex,
                 duration: Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
-                alignment: SCROLL_ALIGNMENT,
               );
             });
           }
         },
         title: Text(
           hikeTrail.name,
-          style: TextStyle(fontSize: TITLE_SIZE, color: textColor),
+          style: titleTextStyle,
         ),
         children: <Widget>[
-          Divider(
-            height: 10,
-            thickness: 2,
-            color: Colors.grey[500],
-          ),
+          cardDivider,
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+              //   child: Text(
+              //     "Trail Details",
+              //     style: TextStyle(
+              //       fontSize: BODY_SIZE,
+              //       fontWeight: FontWeight.bold,
+              //       decoration: TextDecoration.underline,
+              //       color: colorText,
+              //     ),
+              //     textAlign: TextAlign.left,
+              //   ),
+              // ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
-                child: Text(
-                  "Trail Details",
-                  style: TextStyle(
-                    fontSize: BODY_SIZE,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                    color: textColor,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
-                child: Text(
-                  "Distance: ${hikeTrail.distance}",
-                  style: TextStyle(
-                    fontSize: BODY_SIZE,
-                    color: textColor,
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+                padding: TEXT_INSET,
                 child: RichText(
-                    text: TextSpan(
-                        style: TextStyle(fontSize: BODY_SIZE, color: textColor),
-                        children: <TextSpan>[
-                      TextSpan(text: 'Difficulty: '),
-                      TextSpan(
-                        text: '${hikeTrail.rating}',
-                        style: TextStyle(
-                          fontSize: BODY_SIZE,
-                          color: getDifficultyColor(),
-                        ),
-                      ),
-                    ])),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
-                child: Text(
-                  "Time: ${hikeTrail.time}",
-                  style: TextStyle(
-                    fontSize: BODY_SIZE,
-                    color: textColor,
+                    text: TextSpan(children: <TextSpan>[
+                  TextSpan(text: 'Distance: ', style: headerTextStyle),
+                  TextSpan(
+                    text: '${hikeTrail.distance}',
+                    style: bodyTextStyle,
                   ),
-                  textAlign: TextAlign.left,
-                ),
+                ])),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+                padding: TEXT_INSET,
+                child: RichText(
+                    text: TextSpan(children: <TextSpan>[
+                  TextSpan(text: 'Difficulty: ', style: headerTextStyle),
+                  TextSpan(
+                    text: '${hikeTrail.rating}',
+                    style: TextStyle(
+                      fontSize: BODY_SIZE,
+                      color: getDifficultyColor(),
+                    ),
+                  ),
+                ])),
+              ),
+              Padding(
+                padding: TEXT_INSET,
+                child: RichText(
+                    text: TextSpan(children: <TextSpan>[
+                  TextSpan(text: 'Time: ', style: headerTextStyle),
+                  TextSpan(
+                    text: '${hikeTrail.time}',
+                    style: bodyTextStyle,
+                  ),
+                ])),
+              ),
+              Padding(
+                padding: TEXT_INSET,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     RichText(
-                        text: TextSpan(
-                            style: TextStyle(
-                                fontSize: BODY_SIZE, color: textColor),
-                            children: <TextSpan>[
-                          TextSpan(text: 'Wheelchair: '),
-                          TextSpan(
-                            text: '${hikeTrail.wheelchair}',
-                            style: TextStyle(
-                              fontSize: BODY_SIZE,
-                              color: getAccessibilityColor(),
-                            ),
-                          ),
-                        ])),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomRight,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.article_outlined,
-                            size: 50,
-                            color: textColor,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      HikeInformation(hikeTrail: hikeTrail),
-                                ));
-                          },
+                        text: TextSpan(children: <TextSpan>[
+                      TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
+                      TextSpan(
+                        text: '${hikeTrail.wheelchair}',
+                        style: TextStyle(
+                          fontSize: BODY_SIZE,
+                          color: getAccessibilityColor(),
                         ),
                       ),
+                    ])),
+                    IconButton(
+                      icon: Icon(
+                        Icons.open_in_new_outlined,
+                        size: 36,
+                        color: colorPrimary,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HikeInformation(hikeTrail: hikeTrail),
+                            ));
+                      },
                     ),
                   ],
                 ),
@@ -186,17 +182,21 @@ class BusinessCard extends StatelessWidget {
   final Business business;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  static const double TITLE_SIZE = 26;
-  static const double BODY_SIZE = 20;
-  static const double ICON_SIZE = 45;
-  static const double SCROLL_ALIGNMENT = 0;
-
-  final Color textColor = Colors.grey[300];
-  final Color greenColor = Colors.lightGreenAccent[400];
-  final Color orangeColor = colorAccent;
-  final Color redColor = Colors.red[500];
+  final double scrollAlignment = 0;
 
   BusinessCard(this.business, this.scrollController, this.scrollIndex);
+
+  bool isFieldEmpty(String toCheck) {
+    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+  }
+
+  String parseLongField(String toCheck) {
+    String result = toCheck.trim();
+    if (toCheck.length > 35) {
+      result = toCheck.substring(0, 35) + "...";
+    }
+    return result;
+  }
 
   void _launchWebsiteURL(String website) async => await canLaunch(website)
       ? launch(website)
@@ -238,11 +238,17 @@ class BusinessCard extends StatelessWidget {
           msg: "Could not open the email app for $email",
           toastLength: Toast.LENGTH_SHORT);
 
+  void _launchAddressURL(String address) async => await canLaunch(address)
+      ? launch(address)
+      : Fluttertoast.showToast(
+          msg: "Could not open directions to $address",
+          toastLength: Toast.LENGTH_SHORT);
+
   @override
   Widget build(BuildContext context) {
     return Card(
-        color: colorPrimary,
-        margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+        color: colorBackground,
+        margin: CARD_INSET,
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
@@ -253,76 +259,120 @@ class BusinessCard extends StatelessWidget {
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    alignment: SCROLL_ALIGNMENT,
+                    // alignment: scrollAlignment,
                   );
                 });
               }
             },
-            title: Text(
-              business.name,
-              style: TextStyle(fontSize: TITLE_SIZE, color: textColor),
-            ),
+            title: Text(business.name, style: titleTextStyle),
             children: <Widget>[
-              Divider(
-                height: 10,
-                thickness: 2,
-                color: Colors.grey[500],
-              ),
-              (business.imgURL != "" && business.imgURL != null)
-                  ? Image(
-                      image: NetworkImage(business.imgURL),
-                    )
-                  : Container(),
+              cardDivider,
+              Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: DropCapText(
+                      (!isFieldEmpty(business.description))
+                          ? business.description
+                          : "",
+                      style: bodyTextStyle,
+                      dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      dropCapPosition: DropCapPosition.end,
+                      dropCap: (!isFieldEmpty(business.imgURL))
+                          ? DropCap(
+                              width: 100,
+                              height: 100,
+                              child: Image.network(business.imgURL,
+                                  fit: BoxFit.fitHeight))
+                          : DropCap(width: 0, height: 0, child: null))),
+              // (business.imgURL != "" && business.imgURL != null)
+              //     ? Container(
+              //         height: 100,
+              //         alignment: Alignment.topLeft,
+              //         child:
+              //             Image.network(business.imgURL, fit: BoxFit.fitHeight),
+              //       )
+              //     : Container(),
               Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
+                    // Padding(
+                    //   padding: TEXT_INSET,
+                    //   child: Text(
+                    //     "${business.description}",
+                    //     style: bodyTextStyle,
+                    //     textAlign: TextAlign.left,
+                    //   ),
+                    // ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
-                      child: Text(
-                        "${business.description}",
-                        style: TextStyle(
-                          fontSize: BODY_SIZE,
-                          color: textColor,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(business.address))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.location_on),
+                                onPressed: () {
+                                  _launchAddressURL(business.address);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(business.address)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(business.phoneNumber))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.phone),
+                                onPressed: () {
+                                  _launchPhoneURL(business.phoneNumber);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(business.phoneNumber)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(business.email))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.email),
+                                onPressed: () {
+                                  _launchMailURL(business.email);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(business.email)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: (!isFieldEmpty(business.website))
+                          ? Row(children: <Widget>[
+                              IconButton(
+                                icon: FaIcon(FontAwesomeIcons.globe),
+                                onPressed: () {
+                                  _launchWebsiteURL(business.website);
+                                },
+                                iconSize: ICON_SIZE,
+                                color: colorPrimary,
+                              ),
+                              Text('${parseLongField(business.website)}',
+                                  style: headerTextStyle),
+                            ])
+                          : Container(),
                     ),
                     Row(children: <Widget>[
-                      (business.website != "" && business.website != null)
-                          ? IconButton(
-                              icon: FaIcon(FontAwesomeIcons.globe),
-                              onPressed: () {
-                                _launchWebsiteURL(business.website);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: textColor,
-                            )
-                          : Container(),
-                      (business.phoneNumber != "" &&
-                              business.phoneNumber != null)
-                          ? IconButton(
-                              icon: Icon(Icons.phone),
-                              onPressed: () {
-                                _launchPhoneURL(business.phoneNumber);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: textColor,
-                            )
-                          : Container(),
-                      (business.email != "" && business.email != null)
-                          ? IconButton(
-                              icon: Icon(Icons.email),
-                              // onPressed code reference: https://pub.dev/packages/open_mail_app
-                              onPressed: () {
-                                _launchMailURL(business.email);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: textColor,
-                            )
-                          : Container(),
-                      (business.socialMedia["facebook"] != "" &&
-                              business.socialMedia['facebook'] != null)
+                      (!isFieldEmpty(business.socialMedia['facebook']))
                           ? IconButton(
                               icon: FaIcon(FontAwesomeIcons.facebook),
                               onPressed: () {
@@ -330,11 +380,10 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["facebook"]);
                               },
                               iconSize: ICON_SIZE,
-                              color: textColor,
+                              color: colorPrimary,
                             )
                           : Container(),
-                      (business.socialMedia["instagram"] != "" &&
-                              business.socialMedia['instagram'] != null)
+                      (!isFieldEmpty(business.socialMedia['instagram']))
                           ? IconButton(
                               icon: FaIcon(FontAwesomeIcons.instagram),
                               onPressed: () {
@@ -342,11 +391,10 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["instagram"]);
                               },
                               iconSize: ICON_SIZE,
-                              color: textColor,
+                              color: colorPrimary,
                             )
                           : Container(),
-                      (business.socialMedia["twitter"] != "" &&
-                              business.socialMedia['twitter'] != null)
+                      (!isFieldEmpty(business.socialMedia['twitter']))
                           ? IconButton(
                               icon: FaIcon(FontAwesomeIcons.twitter),
                               onPressed: () {
@@ -354,7 +402,7 @@ class BusinessCard extends StatelessWidget {
                                     business.socialMedia["twitter"]);
                               },
                               iconSize: ICON_SIZE,
-                              color: textColor,
+                              color: colorPrimary,
                             )
                           : Container(),
                     ])
