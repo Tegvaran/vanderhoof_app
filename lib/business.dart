@@ -266,8 +266,8 @@ class _BusinessPageState extends State<BusinessState> {
         label: Text(_options[i], style: TextStyle(color: Colors.black)),
         elevation: 5,
         pressElevation: 5,
-        shadowColor: Colors.teal,
-        selectedColor: Colors.blue,
+        shadowColor: colorPrimary,
+        selectedColor: colorAccent,
         onSelected: (bool selected) {
           setState(() {
             if (selected) {
