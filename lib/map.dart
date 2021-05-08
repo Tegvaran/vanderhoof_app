@@ -24,15 +24,19 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
 HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   markers.clear();
   for (int i = 0; i < filteredFireStoreObjects.length; i++) {
-    markers.add(
-      Marker(
-          markerId: MarkerId(i.toString()),
-          position: filteredFireStoreObjects[i].location,
-          infoWindow: InfoWindow(
-            title: filteredFireStoreObjects[i].name,
-            snippet: filteredFireStoreObjects[i].description,
-          )),
-    );
+    // Checks if the location of the object is null,
+    // if it is not then it is added to the marker list.
+    if (filteredFireStoreObjects[i].location != null) {
+      markers.add(
+        Marker(
+            markerId: MarkerId(i.toString()),
+            position: filteredFireStoreObjects[i].location,
+            infoWindow: InfoWindow(
+              title: filteredFireStoreObjects[i].name,
+              snippet: filteredFireStoreObjects[i].description,
+            )),
+      );
+    }
   }
   return markers;
 }
@@ -71,15 +75,19 @@ class GmapState extends State<Gmap> {
     //run marker adapter
     setState(() {
       for (int i = 0; i < listOfFireStoreObjects.length; i++) {
-        _markers.add(
-          Marker(
-              markerId: MarkerId(i.toString()),
-              position: listOfFireStoreObjects[i].location,
-              infoWindow: InfoWindow(
-                title: listOfFireStoreObjects[i].name,
-                snippet: listOfFireStoreObjects[i].description,
-              )),
-        );
+        // Checks if the location of the object is null,
+        // if it is not then it is added to the marker list.
+        if (listOfFireStoreObjects[i].location != null) {
+          _markers.add(
+            Marker(
+                markerId: MarkerId(i.toString()),
+                position: listOfFireStoreObjects[i].location,
+                infoWindow: InfoWindow(
+                  title: listOfFireStoreObjects[i].name,
+                  snippet: listOfFireStoreObjects[i].description,
+                )),
+          );
+        }
       }
     });
   }
