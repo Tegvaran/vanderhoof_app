@@ -13,9 +13,16 @@ abstract class FireStoreObject {
     this.name = name;
     this.address = address;
     this.description = description;
-    double lat = geoLocation.latitude;
-    double lng = geoLocation.longitude;
-    this.location = LatLng(lat, lng);
+
+    // If the address is not provided and or is bad,
+    // the location is set to null and is not converted to LatLng.
+    if (geoLocation != null) {
+      double lat = geoLocation.latitude;
+      double lng = geoLocation.longitude;
+      this.location = LatLng(lat, lng);
+    } else {
+      this.location = null;
+    }
   }
 }
 
