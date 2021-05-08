@@ -1,6 +1,5 @@
 import 'package:web_scraper/web_scraper.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geocoder/geocoder.dart';
+import 'commonFunction.dart';
 
 Future<void> scrap(bool activate) async {
   if (!activate) {
@@ -10,21 +9,6 @@ Future<void> scrap(bool activate) async {
     //==================================
     // Assistance Methods
     //==================================
-
-    CollectionReference business =
-        FirebaseFirestore.instance.collection('businesses');
-    Future<void> addBusiness(Map<String, dynamic> businessInfo, String docID) {
-      if (docID.contains("/")) {
-        docID = docID.replaceAll('/', '|');
-      }
-      return business
-          .doc("$docID")
-          .set(businessInfo)
-          .then((value) => {
-                print("Business Added:  ${docID}"),
-              })
-          .catchError((error) => print("Failed to add Business: $error"));
-    }
 
     String _check(List element) {
       if (element.isNotEmpty) {
@@ -107,17 +91,6 @@ Future<void> scrap(bool activate) async {
               }
             }
           }
-          Future<GeoPoint> toLatLng(String addr) async {
-            if (addr == null || addr.startsWith('Vanderhoof')) {
-              return null;
-            }
-            var address = await Geocoder.local.findAddressesFromQuery(addr);
-            var first = address.first;
-            var coor = first.coordinates;
-            var lat = coor.latitude;
-            var lng = coor.longitude;
-            return GeoPoint(lat, lng);
-          }
 
           toLatLng(a)
               .then((geopoint) => {
@@ -136,7 +109,7 @@ Future<void> scrap(bool activate) async {
                         'instagram': ".",
                         'twitter': "."
                       },
-                    }, n)
+                    })
                   })
               .catchError(
                   (error) => print("Failed to get GeoPoint: $error for $a"));

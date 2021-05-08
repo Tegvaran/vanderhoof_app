@@ -4,12 +4,37 @@ import 'package:geocoder/geocoder.dart';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
-  var address = await Geocoder.local.findAddressesFromQuery(addr);
+  if (addr == null || addr.startsWith('Vanderhoof')) {
+    return null;
+  }
+  var address;
+  try {
+    address = await Geocoder.local.findAddressesFromQuery(addr);
+  } catch (e) {
+    print("could not get geopoint for address: $addr");
+    return address;
+  }
   var first = address.first;
   var coor = first.coordinates;
   var lat = coor.latitude;
   var lng = coor.longitude;
   return GeoPoint(lat, lng);
+}
+
+//=========================================
+//Method to add business to FireStore
+//=========================================
+Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+// Used to add businesses
+  CollectionReference business =
+      FirebaseFirestore.instance.collection('businesses');
+  return business
+      .add(businessInfo)
+      .then((value) => {
+            print("Business Added:  ${value.id}, ${businessInfo['name']}"),
+            business.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Business: $error"));
 }
 
 /// uses a Color with a hex code and returns a MaterialColor object

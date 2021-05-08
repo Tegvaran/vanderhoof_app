@@ -48,9 +48,10 @@ class Business extends FireStoreObject {
   final String website;
   final String imgURL;
   final String category;
+  final String id;
 
   Business(name, address, location, description, this.phoneNumber, this.email,
-      this.socialMedia, this.website, this.imgURL, this.category)
+      this.socialMedia, this.website, this.imgURL, this.category, this.id)
       : super(name, address, location, description);
 }
 

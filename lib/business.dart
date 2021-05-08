@@ -102,7 +102,8 @@ class _BusinessPageState extends State<BusinessState> {
             doc['socialMedia'],
             doc['website'],
             doc['imgURL'],
-            doc['category']);
+            doc['category'],
+            doc['id']);
         businesses.add(b);
       });
     });
@@ -260,18 +261,18 @@ class _BusinessPageState extends State<BusinessState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, int index) {
+    void _deleteBusiness(String businessName, String docID, int index) {
       {
         // Remove the item from the data source.
         setState(() {
           filteredBusinesses.removeAt(index);
         });
         // Delete from fireStore
-        String docID = businessName.replaceAll('/', '|');
+        // String docID = businessName.replaceAll('/', '|');
         fireStore
             .doc(docID)
             .delete()
-            .then((value) => print("$businessName Deleted"))
+            .then((value) => print("$docID Deleted"))
             .catchError((error) => print("Failed to delete user: $error"));
 
         // Then show a snackbar.
@@ -311,7 +312,7 @@ class _BusinessPageState extends State<BusinessState> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
+                          _deleteBusiness(item.name, item.id, index);
                           Navigator.of(context).pop(true);
                         },
                       ),
