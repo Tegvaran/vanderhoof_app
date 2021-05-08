@@ -46,12 +46,11 @@ Future<void> scrap(bool activate) async {
     //==================================
 
     final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
-
+    List listOfBusinesses = [];
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
           webScraper.getElementAttribute('#businesslist > div >h3>a', 'href');
-
-      elements.forEach((element) async {
+      Future<void> fun(var element) async {
         String page = element.substring(33);
         if (await webScraper.loadWebPage(page)) {
           var name = webScraper.getElementTitle('h1.entry-title');
@@ -94,7 +93,7 @@ Future<void> scrap(bool activate) async {
 
           toLatLng(a)
               .then((geopoint) => {
-                    addBusiness({
+                    listOfBusinesses.add({
                       'name': n,
                       'address': a,
                       'phone': p,
@@ -113,7 +112,16 @@ Future<void> scrap(bool activate) async {
                   })
               .catchError(
                   (error) => print("Failed to get GeoPoint: $error for $a"));
+
+          print("adding to temporary list: $n");
         }
+      }
+
+      Future.wait(elements.map(fun)).then((x) async {
+        listOfBusinesses.sort((a, b) {
+          return a['name'].compareTo(b['name']);
+        });
+        listOfBusinesses.forEach((business) => {addBusiness(business)});
       });
     }
   }
