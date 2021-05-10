@@ -26,20 +26,6 @@ abstract class FireStoreObject {
   }
 }
 
-/// Represents a hike trail.
-class HikeTrail extends FireStoreObject {
-  final String distance;
-  final String rating;
-  final String time;
-  final String wheelchair;
-  var pointsOfInterest;
-  final String imgURL;
-
-  HikeTrail(name, address, location, this.distance, this.rating, this.time,
-      this.wheelchair, description, this.pointsOfInterest, this.imgURL)
-      : super(name, address, location, description);
-}
-
 /// Represents a business that is a member of the chamber.
 class Business extends FireStoreObject {
   final String phoneNumber;
@@ -55,16 +41,7 @@ class Business extends FireStoreObject {
       : super(name, address, location, description);
 }
 
-class Recreational extends FireStoreObject {
-  final String phoneNumber;
-  final String email;
-  final String website;
-
-  Recreational(name, address, location, description, this.phoneNumber,
-      this.email, this.website)
-      : super(name, address, location, description);
-}
-
+/// Represents an event.
 class Event extends FireStoreObject {
   final bool dateCheckbox;
   final DateTime datetimeStart;
@@ -74,5 +51,30 @@ class Event extends FireStoreObject {
 
   Event(name, address, location, description, this.dateCheckbox,
       this.datetimeEnd, this.datetimeStart, this.duration, this.isRecurring)
+      : super(name, address, location, description);
+}
+
+/// Represents a hike trail.
+class HikeTrail extends FireStoreObject {
+  final String distance;
+  final String rating;
+  final String time;
+  final String wheelchair;
+  var pointsOfInterest;
+  final String imgURL;
+
+  HikeTrail(name, address, location, this.distance, this.rating, this.time,
+      this.wheelchair, description, this.pointsOfInterest, this.imgURL)
+      : super(name, address, location, description);
+}
+
+/// Represents a recreational spot.
+class Recreational extends FireStoreObject {
+  final String phoneNumber;
+  final String email;
+  final String website;
+
+  Recreational(name, address, location, description, this.phoneNumber,
+      this.email, this.website)
       : super(name, address, location, description);
 }
