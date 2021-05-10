@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _children = [
     BusinessState(),
-    Event(),
+    EventState(),
     Hike(),
     Recreation(),
   ];

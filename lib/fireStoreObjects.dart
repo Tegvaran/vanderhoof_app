@@ -64,3 +64,15 @@ class Recreational extends FireStoreObject {
       this.email, this.website)
       : super(name, address, location, description);
 }
+
+class Event extends FireStoreObject {
+  final bool dateCheckbox;
+  final DateTime datetimeStart;
+  final DateTime datetimeEnd;
+  final int duration;
+  final bool isRecurring;
+
+  Event(name, address, location, description, this.dateCheckbox,
+      this.datetimeEnd, this.datetimeStart, this.duration, this.isRecurring)
+      : super(name, address, location, description);
+}
