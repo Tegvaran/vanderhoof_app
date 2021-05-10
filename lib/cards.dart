@@ -279,10 +279,10 @@ class BusinessCard extends StatelessWidget {
                       dropCapPosition: DropCapPosition.end,
                       dropCap: (!isFieldEmpty(business.imgURL))
                           ? DropCap(
-                              width: 100,
-                              height: 100,
+                              width: 120,
+                              height: 120,
                               child: Image.network(business.imgURL,
-                                  fit: BoxFit.fitHeight))
+                                  fit: BoxFit.contain))
                           : DropCap(width: 0, height: 0, child: null))),
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
