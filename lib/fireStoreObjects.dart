@@ -46,7 +46,7 @@ class Event extends FireStoreObject {
   final bool dateCheckbox;
   final DateTime datetimeStart;
   final DateTime datetimeEnd;
-  final int duration;
+  final num duration;
   final bool isRecurring;
 
   Event(name, address, location, description, this.dateCheckbox,
