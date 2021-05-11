@@ -43,12 +43,17 @@ HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
 }
 
 void changeMarkerColor(index, markers, fireStoreObjects){
-  markers.remove(markers.elementAt(index));
+  //remove marker at expansion card index
+  // markers.remove(markers.elementAt(index));
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
+    print(
+      "fireObject\n" + fireStoreObjects[index].name
+    );
+    //add new marker with blue color
     markers.add(
       Marker(
-          markerId: MarkerId(index.toString()),
+          markerId: MarkerId(fireStoreObjects[index].name),
           position: fireStoreObjects[index].location,
           icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueBlue
@@ -59,6 +64,7 @@ void changeMarkerColor(index, markers, fireStoreObjects){
           )),
     );
   }
+  return markers;
 }
 
 Future<LatLng> toLatLng(String addr) async {
@@ -89,35 +95,20 @@ class GmapState extends State<Gmap> {
   GmapState(this.listOfFireStoreObjects, this._markers);
 
   static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(54.0117956, -124.0177679)
+    target: LatLng(54.0117956, -124.0177679),
+    zoom: 13
   );
-
-  void _changeIconColor(int index){
-    _markers.remove(_markers.elementAt(index));
-    _markers.add(
-      Marker(
-          markerId: MarkerId(index.toString()),
-          position: listOfFireStoreObjects[index].location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue
-          ),
-          infoWindow: InfoWindow(
-            title: listOfFireStoreObjects[index].name,
-            snippet: listOfFireStoreObjects[index].description,
-          )),
-    );
-  }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    _location.onLocationChanged.listen((l) {
-      _mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: zoomVal
-          ),
-        ),
-      );
-    });
+    // _location.onLocationChanged.listen((l) {
+    //   _mapController.animateCamera(
+    //     CameraUpdate.newCameraPosition(
+    //       CameraPosition(target: LatLng(l.latitude, l.longitude)
+    //       ),
+    //     ),
+    //   );
+    // });
     //run marker adapter
     setState(() {
       for (int i = 0; i < listOfFireStoreObjects.length; i++) {
@@ -128,6 +119,9 @@ class GmapState extends State<Gmap> {
             Marker(
                 markerId: MarkerId(i.toString()),
                 position: listOfFireStoreObjects[i].location,
+                // onTap: () {
+                //   listOfFireStoreObjects[i].
+                // },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
                   snippet: listOfFireStoreObjects[i].description,

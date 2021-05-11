@@ -350,6 +350,8 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
+  List<Widget> chips2;
+
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
     List<Widget> chips = [];
@@ -395,6 +397,8 @@ class _BusinessPageState extends State<BusinessState> {
       chips.add(Padding(
           padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
     }
+
+    chips2 = chips;
 
     return ListView(
       // This next line does the trick.
