@@ -3,7 +3,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:vanderhoof_app/main.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
@@ -90,7 +89,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                         Flexible(
                                           child: FormBuilderCheckbox(
                                             initialValue: false,
-                                            name: "dateCheckbox",
+                                            name: "isMultiday",
                                             title: Text(
                                                 "Is this a Multi-day Event?"),
                                             onChanged: (bool changed) {
@@ -407,9 +406,17 @@ class _AddEventPageState extends State<AddEventPage> {
     //=========================================
     //Method to add business to FireStore
     //=========================================
-    Future<void> _addEvent(Map<String, dynamic> event, GeoPoint geoPoint) {
+    Future<void> _addEvent(Map<String, dynamic> event) {
       void _addRepeatingEvent(var event, int repeats, {bool monthly = false}) {
         for (int i = 0; i < repeats; i++) {
+          fireStore
+              .add(event)
+              .then((value) => {
+                    print("Event Added: ${value.id} : ${event['title']}"),
+                    fireStore.doc(value.id).update({"id": value.id})
+                  })
+              .catchError((error) => print("Failed to add Event: $error"));
+
           if (monthly) {
             event['datetimeStart'] = DateTime(event['datetimeStart'].year,
                 event['datetimeStart'].month + 1, event['datetimeStart'].day);
@@ -424,19 +431,11 @@ class _AddEventPageState extends State<AddEventPage> {
             event['datetimeEnd'] = DateTime(event['datetimeEnd'].year,
                 event['datetimeEnd'].month, event['datetimeEnd'].day + 7);
           }
-
-          fireStore
-              .add(event)
-              .then((value) => {
-                    print("Event Added: ${value.id} : ${event['title']}"),
-                    fireStore.doc(value.id).update({"id": value.id})
-                  })
-              .catchError((error) => print("Failed to add Event: $error"));
         }
       }
 
       Map<String, dynamic> eventInfo = {...event};
-      eventInfo['LatLng'] = geoPoint;
+      eventInfo['LatLng'] = null;
       if (multiday) {
         eventInfo['datetimeStart'] = eventInfo['dateRange'].start;
         eventInfo['datetimeEnd'] = eventInfo['dateRange'].end;
@@ -451,12 +450,9 @@ class _AddEventPageState extends State<AddEventPage> {
         eventInfo['datetimeEnd'] =
             eventInfo['datetimeStart'].add(Duration(hours: hour, minutes: min));
       }
-      print("here $recurring");
       eventInfo['isRecurring'] = recurring;
       if (recurring) {
-        print("here ${event['recurringType']}");
         if (event['recurringType'] == "Weekly") {
-          print("weekly");
           _addRepeatingEvent(eventInfo, event['recurringRepeats']);
         } else if (event['recurringType'] == "Monthly") {
           print("monthly");
@@ -481,11 +477,7 @@ class _AddEventPageState extends State<AddEventPage> {
     if (validationSuccess) {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
-      toLatLng(_formKey.currentState.value['address'])
-          .then(
-              (geopoint) => {_addEvent(_formKey.currentState.value, geopoint)})
-          .catchError((error) => print(
-              "Failed to get GeoPoint: $error for ${_formKey.currentState.value['address']}"));
+      _addEvent(_formKey.currentState.value);
 
       //Navigate back to Previous Page
       // Navigator.pop(context);
