@@ -46,13 +46,8 @@ class _EventPageState extends State<EventState> {
             doc["description"],
             doc['datetimeEnd'].toDate(),
             doc['datetimeStart'].toDate(),
-            doc['duration'],
             doc['id'],
-            doc['isMultiday'],
-            doc['isRecurring'],
-            doc['recurringRepeats'],
-            doc['recurringType']);
-        print(e);
+            doc['isMultiday']);
         events.add(e);
       });
     });
@@ -63,7 +58,6 @@ class _EventPageState extends State<EventState> {
       var bdate = b.datetimeStart;
       return adate.compareTo(bdate);
     });
-    print('sorted: ' + events.toString());
 
     return events;
   }

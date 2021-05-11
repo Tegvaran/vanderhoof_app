@@ -45,27 +45,19 @@ class Business extends FireStoreObject {
 class Event extends FireStoreObject {
   final DateTime datetimeEnd;
   final DateTime datetimeStart;
-  final num duration;
   final String id;
   final bool isMultiday;
-  final bool isRecurring;
-  final num recurringRepeats;
-  final String recurringType;
 
   Event(
-      name,
-      address,
-      location,
-      description,
-      this.datetimeEnd,
-      this.datetimeStart,
-      this.duration,
-      this.id,
-      this.isMultiday,
-      this.isRecurring,
-      this.recurringRepeats,
-      this.recurringType)
-      : super(name, address, location, description);
+    name,
+    address,
+    location,
+    description,
+    this.datetimeEnd,
+    this.datetimeStart,
+    this.id,
+    this.isMultiday,
+  ) : super(name, address, location, description);
 }
 
 /// Represents a hike trail.
