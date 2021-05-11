@@ -42,9 +42,24 @@ HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   return markers;
 }
 
-// void _changeMarkerColor(index, markers){
-//   markers.
-// }
+void changeMarkerColor(index, markers, fireStoreObjects){
+  markers.remove(markers.elementAt(index));
+  print("index " + index.toString());
+  if (fireStoreObjects[index].location != null) {
+    markers.add(
+      Marker(
+          markerId: MarkerId(index.toString()),
+          position: fireStoreObjects[index].location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue
+          ),
+          infoWindow: InfoWindow(
+            title: fireStoreObjects[index].name,
+            snippet: fireStoreObjects[index].description,
+          )),
+    );
+  }
+}
 
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
@@ -77,9 +92,21 @@ class GmapState extends State<Gmap> {
     target: LatLng(54.0117956, -124.0177679)
   );
 
-  // void _changeIconColor(int index){
-  //
-  // }
+  void _changeIconColor(int index){
+    _markers.remove(_markers.elementAt(index));
+    _markers.add(
+      Marker(
+          markerId: MarkerId(index.toString()),
+          position: listOfFireStoreObjects[index].location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue
+          ),
+          infoWindow: InfoWindow(
+            title: listOfFireStoreObjects[index].name,
+            snippet: listOfFireStoreObjects[index].description,
+          )),
+    );
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;

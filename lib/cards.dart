@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:intl/intl.dart';
+import 'package:vanderhoof_app/map.dart';
 
 import 'hikeInformation.dart';
 
@@ -183,8 +185,10 @@ class BusinessCard extends StatelessWidget {
   final ItemScrollController scrollController;
   final int scrollIndex;
   final double scrollAlignment = 0;
+  Set<Marker> _markers;
+  List<FireStoreObject> listOfFireStoreObjects;
 
-  BusinessCard(this.business, this.scrollController, this.scrollIndex);
+  BusinessCard(this.business, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
 
   bool isFieldEmpty(String toCheck) {
     return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
@@ -253,6 +257,7 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
+                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -263,6 +268,8 @@ class BusinessCard extends StatelessWidget {
                     // alignment: scrollAlignment,
                   );
                 });
+              } else {
+                resetMarkers(_markers, listOfFireStoreObjects);
               }
             },
             title: Text(business.name, style: titleTextStyle),
