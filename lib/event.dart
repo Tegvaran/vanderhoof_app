@@ -42,19 +42,16 @@ class _EventPageState extends State<EventState> {
       events = filteredEvents = [];
       snap.docs.forEach((doc) {
         Event e = Event(
-            doc['title'],
-            doc['address'],
-            doc['LatLng'],
-            doc["description"],
-            doc['datetimeEnd'].toDate(),
-            doc['datetimeStart'].toDate(),
-            doc['duration'],
-            doc['id'],
-            doc['isMultiday'],
-            doc['isRecurring'],
-            doc['recurringRepeats'],
-            doc['recurringType']);
-        print(e);
+          name: doc['title'],
+          address: doc['address'],
+          location: doc['LatLng'],
+          description: doc["description"],
+          datetimeEnd: doc['datetimeEnd'].toDate(),
+          datetimeStart: doc['datetimeStart'].toDate(),
+          id: doc['id'],
+          isMultiday: doc['isMultiday'],
+        );
+        print('event.dar: ${e.name}');
         events.add(e);
       });
     });
