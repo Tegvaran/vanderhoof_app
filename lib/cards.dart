@@ -289,7 +289,7 @@ class BusinessCard extends StatelessWidget {
               //         height: 100,
               //         alignment: Alignment.topLeft,
               //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.fitHeight),
+              //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(),
               Column(
@@ -499,14 +499,14 @@ class RecreationalCard extends StatelessWidget {
               //             width: 100,
               //             height: 100,
               //             child: Image.network(business.imgURL,
-              //                 fit: BoxFit.fitHeight))
+              //                 fit: BoxFit.contain))
               //             : DropCap(width: 0, height: 0, child: null))),
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
               //         height: 100,
               //         alignment: Alignment.topLeft,
               //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.fitHeight),
+              //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(),
               Column(
@@ -614,9 +614,20 @@ class EventCard extends StatelessWidget {
     return result;
   }
 
-  String formatDateTime(DateTime dateTime) {
+  String formatDate(DateTime dateTime) {
     String formattedDate = DateFormat('MMM d').format(dateTime);
     return formattedDate;
+  }
+
+  String formatDateTime(DateTime dateTime) {
+    String formattedDateTime = DateFormat('MMM d ').format(dateTime) +
+        DateFormat('jm').format(dateTime);
+    return formattedDateTime;
+  }
+
+  String formatTime(DateTime dateTime) {
+    String formattedTime = DateFormat('jm').format(dateTime);
+    return formattedTime;
   }
 
   Widget _buildDateButton(DateTime dateTime) {
@@ -662,109 +673,96 @@ class EventCard extends StatelessWidget {
     return Card(
         color: colorBackground,
         margin: CARD_INSET,
-        child: Column(children: <Widget>[
-          Row(children: <Widget>[
-            _buildDateButton(event.datetimeStart),
-            Text(event.name, style: titleTextStyle),
-          ]),
-          // child: ExpansionTile(
-          // trailing: Container(width: 0, height: 0),
-          // initiallyExpanded: true,
-          // maintainState: true,
-          // onExpansionChanged: (_isExpanded) {
-          //   if (_isExpanded) {
-          //     // check if Expanded
-          //     // let ExpansionTile expand, then scroll Tile to top of the view
-          //     Future.delayed(Duration(milliseconds: 250)).then((value) {
-          //       scrollController.scrollTo(
-          //         index: scrollIndex,
-          //         duration: Duration(milliseconds: 250),
-          //         curve: Curves.easeInOut,
-          //         // alignment: scrollAlignment,
-          //       );
-          //     });
-          //   }
-          // },
-          // title: Text(event.name, style: titleTextStyle),
-          // leading: _buildDateButton(event.datetimeStart),
-          // children: <Widget> [
-          cardDivider,
-          // Padding(
-          //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-          //     child: DropCapText(
-          //         (!isFieldEmpty(event.description))
-          //             ? event.description
-          //             : "",
-          //         style: bodyTextStyle,
-          //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-          //         dropCapPosition: DropCapPosition.end,
-          //         dropCap: (!isFieldEmpty(event.imgURL))
-          //             ? DropCap(
-          //             width: 100,
-          //             height: 100,
-          //             child: Image.network(event.imgURL,
-          //                 fit: BoxFit.fitHeight))
-          //             : DropCap(width: 0, height: 0, child: null))),
-          // (business.imgURL != "" && business.imgURL != null)
-          //     ? Container(
-          //         height: 100,
-          //         alignment: Alignment.topLeft,
-          //         child:
-          //             Image.network(business.imgURL, fit: BoxFit.fitHeight),
-          //       )
-          //     : Container(),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Padding(
-                  padding: TEXT_INSET,
-                  child: Text(
-                    "${event.description}",
-                    style: bodyTextStyle,
-                    textAlign: TextAlign.left,
-                  ),
+        // child: Column(children: <Widget>[
+        //   Row(children: <Widget>[
+        //     _buildDateButton(event.datetimeStart),
+        //     Text(event.name, style: titleTextStyle),
+        //   ]),
+        child: ExpansionTile(
+            onExpansionChanged: (_isExpanded) {
+              if (_isExpanded) {
+                // check if Expanded
+                // let ExpansionTile expand, then scroll Tile to top of the view
+                Future.delayed(Duration(milliseconds: 250)).then((value) {
+                  scrollController.scrollTo(
+                    index: scrollIndex,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    // alignment: scrollAlignment,
+                  );
+                });
+              }
+            },
+            title: Text(event.name, style: titleTextStyle),
+            leading: _buildDateButton(event.datetimeStart),
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              cardDivider,
+              // Padding(
+              //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              //     child: DropCapText(
+              //         (!isFieldEmpty(event.description))
+              //             ? event.description
+              //             : "",
+              //         style: bodyTextStyle,
+              //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+              //         dropCapPosition: DropCapPosition.end,
+              //         dropCap: (!isFieldEmpty(event.imgURL))
+              //             ? DropCap(
+              //             width: 100,
+              //             height: 100,
+              //             child: Image.network(event.imgURL,
+              //                 fit: BoxFit.contain))
+              //             : DropCap(width: 0, height: 0, child: null))),
+              // (event.imgURL != "" && event.imgURL != null)
+              //     ? Container(
+              //         height: 100,
+              //         alignment: Alignment.topLeft,
+              //         child:
+              //             Image.network(event.imgURL, fit: BoxFit.contain),
+              //       )
+              //     : Container(width: 0, height: 0),
+              Padding(
+                padding: TEXT_INSET,
+                child: Text(
+                  "${event.description}",
+                  style: bodyTextStyle,
+                  textAlign: TextAlign.left,
                 ),
-                Padding(
-                  padding: TEXT_INSET,
-                  child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'Start: ', style: headerTextStyle),
-                    TextSpan(
-                      text: formatDateTime(event.datetimeStart),
-                      style: bodyTextStyle,
-                    ),
-                  ])),
-                ),
-                Padding(
-                  padding: TEXT_INSET,
-                  child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'End: ', style: headerTextStyle),
-                    TextSpan(
-                      text: formatDateTime(event.datetimeEnd),
-                      style: bodyTextStyle,
-                    ),
-                  ])),
-                ),
-                Padding(
+              ),
+              Padding(
                   padding: EdgeInsets.zero,
-                  child: (!isFieldEmpty(event.address))
-                      ? Row(children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.location_on),
-                            onPressed: () {
-                              _launchAddressURL(event.address);
-                            },
-                            iconSize: ICON_SIZE,
-                            color: colorPrimary,
-                          ),
-                          Text('${parseLongField(event.address)}',
-                              style: headerTextStyle),
-                        ])
-                      : Container(),
-                ),
-              ])
-        ]));
+                  child: Row(children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.access_time),
+                      onPressed: null,
+                      iconSize: ICON_SIZE,
+                    ),
+                    (event.isMultiday
+                        ? Text(
+                            '${formatDate(event.datetimeStart)} - ${formatDate(event.datetimeEnd)}',
+                            style: headerTextStyle)
+                        : Text(
+                            '${formatDateTime(event.datetimeStart)} - ${formatTime(event.datetimeEnd)}',
+                            style: headerTextStyle)),
+                  ])),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(event.address))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.location_on),
+                          onPressed: () {
+                            _launchAddressURL(event.address);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(event.address)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(width: 0, height: 0),
+              ),
+            ]));
   }
 }
