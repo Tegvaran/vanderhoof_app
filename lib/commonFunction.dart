@@ -27,7 +27,7 @@ Future<GeoPoint> toLatLng(String addr) async {
 Future<void> addBusiness(Map<String, dynamic> businessInfo) {
 // Used to add businesses
   CollectionReference business =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('businesses_tttxx');
   return business
       .add(businessInfo)
       .then((value) => {

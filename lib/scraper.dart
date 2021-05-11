@@ -1,3 +1,4 @@
+// import 'package:flutter/material.dart';
 import 'package:web_scraper/web_scraper.dart';
 import 'commonFunction.dart';
 
@@ -46,11 +47,12 @@ Future<void> scrap(bool activate) async {
     //==================================
 
     final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
-    List listOfBusinesses = [];
+    // List listOfBusinesses = [];
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
           webScraper.getElementAttribute('#businesslist > div >h3>a', 'href');
-      Future<void> fun(var element) async {
+      // Future<void> fun(var element) async {
+      elements.forEach((element) async {
         String page = element.substring(33);
         if (await webScraper.loadWebPage(page)) {
           var name = webScraper.getElementTitle('h1.entry-title');
@@ -93,7 +95,7 @@ Future<void> scrap(bool activate) async {
 
           toLatLng(a)
               .then((geopoint) => {
-                    listOfBusinesses.add({
+                    addBusiness({
                       'name': n,
                       'address': a,
                       'phone': p,
@@ -113,16 +115,16 @@ Future<void> scrap(bool activate) async {
               .catchError(
                   (error) => print("Failed to get GeoPoint: $error for $a"));
 
-          print("adding to temporary list: $n");
+          // print("adding to temporary list: $n");
         }
-      }
-
-      Future.wait(elements.map(fun)).then((x) async {
-        listOfBusinesses.sort((a, b) {
-          return a['name'].compareTo(b['name']);
-        });
-        listOfBusinesses.forEach((business) => {addBusiness(business)});
+        // }
       });
+      // Future.wait(elements.map(fun)).then((x) async {
+      //   listOfBusinesses.sort((a, b) {
+      //     return a['name'].compareTo(b['name']);
+      //   });
+      //   listOfBusinesses.forEach((business) => {addBusiness(business)});
+      // });
     }
   }
 }
