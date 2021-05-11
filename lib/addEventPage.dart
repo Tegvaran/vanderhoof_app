@@ -289,7 +289,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     FormBuilderDateTimePicker(
                                                   initialValue: (event == null)
                                                       ? null
-                                                      : event.datetimeStart,
+                                                      : event.datetimeEnd,
                                                   name: "timeEnd",
                                                   inputType: InputType.time,
                                                   validator:
@@ -506,11 +506,6 @@ class _AddEventPageState extends State<AddEventPage> {
     }
 
     Future<void> _editEvent(Map<String, dynamic> form) {
-      double duration = double.parse(form['duration']);
-      int hour = duration.toInt();
-      int min = (duration % 1 * 60).toInt();
-      DateTime endTime =
-          form['datetimeStart'].add(Duration(hours: hour, minutes: min));
       fireStore
           .doc(event.id)
           .update({
@@ -518,8 +513,7 @@ class _AddEventPageState extends State<AddEventPage> {
             'address': form['address'],
             'description': form['description'],
             'datetimeStart': form['datetimeStart'],
-            'datetimeEnd': endTime,
-            'duration': duration
+            'datetimeEnd': form['timeEnd'],
           })
           .then((value) => {
                 print("Event updated: ${event.id} : ${event.name}"),
@@ -545,7 +539,7 @@ class _AddEventPageState extends State<AddEventPage> {
       }
 
       // // Navigate back to Previous Page
-      // Navigator.pop(context);
+      Navigator.pop(context);
     }
   }
 }
