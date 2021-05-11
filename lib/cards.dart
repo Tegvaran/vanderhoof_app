@@ -80,97 +80,92 @@ class HikeCard extends StatelessWidget {
           hikeTrail.name,
           style: titleTextStyle,
         ),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           cardDivider,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
-              //   child: Text(
-              //     "Trail Details",
-              //     style: TextStyle(
-              //       fontSize: BODY_SIZE,
-              //       fontWeight: FontWeight.bold,
-              //       decoration: TextDecoration.underline,
-              //       color: colorText,
-              //     ),
-              //     textAlign: TextAlign.left,
-              //   ),
-              // ),
-              Padding(
-                padding: TEXT_INSET,
-                child: RichText(
-                    text: TextSpan(children: <TextSpan>[
-                  TextSpan(text: 'Distance: ', style: headerTextStyle),
-                  TextSpan(
-                    text: '${hikeTrail.distance}',
-                    style: bodyTextStyle,
-                  ),
-                ])),
+          // Padding(
+          //   padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+          //   child: Text(
+          //     "Trail Details",
+          //     style: TextStyle(
+          //       fontSize: BODY_SIZE,
+          //       fontWeight: FontWeight.bold,
+          //       decoration: TextDecoration.underline,
+          //       color: colorText,
+          //     ),
+          //     textAlign: TextAlign.left,
+          //   ),
+          // ),
+          Padding(
+            padding: TEXT_INSET,
+            child: RichText(
+                text: TextSpan(children: <TextSpan>[
+              TextSpan(text: 'Distance: ', style: headerTextStyle),
+              TextSpan(
+                text: '${hikeTrail.distance}',
+                style: bodyTextStyle,
               ),
-              Padding(
-                padding: TEXT_INSET,
-                child: RichText(
-                    text: TextSpan(children: <TextSpan>[
-                  TextSpan(text: 'Difficulty: ', style: headerTextStyle),
-                  TextSpan(
-                    text: '${hikeTrail.rating}',
-                    style: TextStyle(
-                      fontSize: BODY_SIZE,
-                      color: getDifficultyColor(),
-                    ),
-                  ),
-                ])),
-              ),
-              Padding(
-                padding: TEXT_INSET,
-                child: RichText(
-                    text: TextSpan(children: <TextSpan>[
-                  TextSpan(text: 'Time: ', style: headerTextStyle),
-                  TextSpan(
-                    text: '${hikeTrail.time}',
-                    style: bodyTextStyle,
-                  ),
-                ])),
-              ),
-              Padding(
-                padding: TEXT_INSET,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RichText(
-                        text: TextSpan(children: <TextSpan>[
-                      TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
-                      TextSpan(
-                        text: '${hikeTrail.wheelchair}',
-                        style: TextStyle(
-                          fontSize: BODY_SIZE,
-                          color: getAccessibilityColor(),
-                        ),
-                      ),
-                    ])),
-                    IconButton(
-                      icon: Icon(
-                        Icons.open_in_new_outlined,
-                        size: 36,
-                        color: colorPrimary,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  HikeInformation(hikeTrail: hikeTrail),
-                            ));
-                      },
-                    ),
-                  ],
+            ])),
+          ),
+          Padding(
+            padding: TEXT_INSET,
+            child: RichText(
+                text: TextSpan(children: <TextSpan>[
+              TextSpan(text: 'Difficulty: ', style: headerTextStyle),
+              TextSpan(
+                text: '${hikeTrail.rating}',
+                style: TextStyle(
+                  fontSize: BODY_SIZE,
+                  color: getDifficultyColor(),
                 ),
               ),
-            ],
+            ])),
+          ),
+          Padding(
+            padding: TEXT_INSET,
+            child: RichText(
+                text: TextSpan(children: <TextSpan>[
+              TextSpan(text: 'Time: ', style: headerTextStyle),
+              TextSpan(
+                text: '${hikeTrail.time}',
+                style: bodyTextStyle,
+              ),
+            ])),
+          ),
+          Padding(
+            padding: TEXT_INSET,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                RichText(
+                    text: TextSpan(children: <TextSpan>[
+                  TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
+                  TextSpan(
+                    text: '${hikeTrail.wheelchair}',
+                    style: TextStyle(
+                      fontSize: BODY_SIZE,
+                      color: getAccessibilityColor(),
+                    ),
+                  ),
+                ])),
+                IconButton(
+                  icon: Icon(
+                    Icons.open_in_new_outlined,
+                    size: 36,
+                    color: colorPrimary,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HikeInformation(hikeTrail: hikeTrail),
+                        ));
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -266,6 +261,7 @@ class BusinessCard extends StatelessWidget {
               }
             },
             title: Text(business.name, style: titleTextStyle),
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
               Padding(
@@ -292,122 +288,114 @@ class BusinessCard extends StatelessWidget {
               //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    // Padding(
-                    //   padding: TEXT_INSET,
-                    //   child: Text(
-                    //     "${business.description}",
-                    //     style: bodyTextStyle,
-                    //     textAlign: TextAlign.left,
-                    //   ),
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(business.address))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.location_on),
-                                onPressed: () {
-                                  _launchAddressURL(business.address);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(business.address)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(business.phoneNumber))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.phone),
-                                onPressed: () {
-                                  _launchPhoneURL(business.phoneNumber);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(business.phoneNumber)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(business.email))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.email),
-                                onPressed: () {
-                                  _launchMailURL(business.email);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(business.email)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(business.website))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: FaIcon(FontAwesomeIcons.globe),
-                                onPressed: () {
-                                  _launchWebsiteURL(business.website);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(business.website)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Row(children: <Widget>[
-                      (!isFieldEmpty(business.socialMedia['facebook']))
-                          ? IconButton(
-                              icon: FaIcon(FontAwesomeIcons.facebook),
-                              onPressed: () {
-                                _launchFacebookURL(
-                                    business.socialMedia["facebook"]);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: colorPrimary,
-                            )
-                          : Container(),
-                      (!isFieldEmpty(business.socialMedia['instagram']))
-                          ? IconButton(
-                              icon: FaIcon(FontAwesomeIcons.instagram),
-                              onPressed: () {
-                                _launchInstaURL(
-                                    business.socialMedia["instagram"]);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: colorPrimary,
-                            )
-                          : Container(),
-                      (!isFieldEmpty(business.socialMedia['twitter']))
-                          ? IconButton(
-                              icon: FaIcon(FontAwesomeIcons.twitter),
-                              onPressed: () {
-                                _launchTwitterURL(
-                                    business.socialMedia["twitter"]);
-                              },
-                              iconSize: ICON_SIZE,
-                              color: colorPrimary,
-                            )
-                          : Container(),
-                    ])
-                  ])
+              // Padding(
+              //   padding: TEXT_INSET,
+              //   child: Text(
+              //     "${business.description}",
+              //     style: bodyTextStyle,
+              //     textAlign: TextAlign.left,
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(business.address))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.location_on),
+                          onPressed: () {
+                            _launchAddressURL(business.address);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(business.address)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(business.phoneNumber))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.phone),
+                          onPressed: () {
+                            _launchPhoneURL(business.phoneNumber);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(business.phoneNumber)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(business.email))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.email),
+                          onPressed: () {
+                            _launchMailURL(business.email);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(business.email)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(business.website))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: FaIcon(FontAwesomeIcons.globe),
+                          onPressed: () {
+                            _launchWebsiteURL(business.website);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(business.website)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Row(children: <Widget>[
+                (!isFieldEmpty(business.socialMedia['facebook']))
+                    ? IconButton(
+                        icon: FaIcon(FontAwesomeIcons.facebook),
+                        onPressed: () {
+                          _launchFacebookURL(business.socialMedia["facebook"]);
+                        },
+                        iconSize: ICON_SIZE,
+                        color: colorPrimary,
+                      )
+                    : Container(),
+                (!isFieldEmpty(business.socialMedia['instagram']))
+                    ? IconButton(
+                        icon: FaIcon(FontAwesomeIcons.instagram),
+                        onPressed: () {
+                          _launchInstaURL(business.socialMedia["instagram"]);
+                        },
+                        iconSize: ICON_SIZE,
+                        color: colorPrimary,
+                      )
+                    : Container(),
+                (!isFieldEmpty(business.socialMedia['twitter']))
+                    ? IconButton(
+                        icon: FaIcon(FontAwesomeIcons.twitter),
+                        onPressed: () {
+                          _launchTwitterURL(business.socialMedia["twitter"]);
+                        },
+                        iconSize: ICON_SIZE,
+                        color: colorPrimary,
+                      )
+                    : Container(),
+              ])
             ]));
   }
 }
@@ -477,12 +465,13 @@ class RecreationalCard extends StatelessWidget {
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
+                  // alignment: scrollAlignment,
                 });
               }
             },
             title: Text(rec.name, style: titleTextStyle),
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
               // Padding(
@@ -509,87 +498,82 @@ class RecreationalCard extends StatelessWidget {
               //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    // Padding(
-                    //   padding: TEXT_INSET,
-                    //   child: Text(
-                    //     "${business.description}",
-                    //     style: bodyTextStyle,
-                    //     textAlign: TextAlign.left,
-                    //   ),
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(rec.address))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.location_on),
-                                onPressed: () {
-                                  _launchAddressURL(rec.address);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(rec.address)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(rec.phoneNumber))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.phone),
-                                onPressed: () {
-                                  _launchPhoneURL(rec.phoneNumber);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(rec.phoneNumber)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(rec.email))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.email),
-                                onPressed: () {
-                                  _launchMailURL(rec.email);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(rec.email)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.zero,
-                      child: (!isFieldEmpty(rec.website))
-                          ? Row(children: <Widget>[
-                              IconButton(
-                                icon: FaIcon(FontAwesomeIcons.globe),
-                                onPressed: () {
-                                  _launchWebsiteURL(rec.website);
-                                },
-                                iconSize: ICON_SIZE,
-                                color: colorPrimary,
-                              ),
-                              Text('${parseLongField(rec.website)}',
-                                  style: headerTextStyle),
-                            ])
-                          : Container(),
-                    ),
-                  ])
+              // Padding(
+              //   padding: TEXT_INSET,
+              //   child: Text(
+              //     "${business.description}",
+              //     style: bodyTextStyle,
+              //     textAlign: TextAlign.left,
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(rec.address))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.location_on),
+                          onPressed: () {
+                            _launchAddressURL(rec.address);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(rec.address)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(rec.phoneNumber))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.phone),
+                          onPressed: () {
+                            _launchPhoneURL(rec.phoneNumber);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(rec.phoneNumber)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(rec.email))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.email),
+                          onPressed: () {
+                            _launchMailURL(rec.email);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(rec.email)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(rec.website))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: FaIcon(FontAwesomeIcons.globe),
+                          onPressed: () {
+                            _launchWebsiteURL(rec.website);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(rec.website)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(),
+              ),
             ]));
   }
 }
