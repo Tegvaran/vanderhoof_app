@@ -434,7 +434,15 @@ class _BusinessPageState extends State<BusinessState> {
                       child: Gmap(filteredBusinesses, _markers),
                     ),
                     Expanded(flex: 1, child: _buildChips()),
-                    Expanded(flex: 8, child: _buildBusinessesList()),
+                    Expanded(
+                        flex: 8,
+                        child: filteredBusinesses.length != 0
+                            ? _buildBusinessesList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:
