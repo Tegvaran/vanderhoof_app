@@ -51,7 +51,7 @@ class _EventPageState extends State<EventState> {
           id: doc['id'],
           isMultiday: doc['isMultiday'],
         );
-        print('event.dar: ${e.name}');
+        // print('event.dar: ${e.name}');
         events.add(e);
       });
     });
