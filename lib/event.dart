@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:vanderhoof_app/addEventPage.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
@@ -186,23 +187,49 @@ class _EventPageState extends State<EventState> {
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredEvents[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
+          // direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              _deleteBusiness(item.name, index);
+
+              Navigator.of(context).pop(true);
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                print("item");
+                //
+                //
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddEventPage(event: item),
+                    ));
+                //
+                //
+              };
+            }
+            print(item.name);
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -214,8 +241,7 @@ class _EventPageState extends State<EventState> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
-                          Navigator.of(context).pop(true);
+                          function();
                         },
                       ),
                       TextButton(
@@ -228,7 +254,8 @@ class _EventPageState extends State<EventState> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 
@@ -287,4 +314,65 @@ class _EventPageState extends State<EventState> {
       ),
     );
   }
+}
+
+//=================================================
+// Backgrounds for Edit/Delete
+//=================================================
+Widget slideRightEditBackground() {
+  return Container(
+    color: Colors.green,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+          ),
+          Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+          Text(
+            " Edit",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerLeft,
+    ),
+  );
+}
+
+Widget slideLeftDeleteBackground() {
+  return Container(
+    color: Colors.red,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          Text(
+            " Delete",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.right,
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerRight,
+    ),
+  );
 }
