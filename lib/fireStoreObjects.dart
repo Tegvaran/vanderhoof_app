@@ -48,7 +48,7 @@ class Event extends FireStoreObject {
   final String id;
   final bool isMultiday;
 
-  Event(
+  Event({
     name,
     address,
     location,
@@ -57,7 +57,7 @@ class Event extends FireStoreObject {
     this.datetimeStart,
     this.id,
     this.isMultiday,
-  ) : super(name, address, location, description);
+  }) : super(name, address, location, description);
 }
 
 /// Represents a hike trail.
