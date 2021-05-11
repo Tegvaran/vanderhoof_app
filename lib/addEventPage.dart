@@ -468,9 +468,6 @@ class _AddEventPageState extends State<AddEventPage> {
         eventInfo['datetimeStart'] = eventInfo['dateRange'].start;
         eventInfo['datetimeEnd'] = eventInfo['dateRange'].end;
         eventInfo.remove('dateRange');
-        eventInfo['duration'] = eventInfo['datetimeEnd']
-            .difference(eventInfo['datetimeStart'])
-            .inDays;
       } else {
         eventInfo['datetimeEnd'] = DateTime(
             event['datetimeStart'].year,
@@ -479,11 +476,6 @@ class _AddEventPageState extends State<AddEventPage> {
             event['timeEnd'].hour,
             event['timeEnd'].minute);
         eventInfo.remove('timeEnd');
-
-        eventInfo['duration'] = eventInfo['datetimeEnd']
-                .difference(eventInfo['datetimeStart'])
-                .inMinutes /
-            60;
       }
       eventInfo['isRecurring'] = recurring;
       if (recurring) {
@@ -494,7 +486,10 @@ class _AddEventPageState extends State<AddEventPage> {
           _addRepeatingEvent(eventInfo, event['recurringRepeats'],
               monthly: true);
         }
+        eventInfo.remove('recurringType');
+        eventInfo.remove('recurringRepeats');
       }
+      eventInfo.remove('isRecurring');
       print(eventInfo);
       return fireStore
           .add(eventInfo)
