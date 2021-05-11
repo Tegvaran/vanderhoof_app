@@ -48,9 +48,10 @@ class Event extends FireStoreObject {
   final DateTime datetimeEnd;
   final num duration;
   final bool isRecurring;
+  final String id;
 
   Event(name, address, location, description, this.isMultiday, this.datetimeEnd,
-      this.datetimeStart, this.duration, this.isRecurring)
+      this.datetimeStart, this.duration, this.isRecurring, this.id)
       : super(name, address, location, description);
 }
 

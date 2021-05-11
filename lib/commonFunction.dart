@@ -37,6 +37,27 @@ Future<void> addBusiness(Map<String, dynamic> businessInfo) {
       .catchError((error) => print("Failed to add Business: $error"));
 }
 
+void deleteCard(String cardName, String docID, int index, State thisContext,
+    BuildContext context, var filteredList, var fireStore) {
+  {
+    // Remove the item from the data source.
+    thisContext.setState(() {
+      filteredList.removeAt(index);
+    });
+    // Delete from fireStore
+    // String docID = businessName.replaceAll('/', '|');
+    fireStore
+        .doc(docID)
+        .delete()
+        .then((value) => print("$docID Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+
+    // Then show a snackbar.
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("$cardName deleted")));
+  }
+}
+
 /// uses a Color with a hex code and returns a MaterialColor object
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];

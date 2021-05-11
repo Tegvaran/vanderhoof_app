@@ -6,6 +6,7 @@ import 'package:vanderhoof_app/addEventPage.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
 
 class EventState extends StatefulWidget {
   EventState({Key key}) : super(key: key);
@@ -45,11 +46,12 @@ class _EventPageState extends State<EventState> {
             doc['address'],
             doc['LatLng'],
             doc["description"],
-            doc['dateCheckbox'],
+            doc['isMultiday'],
             doc['datetimeEnd'].toDate(),
             doc['datetimeStart'].toDate(),
             doc['duration'],
-            doc['isRecurring']);
+            doc['isRecurring'],
+            doc['id']);
         events.add(e);
       });
     });
@@ -164,25 +166,24 @@ class _EventPageState extends State<EventState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String eventName, int index) {
-      {
-        // Remove the item from the data source.
-        setState(() {
-          filteredEvents.removeAt(index);
-        });
-        // Delete from fireStore
-        String docID = eventName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$eventName Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
-        // Then show a snackbar.
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$eventName deleted")));
-      }
-    }
+    // void _deleteBusiness(String docID, int index) {
+    //   {
+    //     // Remove the item from the data source.
+    //     setState(() {
+    //       filteredEvents.removeAt(index);
+    //     });
+    //     // Delete from fireStore
+    //     fireStore
+    //         .doc(docID)
+    //         .delete()
+    //         .then((value) => print("$eventName Deleted"))
+    //         .catchError((error) => print("Failed to delete user: $error"));
+    //
+    //     // Then show a snackbar.
+    //     ScaffoldMessenger.of(context)
+    //         .showSnackBar(SnackBar(content: Text("$eventName deleted")));
+    //   }
+    // }
 
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredEvents[index];
@@ -197,8 +198,9 @@ class _EventPageState extends State<EventState> {
             String confirm = 'Confirm Deletion';
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
-              _deleteBusiness(item.name, index);
-
+              // _deleteBusiness(item.name, index);
+              deleteCard(item.name, item.id, index, this, context,
+                  filteredEvents, fireStore);
               Navigator.of(context).pop(true);
             };
             if (direction == DismissDirection.startToEnd) {
@@ -206,9 +208,6 @@ class _EventPageState extends State<EventState> {
               bodyMsg = "Would you like to edit this item?";
               function = () {
                 // Navigator.of(context).pop(false);
-                print("item");
-                //
-                //
                 Navigator.pop(context);
                 Navigator.push(
                     context,

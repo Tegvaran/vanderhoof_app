@@ -285,21 +285,19 @@ class _AddEventPageState extends State<AddEventPage> {
                                               Container(
                                                 margin:
                                                     EdgeInsets.only(top: 15),
-                                                child: FormBuilderTextField(
+                                                child:
+                                                    FormBuilderDateTimePicker(
                                                   initialValue: (event == null)
                                                       ? null
-                                                      : "${event.duration}",
-                                                  keyboardType:
-                                                      TextInputType.number,
-                                                  name: "duration",
+                                                      : event.datetimeStart,
+                                                  name: "timeEnd",
+                                                  inputType: InputType.time,
                                                   validator:
                                                       FormBuilderValidators
                                                           .required(context),
-                                                  // onTap: () => {},
                                                   decoration: InputDecoration(
-                                                    labelText:
-                                                        "Event duration (hr)",
-                                                    hintText: "in hours",
+                                                    labelText: "Event End Time",
+                                                    hintText: "pick end time",
                                                     icon: Icon(Icons
                                                         .description_outlined),
                                                     floatingLabelBehavior:
@@ -315,6 +313,36 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     ),
                                                   ),
                                                 ),
+                                                // FormBuilderTextField(
+                                                //   initialValue: (event == null)
+                                                //       ? null
+                                                //       : "${event.duration}",
+                                                //   keyboardType:
+                                                //       TextInputType.number,
+                                                //   name: "duration",
+                                                //   validator:
+                                                //       FormBuilderValidators
+                                                //           .required(context),
+                                                //   // onTap: () => {},
+                                                //   decoration: InputDecoration(
+                                                //     labelText:
+                                                //         "Event duration (hr)",
+                                                //     hintText: "in hours",
+                                                //     icon: Icon(Icons
+                                                //         .description_outlined),
+                                                //     floatingLabelBehavior:
+                                                //         FloatingLabelBehavior
+                                                //             .always,
+                                                //     border: OutlineInputBorder(
+                                                //       borderRadius:
+                                                //           const BorderRadius
+                                                //               .all(
+                                                //         const Radius.circular(
+                                                //             10.0),
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                // ),
                                               ),
                                             ],
                                           ),
@@ -444,11 +472,18 @@ class _AddEventPageState extends State<AddEventPage> {
             .difference(eventInfo['datetimeStart'])
             .inDays;
       } else {
-        eventInfo['duration'] = double.parse(eventInfo['duration']);
-        int hour = eventInfo['duration'].toInt();
-        int min = (eventInfo['duration'] % 1 * 60).toInt();
-        eventInfo['datetimeEnd'] =
-            eventInfo['datetimeStart'].add(Duration(hours: hour, minutes: min));
+        eventInfo['datetimeEnd'] = DateTime(
+            event['datetimeStart'].year,
+            event['datetimeStart'].month,
+            event['datetimeStart'].day,
+            event['timeEnd'].hour,
+            event['timeEnd'].minute);
+        eventInfo.remove('timeEnd');
+
+        eventInfo['duration'] = eventInfo['datetimeEnd']
+                .difference(eventInfo['datetimeStart'])
+                .inMinutes /
+            60;
       }
       eventInfo['isRecurring'] = recurring;
       if (recurring) {
@@ -460,12 +495,35 @@ class _AddEventPageState extends State<AddEventPage> {
               monthly: true);
         }
       }
-
+      print(eventInfo);
       return fireStore
           .add(eventInfo)
           .then((value) => {
                 print("Event Added: ${value.id} : ${eventInfo['title']}"),
                 fireStore.doc(value.id).update({"id": value.id})
+              })
+          .catchError((error) => print("Failed to add Event: $error"));
+    }
+
+    Future<void> _editEvent(Map<String, dynamic> form) {
+      double duration = double.parse(form['duration']);
+      int hour = duration.toInt();
+      int min = (duration % 1 * 60).toInt();
+      DateTime endTime =
+          form['datetimeStart'].add(Duration(hours: hour, minutes: min));
+      fireStore
+          .doc(event.id)
+          .update({
+            'title': form['title'],
+            'address': form['address'],
+            'description': form['description'],
+            'datetimeStart': form['datetimeStart'],
+            'datetimeEnd': endTime,
+            'duration': duration
+          })
+          .then((value) => {
+                print("Event updated: ${event.id} : ${event.name}"),
+                fireStore.doc(event.id).update({"id": event.id})
               })
           .catchError((error) => print("Failed to add Event: $error"));
     }
@@ -477,9 +535,16 @@ class _AddEventPageState extends State<AddEventPage> {
     if (validationSuccess) {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
-      _addEvent(_formKey.currentState.value);
 
-      //Navigate back to Previous Page
+      if (event == null) {
+        print("add event");
+        _addEvent(_formKey.currentState.value);
+      } else {
+        print("edit event");
+        _editEvent(_formKey.currentState.value);
+      }
+
+      // // Navigate back to Previous Page
       // Navigator.pop(context);
     }
   }
