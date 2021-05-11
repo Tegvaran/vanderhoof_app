@@ -38,7 +38,7 @@ Future<void> addBusiness(Map<String, dynamic> businessInfo) {
 }
 
 void deleteCard(String cardName, String docID, int index, State thisContext,
-    BuildContext context, var filteredList, var fireStore) {
+    BuildContext context, List filteredList, CollectionReference fireStore) {
   {
     // Remove the item from the data source.
     thisContext.setState(() {
