@@ -303,7 +303,15 @@ class _EventPageState extends State<EventState> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(flex: 1, child: _buildEventsList()),
+                    Expanded(
+                        flex: 1,
+                        child: filteredEvents.length != 0
+                            ? _buildEventsList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:

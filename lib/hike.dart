@@ -155,7 +155,15 @@ class _HikePageState extends State<Hike> {
                       flex: 2,
                       child: Gmap(filteredHikes, _markers),
                     ),
-                    Expanded(flex: 4, child: _buildHikesList()),
+                    Expanded(
+                        flex: 4,
+                        child: filteredHikes.length != 0
+                            ? _buildHikesList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:

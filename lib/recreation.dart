@@ -344,7 +344,15 @@ class _RecreationPageState extends State<Recreation> {
                       flex: 4,
                       child: Gmap(filteredRecs, _markers),
                     ),
-                    Expanded(flex: 8, child: _buildRecsList()),
+                    Expanded(
+                        flex: 8,
+                        child: filteredRecs.length != 0
+                            ? _buildRecsList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:
