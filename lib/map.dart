@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:location/location.dart';
 
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
@@ -41,6 +42,31 @@ HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   return markers;
 }
 
+void changeMarkerColor(index, markers, fireStoreObjects){
+  //remove marker at expansion card index
+  // markers.remove(markers.elementAt(index));
+  print("index " + index.toString());
+  if (fireStoreObjects[index].location != null) {
+    print(
+      "fireObject\n" + fireStoreObjects[index].name
+    );
+    //add new marker with blue color
+    markers.add(
+      Marker(
+          markerId: MarkerId(fireStoreObjects[index].name),
+          position: fireStoreObjects[index].location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue
+          ),
+          infoWindow: InfoWindow(
+            title: fireStoreObjects[index].name,
+            snippet: fireStoreObjects[index].description,
+          )),
+    );
+  }
+  return markers;
+}
+
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
   var first = address.first;
@@ -59,19 +85,30 @@ class Gmap extends StatefulWidget {
   @override
   State<Gmap> createState() => GmapState(listOfFireStoreObjects, _markers);
 }
-
+double zoomVal = 13;
 class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
   List<FireStoreObject> listOfFireStoreObjects;
+  Location _location = Location();
+  GoogleMapController _mapController;
   GmapState(this.listOfFireStoreObjects, this._markers);
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(54.0117956, -124.0177679),
-    zoom: 13,
+    zoom: 13
   );
 
   void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    // _location.onLocationChanged.listen((l) {
+    //   _mapController.animateCamera(
+    //     CameraUpdate.newCameraPosition(
+    //       CameraPosition(target: LatLng(l.latitude, l.longitude)
+    //       ),
+    //     ),
+    //   );
+    // });
     //run marker adapter
     setState(() {
       for (int i = 0; i < listOfFireStoreObjects.length; i++) {
@@ -82,6 +119,9 @@ class GmapState extends State<Gmap> {
             Marker(
                 markerId: MarkerId(i.toString()),
                 position: listOfFireStoreObjects[i].location,
+                // onTap: () {
+                //   listOfFireStoreObjects[i].
+                // },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
                   snippet: listOfFireStoreObjects[i].description,
@@ -99,6 +139,7 @@ class GmapState extends State<Gmap> {
       mapType: mapType,
       markers: _markers,
       onMapCreated: _onMapCreated,
+      myLocationEnabled: true,
     );
   }
 }

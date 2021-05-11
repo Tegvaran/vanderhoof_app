@@ -342,13 +342,15 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index),
+              BusinessCard(filteredBusinesses[index], _scrollController, index, _markers, filteredBusinesses),
               index);
         },
       )),
       floatingActionButton: _buildScrollToTopButton(),
     );
   }
+
+  List<Widget> chips2;
 
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
@@ -395,6 +397,8 @@ class _BusinessPageState extends State<BusinessState> {
       chips.add(Padding(
           padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
     }
+
+    chips2 = chips;
 
     return ListView(
       // This next line does the trick.
