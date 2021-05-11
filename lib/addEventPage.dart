@@ -216,7 +216,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                                               allowClear: true,
                                                               items: List
                                                                       .generate(
-                                                                          5,
+                                                                          11,
                                                                           (i) =>
                                                                               i +
                                                                               1)
