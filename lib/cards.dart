@@ -305,6 +305,19 @@ class BusinessCard extends StatelessWidget {
               //   ),
               // ),
               Padding(
+                  padding: EdgeInsets.fromLTRB(12, 5, 0, 5),
+                  child: (!isFieldEmpty(business.category)
+                      ? RichText(
+                          text: TextSpan(children: <TextSpan>[
+                          TextSpan(
+                              text: 'Categories: ', style: headerTextStyle),
+                          TextSpan(
+                            text: '${business.category}',
+                            style: bodyTextStyle,
+                          ),
+                        ]))
+                      : Container(width: 0, height: 0))),
+              Padding(
                 padding: EdgeInsets.zero,
                 child: (!isFieldEmpty(business.address))
                     ? Row(children: <Widget>[
