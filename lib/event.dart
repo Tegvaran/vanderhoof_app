@@ -44,11 +44,15 @@ class _EventPageState extends State<EventState> {
             doc['address'],
             doc['LatLng'],
             doc["description"],
-            doc['dateCheckbox'],
             doc['datetimeEnd'].toDate(),
             doc['datetimeStart'].toDate(),
             doc['duration'],
-            doc['isRecurring']);
+            doc['id'],
+            doc['isMultiday'],
+            doc['isRecurring'],
+            doc['recurringRepeats'],
+            doc['recurringType']);
+        print(e);
         events.add(e);
       });
     });
@@ -59,6 +63,7 @@ class _EventPageState extends State<EventState> {
       var bdate = b.datetimeStart;
       return adate.compareTo(bdate);
     });
+    print('sorted: ' + events.toString());
 
     return events;
   }

@@ -747,20 +747,20 @@ class EventCard extends StatelessWidget {
                     ),
                   ])),
                 ),
-                Padding(
-                  padding: TEXT_INSET,
-                  child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'Duration: ', style: headerTextStyle),
-                    TextSpan(
-                      text: '${event.duration}',
-                      style: bodyTextStyle,
-                    ),
-                    TextSpan(
-                        text: ' hr' + (event.duration > 1 ? 's' : ''),
-                        style: bodyTextStyle),
-                  ])),
-                ),
+                // Padding(
+                //   padding: TEXT_INSET,
+                //   child: RichText(
+                //       text: TextSpan(children: <TextSpan>[
+                //     TextSpan(text: 'Duration: ', style: headerTextStyle),
+                //     TextSpan(
+                //       text: '${event.duration}',
+                //       style: bodyTextStyle,
+                //     ),
+                //     TextSpan(
+                //         text: ' hr' + (event.duration > 1 ? 's' : ''),
+                //         style: bodyTextStyle),
+                //   ])),
+                // ),
                 Padding(
                   padding: EdgeInsets.zero,
                   child: (!isFieldEmpty(event.address))
