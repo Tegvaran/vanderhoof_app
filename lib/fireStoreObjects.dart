@@ -45,7 +45,6 @@ class Business extends FireStoreObject {
 class Event extends FireStoreObject {
   final DateTime datetimeEnd;
   final DateTime datetimeStart;
-  final num duration;
   final String id;
   final bool isMultiday;
 
@@ -56,7 +55,6 @@ class Event extends FireStoreObject {
     description,
     this.datetimeEnd,
     this.datetimeStart,
-    this.duration,
     this.id,
     this.isMultiday,
   }) : super(name, address, location, description);
