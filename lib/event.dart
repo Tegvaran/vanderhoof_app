@@ -135,7 +135,7 @@ class _EventPageState extends State<EventState> {
       int firstPositionIndex =
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
-        firstPositionIndex > 5
+        firstPositionIndex > 0
             ? _isScrollButtonVisible = true
             : _isScrollButtonVisible = false;
       });
