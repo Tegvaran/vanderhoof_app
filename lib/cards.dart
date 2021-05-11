@@ -24,6 +24,8 @@ TextStyle headerTextStyle = TextStyle(
     fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
 Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
 
+/// Represents a hike card that is displayed on the hike page.
+/// Takes the values for Hike which is a hike object, scrollController, scrollIndex.
 class HikeCard extends StatelessWidget {
   final HikeTrail hikeTrail;
   final ItemScrollController scrollController;
@@ -84,7 +86,7 @@ class HikeCard extends StatelessWidget {
         children: <Widget>[
           cardDivider,
           // Padding(
-          //   padding: const EdgeInsets.fromLTRB(16, 5, 0, 0),
+          //   padding: TEXT_INSET,
           //   child: Text(
           //     "Trail Details",
           //     style: TextStyle(
@@ -173,6 +175,8 @@ class HikeCard extends StatelessWidget {
   }
 }
 
+/// Represents a Business card that is displayed on the businesses page.
+/// Takes the values for Business which is a business object, scrollController, scrollIndex.
 class BusinessCard extends StatelessWidget {
   final Business business;
   final ItemScrollController scrollController;
@@ -264,6 +268,8 @@ class BusinessCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              //// layout option 1: description wrapped around img (top-right corner)
               Padding(
                   padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                   child: DropCapText(
@@ -280,14 +286,16 @@ class BusinessCard extends StatelessWidget {
                               child: Image.network(business.imgURL,
                                   fit: BoxFit.contain))
                           : DropCap(width: 0, height: 0, child: null))),
+
+              //// layout option 2: img above and description below
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
-              //         height: 100,
-              //         alignment: Alignment.topLeft,
+              //         height: 120,
+              //         alignment: Alignment.center,
               //         child:
               //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
-              //     : Container(),
+              //     : Container(width: 0, height: 0),
               // Padding(
               //   padding: TEXT_INSET,
               //   child: Text(
@@ -311,7 +319,7 @@ class BusinessCard extends StatelessWidget {
                         Text('${parseLongField(business.address)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -328,7 +336,7 @@ class BusinessCard extends StatelessWidget {
                         Text('${parseLongField(business.phoneNumber)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -345,7 +353,7 @@ class BusinessCard extends StatelessWidget {
                         Text('${parseLongField(business.email)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -362,7 +370,7 @@ class BusinessCard extends StatelessWidget {
                         Text('${parseLongField(business.website)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Row(children: <Widget>[
                 (!isFieldEmpty(business.socialMedia['facebook']))
@@ -374,7 +382,7 @@ class BusinessCard extends StatelessWidget {
                         iconSize: ICON_SIZE,
                         color: colorPrimary,
                       )
-                    : Container(),
+                    : Container(width: 0, height: 0),
                 (!isFieldEmpty(business.socialMedia['instagram']))
                     ? IconButton(
                         icon: FaIcon(FontAwesomeIcons.instagram),
@@ -384,7 +392,7 @@ class BusinessCard extends StatelessWidget {
                         iconSize: ICON_SIZE,
                         color: colorPrimary,
                       )
-                    : Container(),
+                    : Container(width: 0, height: 0),
                 (!isFieldEmpty(business.socialMedia['twitter']))
                     ? IconButton(
                         icon: FaIcon(FontAwesomeIcons.twitter),
@@ -394,14 +402,13 @@ class BusinessCard extends StatelessWidget {
                         iconSize: ICON_SIZE,
                         color: colorPrimary,
                       )
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ])
             ]));
   }
 }
 
 /// Represents a recreational card that is displayed on the rec page.
-///
 /// Takes the values for Rec which is a recreational object, scrollController, scrollIndex.
 class RecreationalCard extends StatelessWidget {
   final Recreational rec;
@@ -411,7 +418,7 @@ class RecreationalCard extends StatelessWidget {
 
   RecreationalCard(this.rec, this.scrollController, this.scrollIndex);
 
-  /// Checks if a give field from the recreational object is empty or not.
+  // Checks if a given field from the recreational object is empty or not.
   bool isFieldEmpty(String toCheck) {
     return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
   }
@@ -474,6 +481,8 @@ class RecreationalCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              //// layout option 1: description wrapped around img (top-right corner)
               // Padding(
               //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
               //     child: DropCapText(
@@ -485,19 +494,20 @@ class RecreationalCard extends StatelessWidget {
               //         dropCapPosition: DropCapPosition.end,
               //         dropCap: (!isFieldEmpty(business.imgURL))
               //             ? DropCap(
-              //             width: 100,
-              //             height: 100,
+              //             width: 120,
+              //             height: 120,
               //             child: Image.network(business.imgURL,
               //                 fit: BoxFit.contain))
               //             : DropCap(width: 0, height: 0, child: null))),
+              //// layout option 2: img above and description below
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
-              //         height: 100,
-              //         alignment: Alignment.topLeft,
+              //         height: 120,
+              //         alignment: Alignment.center,
               //         child:
               //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
-              //     : Container(),
+              //     : Container(width: 0, height: 0),
               // Padding(
               //   padding: TEXT_INSET,
               //   child: Text(
@@ -521,7 +531,7 @@ class RecreationalCard extends StatelessWidget {
                         Text('${parseLongField(rec.address)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -538,7 +548,7 @@ class RecreationalCard extends StatelessWidget {
                         Text('${parseLongField(rec.phoneNumber)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -555,7 +565,7 @@ class RecreationalCard extends StatelessWidget {
                         Text('${parseLongField(rec.email)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
               Padding(
                 padding: EdgeInsets.zero,
@@ -572,12 +582,14 @@ class RecreationalCard extends StatelessWidget {
                         Text('${parseLongField(rec.website)}',
                             style: headerTextStyle),
                       ])
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ),
             ]));
   }
 }
 
+/// Represents a event card that is displayed on the event page.
+/// Takes the values for Event which is a event object, scrollController, scrollIndex.
 class EventCard extends StatelessWidget {
   final Event event;
   final ItemScrollController scrollController;
@@ -657,11 +669,6 @@ class EventCard extends StatelessWidget {
     return Card(
         color: colorBackground,
         margin: CARD_INSET,
-        // child: Column(children: <Widget>[
-        //   Row(children: <Widget>[
-        //     _buildDateButton(event.datetimeStart),
-        //     Text(event.name, style: titleTextStyle),
-        //   ]),
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
@@ -682,6 +689,8 @@ class EventCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              //// layout option 1: description wrapped around img (top-right corner)
               // Padding(
               //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
               //     child: DropCapText(
@@ -693,17 +702,18 @@ class EventCard extends StatelessWidget {
               //         dropCapPosition: DropCapPosition.end,
               //         dropCap: (!isFieldEmpty(event.imgURL))
               //             ? DropCap(
-              //             width: 100,
-              //             height: 100,
+              //             width: 120,
+              //             height: 120,
               //             child: Image.network(event.imgURL,
               //                 fit: BoxFit.contain))
               //             : DropCap(width: 0, height: 0, child: null))),
+              //// layout option 2: img above and description below
               // (event.imgURL != "" && event.imgURL != null)
               //     ? Container(
-              //         height: 100,
-              //         alignment: Alignment.topLeft,
+              //         height: 120,
+              //         alignment: Alignment.center,
               //         child:
-              //             Image.network(event.imgURL, fit: BoxFit.contain),
+              //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(width: 0, height: 0),
               Padding(
