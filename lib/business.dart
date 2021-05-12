@@ -344,15 +344,14 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index, _markers, filteredBusinesses),
+              BusinessCard(filteredBusinesses[index], _scrollController, index,
+                  _markers, filteredBusinesses),
               index);
         },
       )),
       floatingActionButton: _buildScrollToTopButton(),
     );
   }
-
-
 
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
@@ -378,7 +377,7 @@ class _BusinessPageState extends State<BusinessState> {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
         label: Text(_options[i], style: TextStyle(color: Colors.black)),
-        elevation: 5,
+        elevation: 3,
         pressElevation: 5,
         shadowColor: colorPrimary,
         selectedColor: colorAccent,
@@ -436,12 +435,12 @@ class _BusinessPageState extends State<BusinessState> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 4,
+                      flex: 9,
                       child: Gmap(filteredBusinesses, _markers),
                     ),
-                    Expanded(flex: 1, child: _buildChips()),
+                    Expanded(flex: 2, child: _buildChips()),
                     Expanded(
-                        flex: 8,
+                        flex: 14,
                         child: filteredBusinesses.length != 0
                             ? _buildBusinessesList()
                             : Container(

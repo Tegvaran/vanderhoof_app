@@ -306,7 +306,8 @@ class _RecreationPageState extends State<Recreation> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              RecreationalCard(filteredRecs[index], _scrollController, index, _markers, filteredRecs),
+              RecreationalCard(filteredRecs[index], _scrollController, index,
+                  _markers, filteredRecs),
               index);
         },
       )),
@@ -341,11 +342,11 @@ class _RecreationPageState extends State<Recreation> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 4,
+                      flex: 9,
                       child: Gmap(filteredRecs, _markers),
                     ),
                     Expanded(
-                        flex: 8,
+                        flex: 16,
                         child: filteredRecs.length != 0
                             ? _buildRecsList()
                             : Container(

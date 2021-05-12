@@ -122,8 +122,8 @@ class _HikePageState extends State<Hike> {
                 itemScrollController: _scrollController,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return HikeCard(
-                      filteredHikes[index], _scrollController, index, _markers, filteredHikes);
+                  return HikeCard(filteredHikes[index], _scrollController,
+                      index, _markers, filteredHikes);
                 })));
   }
 
@@ -152,11 +152,11 @@ class _HikePageState extends State<Hike> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 2,
+                      flex: 9,
                       child: Gmap(filteredHikes, _markers),
                     ),
                     Expanded(
-                        flex: 4,
+                        flex: 16,
                         child: filteredHikes.length != 0
                             ? _buildHikesList()
                             : Container(
