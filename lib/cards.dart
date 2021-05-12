@@ -187,7 +187,8 @@ class BusinessCard extends StatelessWidget {
   Set<Marker> _markers;
   List<FireStoreObject> listOfFireStoreObjects;
 
-  BusinessCard(this.business, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
+  BusinessCard(this.business, this.scrollController, this.scrollIndex,
+      this._markers, this.listOfFireStoreObjects);
 
   bool isFieldEmpty(String toCheck) {
     return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
@@ -256,7 +257,8 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(
+                    scrollIndex, _markers, listOfFireStoreObjects);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
