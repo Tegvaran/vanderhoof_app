@@ -84,3 +84,14 @@ class Recreational extends FireStoreObject {
       this.email, this.website)
       : super(name, address, location, description);
 }
+
+/// Represents a business resource.
+class Resource extends FireStoreObject {
+  final String name;
+  final String description;
+  final String website;
+  final String id;
+
+  Resource(this.name, this.description, this.website, this.id)
+      : super('', '', null, '');
+}
