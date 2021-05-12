@@ -48,6 +48,7 @@ Future<void> scrap(bool activate) async {
 
     final webScraper = WebScraper('https://www.vanderhoofchamber.com/');
     // List listOfBusinesses = [];
+    int count = 1;
     if (await webScraper.loadWebPage('/membership/business-directory')) {
       var elements =
           webScraper.getElementAttribute('#businesslist > div >h3>a', 'href');
@@ -93,27 +94,27 @@ Future<void> scrap(bool activate) async {
             }
           }
 
-          toLatLng(a)
-              .then((geopoint) => {
-                    addBusiness({
-                      'name': n,
-                      'address': a,
-                      'phone': p,
-                      'email': e,
-                      'website': w,
-                      'description': d,
-                      'imgURL': i,
-                      'category': c,
-                      'LatLng': geopoint,
-                      'socialMedia': {
-                        'facebook': ".",
-                        'instagram': ".",
-                        'twitter': "."
-                      },
-                    })
-                  })
-              .catchError(
-                  (error) => print("Failed to get GeoPoint: $error for $a"));
+          toLatLng(a).then((geopoint) {
+            addBusiness({
+              'name': n,
+              'address': a,
+              'phone': p,
+              'email': e,
+              'website': w,
+              'description': d,
+              'imgURL': i,
+              'category': c,
+              'LatLng': geopoint,
+              'socialMedia': {
+                'facebook': ".",
+                'instagram': ".",
+                'twitter': "."
+              },
+            });
+            print("$n: count: $count");
+            count++;
+          }).catchError(
+              (error) => print("Failed to get GeoPoint: $error for $a"));
 
           // print("adding to temporary list: $n");
         }
