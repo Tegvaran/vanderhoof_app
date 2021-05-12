@@ -279,6 +279,7 @@ class BusinessCard extends StatelessWidget {
                   );
                 });
               } else {
+                setIsCardExpanded(false);
                 resetMarkers(_markers, listOfFireStoreObjects);
               }
             },

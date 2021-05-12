@@ -48,7 +48,6 @@ class _BusinessPageState extends State<BusinessState> {
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
-  bool isScrollingDownList = false;
   bool isScrollButtonVisible = false;
   // bool isCardExpanded = false;
 
@@ -245,18 +244,17 @@ class _BusinessPageState extends State<BusinessState> {
       setState(() {
         if (firstPositionIndex > 5) {
           isScrollButtonVisible = true;
-          // isScrollingDownList = true;
           if (!isCardExpanded) {
             hideMap();
           }
         } else {
           isScrollButtonVisible = false;
-          // isScrollingDownList = false;
+          setIsCardExpanded(false);
           showMap();
         }
         // firstPositionIndex > 5
-        //     ? isScrollButtonVisible = isScrollingDownList = true
-        //     : isScrollButtonVisible = isScrollingDownList = false;
+        //     ? isScrollButtonVisible = true
+        //     : isScrollButtonVisible = false;
       });
     });
 
