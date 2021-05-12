@@ -6,10 +6,14 @@ import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
 
-bool isScrollingDownList = false;
+bool isMapVisible = true;
 
-void setIsScrollingDownList(bool boolean) {
-  isScrollingDownList = boolean;
+void hideMap() {
+  isMapVisible = false;
+}
+
+void showMap() {
+  isMapVisible = true;
 }
 
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
@@ -138,7 +142,7 @@ class GmapState extends State<Gmap> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         width: double.infinity,
-        height: isScrollingDownList ? 0.0 : 200.0,
+        height: isMapVisible ? 200.0 : 0.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.fastOutSlowIn,
         child: GoogleMap(

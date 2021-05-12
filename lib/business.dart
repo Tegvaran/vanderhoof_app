@@ -26,7 +26,6 @@ class BusinessState extends StatefulWidget {
 
   final title = "Businesses";
 
-
   @override
   _BusinessPageState createState() => new _BusinessPageState();
 }
@@ -248,12 +247,12 @@ class _BusinessPageState extends State<BusinessState> {
           isScrollButtonVisible = true;
           // isScrollingDownList = true;
           if (!isCardExpanded) {
-            setIsScrollingDownList(true);
+            hideMap();
           }
         } else {
           isScrollButtonVisible = false;
           // isScrollingDownList = false;
-          setIsScrollingDownList(false);
+          showMap();
         }
         // firstPositionIndex > 5
         //     ? isScrollButtonVisible = isScrollingDownList = true

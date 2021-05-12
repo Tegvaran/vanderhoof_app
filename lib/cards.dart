@@ -267,7 +267,7 @@ class BusinessCard extends StatelessWidget {
                 changeMarkerColor(
                     scrollIndex, _markers, listOfFireStoreObjects);
                 setIsCardExpanded(true);
-                setIsScrollingDownList(false);
+                showMap();
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
