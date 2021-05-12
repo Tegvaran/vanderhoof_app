@@ -58,6 +58,33 @@ void deleteCard(String cardName, String docID, int index, State thisContext,
   }
 }
 
+DateTime addDateTime({DateTime dateTime, String repeatType}) {
+  if (repeatType == 'Daily') {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day + 1,
+        dateTime.hour, dateTime.minute);
+  } else if (repeatType == 'Weekly') {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day + 7,
+        dateTime.hour, dateTime.minute);
+  } else if (repeatType == 'Monthly') {
+    return DateTime(dateTime.year, dateTime.month + 1, dateTime.day,
+        dateTime.hour, dateTime.minute);
+  } else {
+    return DateTime(dateTime.year + 1, dateTime.month, dateTime.day,
+        dateTime.hour, dateTime.minute);
+  }
+}
+
+Future<void> addEvent(event, CollectionReference fireStore) {
+  print("adding to firebase: $event");
+  return fireStore
+      .add(event)
+      .then((value) => {
+            print("Event Added: ${value.id} : ${event['title']}"),
+            fireStore.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Event: $error"));
+}
+
 /// uses a Color with a hex code and returns a MaterialColor object
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
