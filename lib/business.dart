@@ -13,6 +13,7 @@ import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
+import 'map.dart';
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -195,6 +196,7 @@ class _BusinessPageState extends State<BusinessState> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems('');
                   setState(() {
                     this.isSearching = false;
                     filteredBusinesses = businesses;
