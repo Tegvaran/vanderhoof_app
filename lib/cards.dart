@@ -780,3 +780,111 @@ class EventCard extends StatelessWidget {
             ]));
   }
 }
+
+/// Represents a event card that is displayed on the event page.
+/// Takes the values for Event which is a event object, scrollController, scrollIndex.
+class ResourceCard extends StatelessWidget {
+  final Resource resource;
+  final ItemScrollController scrollController;
+  final int scrollIndex;
+  final double scrollAlignment = 0;
+
+  ResourceCard(this.resource, this.scrollController, this.scrollIndex);
+
+  bool isFieldEmpty(String toCheck) {
+    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+  }
+
+  String parseLongField(String toCheck) {
+    String result = toCheck.trim();
+    if (toCheck.length > 35) {
+      result = toCheck.substring(0, 35) + "...";
+    }
+    return result;
+  }
+
+  void _launchWebsiteURL(String website) async => await canLaunch(website)
+      ? launch(website)
+      : Fluttertoast.showToast(
+          msg: "Could not open website $website",
+          toastLength: Toast.LENGTH_SHORT);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        color: colorBackground,
+        margin: CARD_INSET,
+        child: ExpansionTile(
+            onExpansionChanged: (_isExpanded) {
+              if (_isExpanded) {
+                // check if Expanded
+                // let ExpansionTile expand, then scroll Tile to top of the view
+                Future.delayed(Duration(milliseconds: 250)).then((value) {
+                  scrollController.scrollTo(
+                    index: scrollIndex,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                    // alignment: scrollAlignment,
+                  );
+                });
+              }
+            },
+            title: Text(resource.name, style: titleTextStyle),
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              cardDivider,
+
+              //// layout option 1: description wrapped around img (top-right corner)
+              // Padding(
+              //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              //     child: DropCapText(
+              //         (!isFieldEmpty(event.description))
+              //             ? event.description
+              //             : "",
+              //         style: bodyTextStyle,
+              //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+              //         dropCapPosition: DropCapPosition.end,
+              //         dropCap: (!isFieldEmpty(event.imgURL))
+              //             ? DropCap(
+              //             width: 120,
+              //             height: 120,
+              //             child: Image.network(event.imgURL,
+              //                 fit: BoxFit.contain))
+              //             : DropCap(width: 0, height: 0, child: null))),
+              //// layout option 2: img above and description below
+              // (event.imgURL != "" && event.imgURL != null)
+              //     ? Container(
+              //         height: 120,
+              //         alignment: Alignment.center,
+              //         child:
+              //             Image.network(business.imgURL, fit: BoxFit.contain),
+              //       )
+              //     : Container(width: 0, height: 0),
+              Padding(
+                padding: TEXT_INSET,
+                child: Text(
+                  "${resource.description}",
+                  style: bodyTextStyle,
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: (!isFieldEmpty(resource.website))
+                    ? Row(children: <Widget>[
+                        IconButton(
+                          icon: FaIcon(FontAwesomeIcons.globe),
+                          onPressed: () {
+                            _launchWebsiteURL(resource.website);
+                          },
+                          iconSize: ICON_SIZE,
+                          color: colorPrimary,
+                        ),
+                        Text('${parseLongField(resource.website)}',
+                            style: headerTextStyle),
+                      ])
+                    : Container(width: 0, height: 0),
+              ),
+            ]));
+  }
+}
