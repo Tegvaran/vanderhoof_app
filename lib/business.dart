@@ -24,7 +24,7 @@ class BusinessState extends StatefulWidget {
   _BusinessPageState createState() => new _BusinessPageState();
 }
 
-List<Widget> chips2;
+
 
 class _BusinessPageState extends State<BusinessState> {
   // Businesses populated from firebase
@@ -399,8 +399,6 @@ class _BusinessPageState extends State<BusinessState> {
       chips.add(Padding(
           padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
     }
-
-    chips2 = chips;
 
     return ListView(
       // This next line does the trick.

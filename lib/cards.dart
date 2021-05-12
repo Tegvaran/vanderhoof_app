@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -191,6 +193,9 @@ class BusinessCard extends StatelessWidget {
   final double scrollAlignment = 0;
   Set<Marker> _markers;
   List<FireStoreObject> listOfFireStoreObjects;
+  final rnd = Random();
+  int number = 0;
+  bool expanded = false;
 
   BusinessCard(this.business, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
 
@@ -204,6 +209,12 @@ class BusinessCard extends StatelessWidget {
       result = toCheck.substring(0, 35) + "...";
     }
     return result;
+  }
+
+  //forces tie to refresh and expand
+  void expand() {
+    number =  rnd.nextInt(100);
+    expanded = true;
   }
 
   void _launchWebsiteURL(String website) async => await canLaunch(website)
@@ -259,6 +270,9 @@ class BusinessCard extends StatelessWidget {
         color: colorBackground,
         margin: CARD_INSET,
         child: ExpansionTile(
+            // forces tile to refresh expanded
+            key: Key('$number - $expanded'),
+            initiallyExpanded: expanded,
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
                 changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
@@ -457,6 +471,10 @@ class RecreationalCard extends StatelessWidget {
     }
     return result;
   }
+
+  // void setExpanded () {
+  //   _isExpanded
+  // }
 
   void _launchWebsiteURL(String website) async => await canLaunch(website)
       ? launch(website)

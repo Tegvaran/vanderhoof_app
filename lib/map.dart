@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:vanderhoof_app/business.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
@@ -119,9 +120,9 @@ class GmapState extends State<Gmap> {
             Marker(
                 markerId: MarkerId(i.toString()),
                 position: listOfFireStoreObjects[i].location,
-                // onTap: () {
-                //   listOfFireStoreObjects[i].
-                // },
+                onTap: () {
+                  // trigger BusinessCard.expand here
+                },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
                   snippet: listOfFireStoreObjects[i].description,
