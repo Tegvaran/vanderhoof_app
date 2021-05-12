@@ -123,7 +123,7 @@ class _HikePageState extends State<Hike> {
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HikeCard(
-                      filteredHikes[index], _scrollController, index);
+                      filteredHikes[index], _scrollController, index, _markers, filteredHikes);
                 })));
   }
 

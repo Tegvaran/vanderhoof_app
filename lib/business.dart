@@ -24,6 +24,8 @@ class BusinessState extends StatefulWidget {
   _BusinessPageState createState() => new _BusinessPageState();
 }
 
+List<Widget> chips2;
+
 class _BusinessPageState extends State<BusinessState> {
   // Businesses populated from firebase
   List<Business> businesses = [];
@@ -350,7 +352,7 @@ class _BusinessPageState extends State<BusinessState> {
     );
   }
 
-  List<Widget> chips2;
+
 
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {

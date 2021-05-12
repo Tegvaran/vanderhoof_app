@@ -306,7 +306,7 @@ class _RecreationPageState extends State<Recreation> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              RecreationalCard(filteredRecs[index], _scrollController, index),
+              RecreationalCard(filteredRecs[index], _scrollController, index, _markers, filteredRecs),
               index);
         },
       )),
