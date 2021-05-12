@@ -6,16 +6,6 @@ import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
 
-bool isMapVisible = true;
-
-void hideMap() {
-  isMapVisible = false;
-}
-
-void showMap() {
-  isMapVisible = true;
-}
-
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
   for (int i = 0; i < objList.length; i++) {
@@ -140,17 +130,12 @@ class GmapState extends State<Gmap> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-        width: double.infinity,
-        height: isMapVisible ? 200.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.fastOutSlowIn,
-        child: GoogleMap(
-          initialCameraPosition: _kGooglePlex,
-          mapType: mapType,
-          markers: _markers,
-          onMapCreated: _onMapCreated,
-          myLocationEnabled: true,
-        ));
+    return GoogleMap(
+      initialCameraPosition: _kGooglePlex,
+      mapType: mapType,
+      markers: _markers,
+      onMapCreated: _onMapCreated,
+      myLocationEnabled: true,
+    );
   }
 }

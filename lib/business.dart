@@ -16,9 +16,21 @@ import 'scraper.dart';
 import 'main.dart';
 
 bool isCardExpanded = false;
+bool isMapVisible = true;
 
-void setIsCardExpanded(bool boolean) {
+// sets listener for whether or not a businessCard is expanded
+void setCardExpanded(bool boolean) {
   isCardExpanded = boolean;
+}
+
+// hides googleMap widget (when scrolling down a list)
+void hideMap() {
+  isMapVisible = false;
+}
+
+// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+void showMap() {
+  isMapVisible = true;
 }
 
 class BusinessState extends StatefulWidget {
@@ -249,7 +261,7 @@ class _BusinessPageState extends State<BusinessState> {
           }
         } else {
           isScrollButtonVisible = false;
-          setIsCardExpanded(false);
+          setCardExpanded(false);
           showMap();
         }
         // firstPositionIndex > 5
@@ -462,7 +474,12 @@ class _BusinessPageState extends State<BusinessState> {
                     //   flex: 9,
                     //   child: Gmap(filteredBusinesses, _markers),
                     // ),
-                    Gmap(filteredBusinesses, _markers),
+                    AnimatedContainer(
+                        width: double.infinity,
+                        height: isMapVisible ? 200.0 : 0.0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.fastOutSlowIn,
+                        child: Gmap(filteredBusinesses, _markers)),
                     Container(
                         width: double.infinity,
                         height: 50.0,

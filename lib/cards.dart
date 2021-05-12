@@ -264,12 +264,7 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(
-                    scrollIndex, _markers, listOfFireStoreObjects);
-                setIsCardExpanded(true);
-                showMap();
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll ExpansionTile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
@@ -278,8 +273,18 @@ class BusinessCard extends StatelessWidget {
                     // alignment: scrollAlignment,
                   );
                 });
+
+                // BusinessPage listener -> card is expanded and map should be shown
+                setCardExpanded(true);
+                showMap();
+
+                // Map listener -> highlight chosen businessCard with a blue marker
+                changeMarkerColor(
+                    scrollIndex, _markers, listOfFireStoreObjects);
               } else {
-                setIsCardExpanded(false);
+                // BusinessPage listener -> card is not expanded
+                setCardExpanded(false);
+                // Map listener -> reset markers
                 resetMarkers(_markers, listOfFireStoreObjects);
               }
             },
