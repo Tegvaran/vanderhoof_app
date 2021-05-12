@@ -33,7 +33,7 @@ class Business extends FireStoreObject {
   final Map socialMedia;
   final String website;
   final String imgURL;
-  final String category;
+  final List category;
   final String id;
 
   Business(name, address, location, description, this.phoneNumber, this.email,

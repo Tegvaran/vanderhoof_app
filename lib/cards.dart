@@ -187,7 +187,8 @@ class BusinessCard extends StatelessWidget {
   Set<Marker> _markers;
   List<FireStoreObject> listOfFireStoreObjects;
 
-  BusinessCard(this.business, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
+  BusinessCard(this.business, this.scrollController, this.scrollIndex,
+      this._markers, this.listOfFireStoreObjects);
 
   bool isFieldEmpty(String toCheck) {
     return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
@@ -214,12 +215,17 @@ class BusinessCard extends StatelessWidget {
               msg: "Could not open profile: $username",
               toastLength: Toast.LENGTH_SHORT);
 
-  void _launchFacebookURL(username) async =>
-      await canLaunch("https://www.facebook.com/$username/")
-          ? launch("https://www.facebook.com/$username/")
-          : Fluttertoast.showToast(
-              msg: "Could not open profile: $username",
-              toastLength: Toast.LENGTH_SHORT);
+  void _launchFacebookURL(String username) async {
+    String url = username;
+    if (!username.contains('https')) {
+      url = "https://www.facebook.com/$username/";
+    }
+    await canLaunch(url)
+        ? launch(url)
+        : Fluttertoast.showToast(
+            msg: "Could not open the profile.",
+            toastLength: Toast.LENGTH_SHORT);
+  }
 
   void _launchTwitterURL(username) async =>
       await canLaunch("twitter.com/$username/")
@@ -248,6 +254,17 @@ class BusinessCard extends StatelessWidget {
           msg: "Could not open directions for $address.",
           toastLength: Toast.LENGTH_SHORT);
 
+  String categoryText() {
+    String categories = "";
+    for (var i = 0; i < business.category.length; i++) {
+      if (i != business.category.length - 1) {
+        categories = categories + "${business.category[i]}, ";
+      } else
+        categories = categories + business.category[i];
+    }
+    return categories;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -256,7 +273,8 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(
+                    scrollIndex, _markers, listOfFireStoreObjects);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -313,13 +331,15 @@ class BusinessCard extends StatelessWidget {
               // ),
               Padding(
                   padding: EdgeInsets.fromLTRB(12, 5, 0, 5),
-                  child: (!isFieldEmpty(business.category)
+                  // Checks if the category's length is empty or not
+                  child: (business.category != null &&
+                          business.category.length != 0
                       ? RichText(
                           text: TextSpan(children: <TextSpan>[
                           TextSpan(
                               text: 'Categories: ', style: headerTextStyle),
                           TextSpan(
-                            text: '${business.category}',
+                            text: categoryText(),
                             style: bodyTextStyle,
                           ),
                         ]))

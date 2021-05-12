@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'addHikePage.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
@@ -36,7 +37,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('teg_businesses');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -166,6 +167,18 @@ class _BusinessPageState extends State<BusinessState> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddEventPage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Hike/Trail"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddHikePage(),
                 ));
           },
         ),
@@ -342,7 +355,8 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index, _markers, filteredBusinesses),
+              BusinessCard(filteredBusinesses[index], _scrollController, index,
+                  _markers, filteredBusinesses),
               index);
         },
       )),
@@ -359,10 +373,9 @@ class _BusinessPageState extends State<BusinessState> {
     void _filterSearchItemsByCategory(value) {
       setState(() {
         filteredBusinesses = businesses.where((businessCard) {
-          if (businessCard.category != null) {
-            return businessCard.category
-                .toLowerCase()
-                .contains(value.toLowerCase());
+          if (businessCard.category != null &&
+              businessCard.category.length != 0) {
+            return (businessCard.category).contains(value);
           } else {
             return false;
           }

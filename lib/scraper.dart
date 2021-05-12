@@ -63,6 +63,8 @@ Future<void> scrap(bool activate) async {
           var web = webScraper.getElement('p.website>a', ['href']);
           var img = webScraper.getElement('div.entry-content >img', ['src']);
           var category = webScraper.getElementTitle('p.categories > a');
+          var facebook = webScraper
+              .getElement('div.cdash-social-media > ul > li > a', ['href']);
 
           String n = _check(name);
           String p = _checkPhone(phone);
@@ -71,7 +73,7 @@ Future<void> scrap(bool activate) async {
           String e = _check(email);
           String w = _checkElement(web, 'href');
           String i = _checkElement(img, 'src');
-          String c = _check(category);
+          String f = _checkElement(facebook, 'href');
 
           // Format address
           if (a != null) {
@@ -103,10 +105,10 @@ Future<void> scrap(bool activate) async {
                       'website': w,
                       'description': d,
                       'imgURL': i,
-                      'category': c,
+                      'category': category,
                       'LatLng': geopoint,
                       'socialMedia': {
-                        'facebook': ".",
+                        'facebook': f,
                         'instagram': ".",
                         'twitter': "."
                       },
