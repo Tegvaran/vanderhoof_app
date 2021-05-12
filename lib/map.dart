@@ -6,6 +6,12 @@ import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:location/location.dart';
 
+bool isScrollingDownList = false;
+
+void setIsScrollingDownList(bool boolean) {
+  isScrollingDownList = boolean;
+}
+
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
   for (int i = 0; i < objList.length; i++) {
@@ -42,25 +48,21 @@ HashSet<Marker> resetMarkers(markers, filteredFireStoreObjects) {
   return markers;
 }
 
-void changeMarkerColor(index, markers, fireStoreObjects){
+void changeMarkerColor(index, markers, fireStoreObjects) {
   //remove marker at expansion card index
   // markers.remove(markers.elementAt(index));
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
-    print(
-      "fireObject\n" + fireStoreObjects[index].name
-    );
+    print("fireObject\n" + fireStoreObjects[index].name);
     //add new marker with blue color
     markers.add(
       Marker(
           markerId: MarkerId(fireStoreObjects[index].name),
           position: fireStoreObjects[index].location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           infoWindow: InfoWindow(
             title: fireStoreObjects[index].name,
-            snippet: fireStoreObjects[index].description,
+            snippet: fireStoreObjects[index].address,
           )),
     );
   }
@@ -85,7 +87,9 @@ class Gmap extends StatefulWidget {
   @override
   State<Gmap> createState() => GmapState(listOfFireStoreObjects, _markers);
 }
+
 double zoomVal = 13;
+
 class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
@@ -94,10 +98,8 @@ class GmapState extends State<Gmap> {
   GoogleMapController _mapController;
   GmapState(this.listOfFireStoreObjects, this._markers);
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(54.0117956, -124.0177679),
-    zoom: 13
-  );
+  static final CameraPosition _kGooglePlex =
+      CameraPosition(target: LatLng(54.0117956, -124.0177679), zoom: 13);
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -124,7 +126,7 @@ class GmapState extends State<Gmap> {
                 // },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
-                  snippet: listOfFireStoreObjects[i].description,
+                  snippet: listOfFireStoreObjects[i].address,
                 )),
           );
         }
@@ -134,12 +136,17 @@ class GmapState extends State<Gmap> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: _kGooglePlex,
-      mapType: mapType,
-      markers: _markers,
-      onMapCreated: _onMapCreated,
-      myLocationEnabled: true,
-    );
+    return AnimatedContainer(
+        width: double.infinity,
+        height: isScrollingDownList ? 0.0 : 200.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn,
+        child: GoogleMap(
+          initialCameraPosition: _kGooglePlex,
+          mapType: mapType,
+          markers: _markers,
+          onMapCreated: _onMapCreated,
+          myLocationEnabled: true,
+        ));
   }
 }

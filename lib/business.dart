@@ -15,10 +15,17 @@ import 'scraper.dart';
 
 import 'main.dart';
 
+bool isCardExpanded = false;
+
+void setIsCardExpanded(bool boolean) {
+  isCardExpanded = boolean;
+}
+
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
 
   final title = "Businesses";
+
 
   @override
   _BusinessPageState createState() => new _BusinessPageState();
@@ -42,7 +49,9 @@ class _BusinessPageState extends State<BusinessState> {
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
-  bool _isScrollButtonVisible = false;
+  bool isScrollingDownList = false;
+  bool isScrollButtonVisible = false;
+  // bool isCardExpanded = false;
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
@@ -235,14 +244,25 @@ class _BusinessPageState extends State<BusinessState> {
       int firstPositionIndex =
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
-        firstPositionIndex > 5
-            ? _isScrollButtonVisible = true
-            : _isScrollButtonVisible = false;
+        if (firstPositionIndex > 5) {
+          isScrollButtonVisible = true;
+          // isScrollingDownList = true;
+          if (!isCardExpanded) {
+            setIsScrollingDownList(true);
+          }
+        } else {
+          isScrollButtonVisible = false;
+          // isScrollingDownList = false;
+          setIsScrollingDownList(false);
+        }
+        // firstPositionIndex > 5
+        //     ? isScrollButtonVisible = isScrollingDownList = true
+        //     : isScrollButtonVisible = isScrollingDownList = false;
       });
     });
 
     Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
+      return isScrollButtonVisible
           ? FloatingActionButton(
               // scroll to top of the list
               child: FaIcon(FontAwesomeIcons.angleUp),
@@ -433,12 +453,24 @@ class _BusinessPageState extends State<BusinessState> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
-                    // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child: Gmap(filteredBusinesses, _markers),
-                    ),
-                    Expanded(flex: 2, child: _buildChips()),
+                    // // note: play around with flex int value to adjust vertical spaces between widgets
+                    // AnimatedContainer(
+                    //   width: double.infinity,
+                    //   height: isScrollingDownList ? 0.0 : 200.0,
+                    //   duration: const Duration(milliseconds: 300),
+                    //   curve: Curves.fastOutSlowIn,
+                    //   child: Gmap(filteredBusinesses, _markers),
+                    // ),
+                    // Expanded(
+                    //   flex: 9,
+                    //   child: Gmap(filteredBusinesses, _markers),
+                    // ),
+                    Gmap(filteredBusinesses, _markers),
+                    Container(
+                        width: double.infinity,
+                        height: 50.0,
+                        child: _buildChips()),
+                    // Expanded(flex: 2, child: _buildChips()),
                     Expanded(
                         flex: 14,
                         child: filteredBusinesses.length != 0

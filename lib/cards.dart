@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:vanderhoof_app/business.dart';
 import 'package:vanderhoof_app/main.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -265,6 +266,8 @@ class BusinessCard extends StatelessWidget {
               if (_isExpanded) {
                 changeMarkerColor(
                     scrollIndex, _markers, listOfFireStoreObjects);
+                setIsCardExpanded(true);
+                setIsScrollingDownList(false);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
