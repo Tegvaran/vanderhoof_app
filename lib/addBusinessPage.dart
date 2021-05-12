@@ -5,7 +5,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:vanderhoof_app/main.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'commonFunction.dart';
 
 class AddBusinessPage extends StatefulWidget {
@@ -182,25 +181,6 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
   void _onSubmitPressed() {
     print("-------------Submit clicked------------");
 
-    CollectionReference business =
-        FirebaseFirestore.instance.collection('businesses');
-    //=========================================
-    //Method to add business to FireStore
-    //=========================================
-    Future<void> addBusiness(Map<String, dynamic> businessInfo) {
-      String docID = businessInfo['name'];
-      if (docID.contains("/")) {
-        docID = docID.replaceAll('/', '|');
-      }
-      return business
-          .doc("$docID")
-          .set(businessInfo)
-          .then((value) => {
-                print("Business Added:  ${docID}"),
-              })
-          .catchError((error) => print("Failed to add Business: $error"));
-    }
-
     //=========================================
     //Validate fields. If successful, then addBusiness()
     //=========================================
@@ -218,12 +198,13 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
           'socialMedia': {'facebook': ".", 'instagram': ".", 'twitter': "."}
         };
         addBusiness(business);
-      });
+        print(business);
 
-      //=========================================
-      //Navigate back to Business Page
-      //=========================================
-      Navigator.pop(context);
+        //=========================================
+        //Navigate back to Business Page
+        //=========================================
+        Navigator.pop(context);
+      });
     }
   }
 }

@@ -95,6 +95,7 @@ class _HikePageState extends State<Hike> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredHikes = hikes;
@@ -122,7 +123,7 @@ class _HikePageState extends State<Hike> {
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return HikeCard(
-                      filteredHikes[index], _scrollController, index);
+                      filteredHikes[index], _scrollController, index, _markers, filteredHikes);
                 })));
   }
 
@@ -154,7 +155,15 @@ class _HikePageState extends State<Hike> {
                       flex: 2,
                       child: Gmap(filteredHikes, _markers),
                     ),
-                    Expanded(flex: 4, child: _buildHikesList()),
+                    Expanded(
+                        flex: 4,
+                        child: filteredHikes.length != 0
+                            ? _buildHikesList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:

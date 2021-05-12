@@ -4,12 +4,85 @@ import 'package:geocoder/geocoder.dart';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
-  var address = await Geocoder.local.findAddressesFromQuery(addr);
+  if (addr == null || addr.startsWith('Vanderhoof')) {
+    return null;
+  }
+  var address;
+  try {
+    address = await Geocoder.local.findAddressesFromQuery(addr);
+  } catch (e) {
+    print("could not get geopoint for address: $addr");
+    return address;
+  }
   var first = address.first;
   var coor = first.coordinates;
   var lat = coor.latitude;
   var lng = coor.longitude;
   return GeoPoint(lat, lng);
+}
+
+//=========================================
+//Method to add business to FireStore
+//=========================================
+Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+// Used to add businesses
+  CollectionReference business =
+      FirebaseFirestore.instance.collection('businesses');
+  return business
+      .add(businessInfo)
+      .then((value) => {
+            print("Business Added:  ${value.id}, ${businessInfo['name']}"),
+            business.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Business: $error"));
+}
+
+void deleteCard(String cardName, String docID, int index, State thisContext,
+    BuildContext context, List filteredList, CollectionReference fireStore) {
+  {
+    // Remove the item from the data source.
+    thisContext.setState(() {
+      filteredList.removeAt(index);
+    });
+    // Delete from fireStore
+    // String docID = businessName.replaceAll('/', '|');
+    fireStore
+        .doc(docID)
+        .delete()
+        .then((value) => print("$docID Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+
+    // Then show a snackbar.
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("$cardName deleted")));
+  }
+}
+
+DateTime addDateTime({DateTime dateTime, String repeatType}) {
+  if (repeatType == 'Daily') {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day + 1,
+        dateTime.hour, dateTime.minute);
+  } else if (repeatType == 'Weekly') {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day + 7,
+        dateTime.hour, dateTime.minute);
+  } else if (repeatType == 'Monthly') {
+    return DateTime(dateTime.year, dateTime.month + 1, dateTime.day,
+        dateTime.hour, dateTime.minute);
+  } else {
+    return DateTime(dateTime.year + 1, dateTime.month, dateTime.day,
+        dateTime.hour, dateTime.minute);
+  }
+}
+
+Future<void> addEvent(event, CollectionReference fireStore) {
+  print("adding to firebase: $event");
+  return fireStore
+      .add(event)
+      .then((value) => {
+            print("Event Added: ${value.id} : ${event['title']}"),
+            fireStore.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Event: $error"));
 }
 
 /// uses a Color with a hex code and returns a MaterialColor object

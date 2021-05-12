@@ -166,6 +166,7 @@ class _RecreationPageState extends State<Recreation> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredRecs = recs;
@@ -305,7 +306,7 @@ class _RecreationPageState extends State<Recreation> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              RecreationalCard(filteredRecs[index], _scrollController, index),
+              RecreationalCard(filteredRecs[index], _scrollController, index, _markers, filteredRecs),
               index);
         },
       )),
@@ -343,7 +344,15 @@ class _RecreationPageState extends State<Recreation> {
                       flex: 4,
                       child: Gmap(filteredRecs, _markers),
                     ),
-                    Expanded(flex: 8, child: _buildRecsList()),
+                    Expanded(
+                        flex: 8,
+                        child: filteredRecs.length != 0
+                            ? _buildRecsList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:

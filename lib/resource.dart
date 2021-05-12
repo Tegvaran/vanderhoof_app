@@ -2,34 +2,33 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/addEventPage.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
 
-class EventState extends StatefulWidget {
-  EventState({Key key}) : super(key: key);
+class ResourceState extends StatefulWidget {
+  ResourceState({Key key}) : super(key: key);
 
-  final title = "Events";
+  final title = "Business Resources";
 
   @override
-  _EventPageState createState() => new _EventPageState();
+  _ResourcePageState createState() => new _ResourcePageState();
 }
 
-class _EventPageState extends State<EventState> {
+class _ResourcePageState extends State<ResourceState> {
   // Events populated from firebase
-  List<Event> events = [];
+  List<Resource> resources = [];
 
   // Events after filtering search - this is whats shown in ListView
-  List<Event> filteredEvents = [];
+  List<Resource> filteredResources = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('events');
+      FirebaseFirestore.instance.collection('resources');
 
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
@@ -37,49 +36,32 @@ class _EventPageState extends State<EventState> {
   bool _isScrollButtonVisible = false;
 
   /// firebase async method to get data
-  Future _getEvents() async {
+  Future _getResources() async {
     await fireStore.get().then((QuerySnapshot snap) {
-      events = filteredEvents = [];
+      resources = filteredResources = [];
       snap.docs.forEach((doc) {
-        Event e = Event(
-          name: doc['title'],
-          address: doc['address'],
-          location: doc['LatLng'],
-          description: doc["description"],
-          datetimeEnd: doc['datetimeEnd'].toDate(),
-          datetimeStart: doc['datetimeStart'].toDate(),
-          id: doc['id'],
-          isMultiday: doc['isMultiday'],
-        );
-        // print('event.dar: ${e.name}');
-        events.add(e);
+        Resource resource = Resource(
+            doc['name'], doc['description'], doc['website'], doc['id']);
+        resources.add(resource);
       });
     });
 
-    // sort all events by starting date
-    events.sort((a, b) {
-      var adate = a.datetimeStart;
-      var bdate = b.datetimeStart;
-      return adate.compareTo(bdate);
-    });
-    print('sorted: ' + events.toString());
-
-    return events;
+    return resources;
   }
 
   /// this method gets firebase data and populates into list of events
   @override
   void initState() {
-    future = _getEvents();
+    future = _getResources();
     super.initState();
   }
 
   /// This method does the logic for search and changes filteredEvents to search results
   void _filterSearchItems(value) {
     setState(() {
-      filteredEvents = events
-          .where(
-              (event) => event.name.toLowerCase().contains(value.toLowerCase()))
+      filteredResources = resources
+          .where((resource) =>
+              resource.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
@@ -100,7 +82,7 @@ class _EventPageState extends State<EventState> {
                     Icons.search,
                     color: Colors.white,
                   ),
-                  hintText: "Search Events",
+                  hintText: "Search Business Resources",
                   hintStyle: TextStyle(color: Colors.white70)),
             ),
       actions: <Widget>[
@@ -111,7 +93,7 @@ class _EventPageState extends State<EventState> {
                   _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
-                    filteredEvents = events;
+                    filteredResources = resources;
                   });
                 },
               )
@@ -128,7 +110,7 @@ class _EventPageState extends State<EventState> {
   }
 
   /// Widget build for Events ListView
-  Widget _buildEventsList() {
+  Widget _buildResourcesList() {
     //=================================================
     // Scrolling Listener + ScrollToTop Button
     //=================================================
@@ -187,7 +169,7 @@ class _EventPageState extends State<EventState> {
     // }
 
     Widget _dismissibleTile(Widget child, int index) {
-      final item = filteredEvents[index];
+      final item = filteredResources[index];
       return Dismissible(
           // direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
@@ -201,24 +183,25 @@ class _EventPageState extends State<EventState> {
             var function = () {
               // _deleteBusiness(item.name, index);
               deleteCard(item.name, item.id, index, this, context,
-                  filteredEvents, fireStore);
+                  filteredResources, fireStore);
               Navigator.of(context).pop(true);
             };
-            if (direction == DismissDirection.startToEnd) {
-              confirm = 'Confirm to go to edit page';
-              bodyMsg = "Would you like to edit this item?";
-              function = () {
-                // Navigator.of(context).pop(false);
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddEventPage(event: item),
-                    ));
-                //
-                //
-              };
-            }
+            //// todo: AddResourcePage.dart and uncomment this edit feature
+            // if (direction == DismissDirection.startToEnd) {
+            //   confirm = 'Confirm to go to edit page';
+            //   bodyMsg = "Would you like to edit this item?";
+            //   function = () {
+            //     // Navigator.of(context).pop(false);
+            //     Navigator.pop(context);
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => AddResourcePage(Resource: item),
+            //         ));
+            //     //
+            //     //
+            //   };
+            // }
             print(item.name);
             return await showDialog(
                 context: context,
@@ -260,18 +243,18 @@ class _EventPageState extends State<EventState> {
     }
 
     //=================================================
-    // Build Widget for EventsList
+    // Build Widget for ResourcesList
     //=================================================
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
-        itemCount: filteredEvents.length,
+        itemCount: filteredResources.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              EventCard(filteredEvents[index], _scrollController, index),
+              ResourceCard(filteredResources[index], _scrollController, index),
               index);
         },
       )),
@@ -303,15 +286,9 @@ class _EventPageState extends State<EventState> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                        flex: 1,
-                        child: filteredEvents.length != 0
-                            ? _buildEventsList()
-                            : Container(
-                                child: Center(
-                                child: Text("No results found",
-                                    style: titleTextStyle),
-                              ))),
+                    // todo: add logo widget
+                    Expanded(flex: 2, child: Text("vcc logo widget")),
+                    Expanded(flex: 8, child: _buildResourcesList()),
                   ],
                 );
               default:

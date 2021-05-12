@@ -11,9 +11,9 @@ import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'scraper.dart';
 
 import 'main.dart';
-import 'map.dart';
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -23,6 +23,8 @@ class BusinessState extends StatefulWidget {
   @override
   _BusinessPageState createState() => new _BusinessPageState();
 }
+
+List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
   // Businesses populated from firebase
@@ -102,7 +104,8 @@ class _BusinessPageState extends State<BusinessState> {
             doc['socialMedia'],
             doc['website'],
             doc['imgURL'],
-            doc['category']);
+            doc['category'],
+            doc['id']);
         businesses.add(b);
       });
     });
@@ -168,6 +171,11 @@ class _BusinessPageState extends State<BusinessState> {
                 ));
           },
         ),
+        ListTile(
+          leading: Icon(Icons.ac_unit),
+          title: Text("Test Scraper"),
+          onTap: () => scrap(true),
+        ),
       ],
     ));
   }
@@ -196,7 +204,7 @@ class _BusinessPageState extends State<BusinessState> {
             ? IconButton(
                 icon: Icon(Icons.cancel),
                 onPressed: () {
-                  _filterSearchItems('');
+                  _filterSearchItems("");
                   setState(() {
                     this.isSearching = false;
                     filteredBusinesses = businesses;
@@ -255,18 +263,18 @@ class _BusinessPageState extends State<BusinessState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, int index) {
+    void _deleteBusiness(String businessName, String docID, int index) {
       {
         // Remove the item from the data source.
         setState(() {
           filteredBusinesses.removeAt(index);
         });
         // Delete from fireStore
-        String docID = businessName.replaceAll('/', '|');
+        // String docID = businessName.replaceAll('/', '|');
         fireStore
             .doc(docID)
             .delete()
-            .then((value) => print("$businessName Deleted"))
+            .then((value) => print("$docID Deleted"))
             .catchError((error) => print("Failed to delete user: $error"));
 
         // Then show a snackbar.
@@ -306,7 +314,7 @@ class _BusinessPageState extends State<BusinessState> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
+                          _deleteBusiness(item.name, item.id, index);
                           Navigator.of(context).pop(true);
                         },
                       ),
@@ -336,13 +344,15 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index),
+              BusinessCard(filteredBusinesses[index], _scrollController, index, _markers, filteredBusinesses),
               index);
         },
       )),
       floatingActionButton: _buildScrollToTopButton(),
     );
   }
+
+
 
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
@@ -390,6 +400,8 @@ class _BusinessPageState extends State<BusinessState> {
           padding: EdgeInsets.symmetric(horizontal: 10), child: choiceChip));
     }
 
+    chips2 = chips;
+
     return ListView(
       // This next line does the trick.
       scrollDirection: Axis.horizontal,
@@ -428,7 +440,15 @@ class _BusinessPageState extends State<BusinessState> {
                       child: Gmap(filteredBusinesses, _markers),
                     ),
                     Expanded(flex: 1, child: _buildChips()),
-                    Expanded(flex: 8, child: _buildBusinessesList()),
+                    Expanded(
+                        flex: 8,
+                        child: filteredBusinesses.length != 0
+                            ? _buildBusinessesList()
+                            : Container(
+                                child: Center(
+                                child: Text("No results found",
+                                    style: titleTextStyle),
+                              ))),
                   ],
                 );
               default:

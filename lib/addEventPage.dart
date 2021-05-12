@@ -2,19 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:vanderhoof_app/fireStoreObjects.dart';
+import 'package:vanderhoof_app/event.dart';
 
 class AddEventPage extends StatefulWidget {
+  final Event event;
+  AddEventPage({edit = false, this.event}) {
+    print(event);
+  }
   @override
-  _AddEventPageSate createState() => _AddEventPageSate();
+  _AddEventPageState createState() => _AddEventPageState(event: event);
 }
 
-class _AddEventPageSate extends State<AddEventPage> {
+class _AddEventPageState extends State<AddEventPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
   bool multiday = false;
+  bool recurring = false;
+  Event event;
+  var recurringEventOptions = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+
+  _AddEventPageState({this.event}) {
+    if (event != null) {
+      multiday = event.isMultiday;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,99 +59,236 @@ class _AddEventPageSate extends State<AddEventPage> {
                                 children: [
                                   GFTypography(
                                     type: GFTypographyType.typo1,
-                                    text: 'New Event information',
+                                    text: (event == null)
+                                        ? 'New Event information'
+                                        : "Edit Event",
                                   ),
                                   SizedBox(height: 20),
                                   _getTextField(
-                                      "title",
-                                      "Event Title",
-                                      "name of the event",
-                                      Icon(Icons.shopping_basket_outlined)),
+                                      name: "title",
+                                      labelText: "Event Title",
+                                      hintText: "name of the event",
+                                      initialValue:
+                                          (event == null) ? null : event.name,
+                                      icon:
+                                          Icon(Icons.shopping_basket_outlined)),
                                   _getTextField(
-                                      "description",
-                                      "Description",
-                                      "description of event",
-                                      Icon(Icons.description_outlined)),
-                                  Column(
-                                    children: <Widget>[
-                                      FormBuilderCheckbox(
-                                        initialValue: false,
-                                        name: "dateCheckbox",
-                                        title:
-                                            Text("Is this a Multi-day Event?"),
-                                        onChanged: (bool changed) {
-                                          setState(() {
-                                            multiday = changed;
-                                          });
-                                        },
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 15),
-                                        child: (multiday)
-                                            ? FormBuilderDateRangePicker(
-                                                decoration: InputDecoration(
-                                                  labelText: "Multi-Day Event",
-                                                  hintText:
-                                                      "pick  start and end date",
-                                                  icon: Icon(Icons
-                                                      .calendar_today_sharp),
-                                                  floatingLabelBehavior:
-                                                      FloatingLabelBehavior
-                                                          .always,
-                                                  border: OutlineInputBorder(
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                      const Radius.circular(
-                                                          10.0),
-                                                    ),
+                                      name: "address",
+                                      labelText: "Address",
+                                      hintText: "address of event",
+                                      initialValue: (event == null)
+                                          ? null
+                                          : event.address,
+                                      icon: Icon(
+                                          Icons.add_location_alt_outlined)),
+                                  _getTextField(
+                                      name: "description",
+                                      labelText: "Description",
+                                      hintText: "description of event",
+                                      initialValue: (event == null)
+                                          ? null
+                                          : event.description,
+                                      icon: Icon(Icons.description_outlined)),
+                                  if (event == null)
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: FormBuilderSwitch(
+                                            initialValue: false,
+                                            name: "isMultiday",
+                                            title: Text("Multi-day Event?"),
+                                            decoration: InputDecoration(
+                                              border: InputBorder.none,
+                                            ),
+                                            onChanged: (bool changed) {
+                                              setState(() {
+                                                multiday = changed;
+                                                recurring = false;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                        (multiday)
+                                            ? Spacer()
+                                            : Flexible(
+                                                child: FormBuilderSwitch(
+                                                  initialValue: false,
+                                                  name: "isRecurring",
+                                                  title:
+                                                      Text("Recurring Event?"),
+                                                  decoration: InputDecoration(
+                                                    border: InputBorder.none,
                                                   ),
+                                                  onChanged: (bool changed) {
+                                                    setState(() {
+                                                      recurring = changed;
+                                                    });
+                                                  },
                                                 ),
-                                                name: "dateRange",
-                                                firstDate: DateTime(2020),
-                                                lastDate: DateTime(2021))
-                                            : Column(
-                                                children: [
-                                                  FormBuilderDateTimePicker(
-                                                    name: "datetimeStart",
-                                                    validator:
-                                                        FormBuilderValidators
-                                                            .required(context),
-                                                    decoration: InputDecoration(
-                                                      labelText:
-                                                          "Event Date/Time",
-                                                      hintText:
-                                                          "pick date and time",
-                                                      icon: Icon(Icons
-                                                          .calendar_today_sharp),
-                                                      floatingLabelBehavior:
-                                                          FloatingLabelBehavior
-                                                              .always,
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                .all(
-                                                          const Radius.circular(
-                                                              10.0),
-                                                        ),
+                                              )
+                                      ],
+                                    ),
+                                  // The Container below only appears if recurring
+                                  // is true.
+                                  // The Container below contains the dateRange
+                                  // Picker OR the DateTime Picker, depending on
+                                  // the boolean: multiday.
+                                  Container(
+                                    margin: EdgeInsets.only(top: 15),
+                                    child: (multiday)
+                                        ? FormBuilderDateRangePicker(
+                                            firstDate: (event != null)
+                                                ? event.datetimeStart
+                                                : DateTime.now(),
+                                            lastDate: (event != null)
+                                                ? event.datetimeEnd
+                                                : DateTime.now()
+                                                    .add(Duration(days: 365)),
+                                            initialValue: (event != null)
+                                                ? DateTimeRange(
+                                                    start: event.datetimeStart,
+                                                    end: event.datetimeEnd)
+                                                : null,
+                                            decoration: InputDecoration(
+                                              labelText: "Multi-Day Event",
+                                              hintText:
+                                                  "pick start and end date",
+                                              icon: Icon(
+                                                  Icons.calendar_today_sharp),
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.always,
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                  const Radius.circular(10.0),
+                                                ),
+                                              ),
+                                            ),
+                                            name: "dateRange",
+                                          )
+                                        : Column(
+                                            children: [
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 15),
+                                                child:
+                                                    FormBuilderDateTimePicker(
+                                                  initialValue: (event == null)
+                                                      ? null
+                                                      : event.datetimeStart,
+                                                  name: "datetimeStart",
+                                                  validator:
+                                                      FormBuilderValidators
+                                                          .required(context),
+                                                  decoration: InputDecoration(
+                                                    labelText:
+                                                        "Event Start Date/Time",
+                                                    hintText:
+                                                        "pick date and time",
+                                                    icon: Icon(Icons
+                                                        .calendar_today_sharp),
+                                                    floatingLabelBehavior:
+                                                        FloatingLabelBehavior
+                                                            .always,
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                              .all(
+                                                        const Radius.circular(
+                                                            10.0),
                                                       ),
                                                     ),
                                                   ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 15),
-                                                    child: FormBuilderTextField(
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      name: "duration",
-                                                      // onTap: () => {},
+                                                ),
+                                              ),
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 15),
+                                                child:
+                                                    FormBuilderDateTimePicker(
+                                                  initialValue: (event == null)
+                                                      ? null
+                                                      : event.datetimeEnd,
+                                                  name: "timeEnd",
+                                                  inputType: InputType.time,
+                                                  validator:
+                                                      FormBuilderValidators
+                                                          .required(context),
+                                                  decoration: InputDecoration(
+                                                    labelText: "Event End Time",
+                                                    hintText: "pick end time",
+                                                    icon: Icon(Icons
+                                                        .description_outlined),
+                                                    floatingLabelBehavior:
+                                                        FloatingLabelBehavior
+                                                            .always,
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                              .all(
+                                                        const Radius.circular(
+                                                            10.0),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                // FormBuilderTextField(
+                                                //   initialValue: (event == null)
+                                                //       ? null
+                                                //       : "${event.duration}",
+                                                //   keyboardType:
+                                                //       TextInputType.number,
+                                                //   name: "duration",
+                                                //   validator:
+                                                //       FormBuilderValidators
+                                                //           .required(context),
+                                                //   // onTap: () => {},
+                                                //   decoration: InputDecoration(
+                                                //     labelText:
+                                                //         "Event duration (hr)",
+                                                //     hintText: "in hours",
+                                                //     icon: Icon(Icons
+                                                //         .description_outlined),
+                                                //     floatingLabelBehavior:
+                                                //         FloatingLabelBehavior
+                                                //             .always,
+                                                //     border: OutlineInputBorder(
+                                                //       borderRadius:
+                                                //           const BorderRadius
+                                                //               .all(
+                                                //         const Radius.circular(
+                                                //             10.0),
+                                                //       ),
+                                                //     ),
+                                                //   ),
+                                                // ),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+
+                                  Container(
+                                    margin: (event != null)
+                                        ? EdgeInsets.only(top: 15)
+                                        : EdgeInsets.only(top: 0),
+                                    child: (recurring)
+                                        ? Column(
+                                            children: [
+                                              Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 15),
+                                                  child: FormBuilderDropdown(
+                                                      validator:
+                                                          FormBuilderValidators
+                                                              .required(
+                                                                  context),
+                                                      name: "recurringType",
+                                                      hint: Text("None"),
                                                       decoration:
                                                           InputDecoration(
                                                         labelText:
-                                                            "Event duration",
-                                                        hintText: "in hours",
-                                                        icon: Icon(Icons
-                                                            .description_outlined),
+                                                            "Recurring Type?",
+                                                        icon: Icon(Icons.timer),
                                                         floatingLabelBehavior:
                                                             FloatingLabelBehavior
                                                                 .always,
@@ -149,12 +302,95 @@ class _AddEventPageSate extends State<AddEventPage> {
                                                           ),
                                                         ),
                                                       ),
+                                                      allowClear: true,
+                                                      items: recurringEventOptions
+                                                          .map((choice) =>
+                                                              DropdownMenuItem(
+                                                                  value: choice,
+                                                                  child: Text(
+                                                                      "$choice")))
+                                                          .toList())),
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 15),
+                                                child:
+                                                    FormBuilderDateTimePicker(
+                                                  name: "recurringEnd",
+                                                  validator:
+                                                      FormBuilderValidators
+                                                          .required(context),
+                                                  inputType: InputType.date,
+                                                  decoration: InputDecoration(
+                                                    labelText:
+                                                        "Recurring End Date",
+                                                    hintText: "pick end date ",
+                                                    icon: Icon(Icons
+                                                        .calendar_today_sharp),
+                                                    floatingLabelBehavior:
+                                                        FloatingLabelBehavior
+                                                            .always,
+                                                    border: OutlineInputBorder(
+                                                      borderRadius:
+                                                          const BorderRadius
+                                                              .all(
+                                                        const Radius.circular(
+                                                            10.0),
+                                                      ),
                                                     ),
                                                   ),
-                                                ],
+                                                ),
                                               ),
-                                      ),
-                                    ],
+
+                                              // Flexible(
+                                              //     child: Container(
+                                              //         margin: EdgeInsets.only(
+                                              //             bottom: 15),
+                                              //         child:
+                                              //             FormBuilderDropdown(
+                                              //                 validator:
+                                              //                     FormBuilderValidators
+                                              //                         .required(
+                                              //                             context),
+                                              //                 hint:
+                                              //                     Text("1 - 6"),
+                                              //                 name:
+                                              //                     "recurringRepeats",
+                                              //                 decoration:
+                                              //                     InputDecoration(
+                                              //                   icon: Spacer(),
+                                              //                   labelText:
+                                              //                       "Number of times?",
+                                              //                   floatingLabelBehavior:
+                                              //                       FloatingLabelBehavior
+                                              //                           .always,
+                                              //                   border:
+                                              //                       OutlineInputBorder(
+                                              //                     borderRadius:
+                                              //                         const BorderRadius
+                                              //                             .all(
+                                              //                       const Radius
+                                              //                               .circular(
+                                              //                           10.0),
+                                              //                     ),
+                                              //                   ),
+                                              //                 ),
+                                              //                 allowClear: true,
+                                              //                 items: List
+                                              //                         .generate(
+                                              //                             11,
+                                              //                             (i) =>
+                                              //                                 i +
+                                              //                                 1)
+                                              //                     .map((choice) =>
+                                              //                         DropdownMenuItem(
+                                              //                             value:
+                                              //                                 choice,
+                                              //                             child:
+                                              //                                 Text("$choice")))
+                                              //                     .toList())))
+                                            ],
+                                          )
+                                        : null,
                                   ),
                                   SizedBox(height: 20),
                                   Row(
@@ -207,17 +443,17 @@ class _AddEventPageSate extends State<AddEventPage> {
   }
 
   Widget _getTextField(
-    String name,
-    String labelText,
-    String hintText,
-    Icon icon,
-  ) {
+      {String name,
+      String labelText,
+      String hintText,
+      Icon icon,
+      String initialValue}) {
     var formValidator = FormBuilderValidators.required(context);
 
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: FormBuilderTextField(
-        keyboardType: TextInputType.number,
+        initialValue: initialValue,
         name: name,
         validator: formValidator,
         decoration: InputDecoration(
@@ -243,31 +479,64 @@ class _AddEventPageSate extends State<AddEventPage> {
     //=========================================
     //Method to add business to FireStore
     //=========================================
-    Future<void> addEvent(Map<String, dynamic> event) {
-      Map<String, dynamic> eventInfo = {...event};
-      String docID = eventInfo['title'];
-      if (docID.contains("/")) {
-        docID = docID.replaceAll('/', '|');
+    Future<void> _addEvent(Map<String, dynamic> event) {
+      void _addRepeatingEvent(var event) {
+        String repeatType = event['recurringType'];
+        DateTime end =
+            event['recurringEnd'].add(Duration(hours: 23, minutes: 59));
+        event.remove('recurringType');
+        event.remove('recurringEnd');
+        while (event['datetimeStart'].isBefore(end)) {
+          addEvent(event, fireStore);
+          event['datetimeStart'] = addDateTime(
+              dateTime: event['datetimeStart'], repeatType: repeatType);
+          event['datetimeEnd'] = addDateTime(
+              dateTime: event['datetimeEnd'], repeatType: repeatType);
+        }
       }
+
+      Map<String, dynamic> eventInfo = {...event};
+      eventInfo['LatLng'] = null;
       if (multiday) {
         eventInfo['datetimeStart'] = eventInfo['dateRange'].start;
         eventInfo['datetimeEnd'] = eventInfo['dateRange'].end;
         eventInfo.remove('dateRange');
-        eventInfo['duration'] = eventInfo['datetimeEnd']
-            .difference(eventInfo['datetimeStart'])
-            .inDays;
       } else {
-        double duration = double.parse(eventInfo['duration']);
-        int hour = duration.toInt();
-        int min = (duration % 1 * 60).toInt();
-        eventInfo['datetimeEnd'] =
-            eventInfo['datetimeStart'].add(Duration(hours: hour, minutes: min));
+        eventInfo['datetimeEnd'] = DateTime(
+            event['datetimeStart'].year,
+            event['datetimeStart'].month,
+            event['datetimeStart'].day,
+            event['timeEnd'].hour,
+            event['timeEnd'].minute);
+        eventInfo.remove('timeEnd');
       }
-      return fireStore
-          .doc()
-          .set(eventInfo)
+      eventInfo.remove('isRecurring');
+      if (recurring) {
+        _addRepeatingEvent(eventInfo);
+      } else {
+        return addEvent(eventInfo, fireStore);
+      }
+    }
+
+    Future<void> _editEvent(Map<String, dynamic> form) {
+      DateTime timeEnd = DateTime(
+          form['datetimeStart'].year,
+          form['datetimeStart'].month,
+          form['datetimeStart'].day,
+          form['timeEnd'].hour,
+          form['timeEnd'].minute);
+      fireStore
+          .doc(event.id)
+          .update({
+            'title': form['title'],
+            'address': form['address'],
+            'description': form['description'],
+            'datetimeStart': form['datetimeStart'],
+            'datetimeEnd': timeEnd,
+          })
           .then((value) => {
-                print("Event Added:  $docID"),
+                print("Event updated: ${event.id} : ${event.name}"),
+                fireStore.doc(event.id).update({"id": event.id})
               })
           .catchError((error) => print("Failed to add Event: $error"));
     }
@@ -279,10 +548,23 @@ class _AddEventPageSate extends State<AddEventPage> {
     if (validationSuccess) {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
-      addEvent(_formKey.currentState.value);
 
-      //Navigate back to Previous Page
-      // Navigator.pop(context);
+      if (event == null) {
+        print("adding event");
+        _addEvent(_formKey.currentState.value);
+      } else {
+        print("editing event");
+        _editEvent(_formKey.currentState.value);
+      }
+
+      // Navigate back to Previous Page
+      Navigator.pop(context);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventState(),
+          ));
     }
   }
 }
