@@ -1,18 +1,19 @@
 import 'dart:collection';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'package:awesome_loader/awesome_loader.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'scraper.dart';
-
 import 'main.dart';
 
 class BusinessState extends StatefulWidget {
@@ -80,6 +81,7 @@ class _BusinessPageState extends State<BusinessState> {
     String _parsePhoneNumber(String phone) {
       String parsedPhone = "";
       if (phone != null && phone.trim() != "" && phone != ".") {
+        phone = phone.replaceAll(new RegExp(r'[^\d]+'), "");
         parsedPhone = "(" +
             phone.substring(0, 3) +
             ") " +
@@ -248,14 +250,6 @@ class _BusinessPageState extends State<BusinessState> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    void scrollToIndex(int index) {
-      _scrollController.scrollTo(
-        index: index,
-        duration: Duration(seconds: 1),
-        curve: Curves.easeInOut,
-      );
-    }
 
     Widget _buildScrollToTopButton() {
       return _isScrollButtonVisible
@@ -440,10 +434,21 @@ class _BusinessPageState extends State<BusinessState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

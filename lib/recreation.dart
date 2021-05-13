@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:awesome_loader/awesome_loader.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,6 +51,7 @@ class _RecreationPageState extends State<Recreation> {
     String _parsePhoneNumber(String phone) {
       String parsedPhone = "";
       if (phone != null && phone.trim() != "" && phone != ".") {
+        phone = phone.replaceAll(new RegExp(r'[^\d]+'), "");
         parsedPhone = "(" +
             phone.substring(0, 3) +
             ") " +
@@ -64,13 +66,13 @@ class _RecreationPageState extends State<Recreation> {
     await fireStore.get().then((QuerySnapshot snap) {
       recs = filteredRecs = [];
       snap.docs.forEach((doc) {
-        // String phone = _parsePhoneNumber(doc['phone']);
+        String phone = _parsePhoneNumber(doc['phone']);
         Recreational b = Recreational(
             doc['name'],
             doc['address'],
             doc['LatLng'],
             doc["description"],
-            doc["phone"],
+            phone,
             doc['email'],
             doc['website']);
         recs.add(b);
@@ -331,10 +333,21 @@ class _RecreationPageState extends State<Recreation> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

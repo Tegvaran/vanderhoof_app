@@ -1,3 +1,4 @@
+import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -276,10 +277,21 @@ class _ResourcePageState extends State<ResourceState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
