@@ -45,6 +45,7 @@ HashSet<Marker> resetMarkers(
             position: filteredFireStoreObjects[i].location,
             onTap: () {
               scrollToIndex(scrollController, i);
+              changeMarkerColor(i, markers, filteredFireStoreObjects, scrollController);
             },
             infoWindow: InfoWindow(
               title: filteredFireStoreObjects[i].name,
@@ -58,7 +59,7 @@ HashSet<Marker> resetMarkers(
 
 void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   //remove marker at expansion card index
-  // markers.remove(markers.elementAt(index));
+  //markers.remove(markers.elementAt(index));
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
     print("fireObject\n" + fireStoreObjects[index].name);
@@ -78,6 +79,13 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
     );
   }
   return markers;
+}
+
+
+
+GoogleMapController mapController;
+void changeCamera(LatLng pos) {
+  mapController.moveCamera(CameraUpdate.newLatLng(pos));
 }
 
 Future<LatLng> toLatLng(String addr) async {
@@ -118,6 +126,7 @@ class GmapState extends State<Gmap> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    mapController = _mapController;
 
     //run marker adapter
     setState(() {
@@ -130,8 +139,8 @@ class GmapState extends State<Gmap> {
                 markerId: MarkerId(i.toString()),
                 position: listOfFireStoreObjects[i].location,
                 onTap: () {
-                  // listOfFireStoreObjects[i].
                   scrollToIndex(scrollController, i);
+                  changeMarkerColor(i, _markers, listOfFireStoreObjects, scrollController);
                 },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
@@ -150,6 +159,10 @@ class GmapState extends State<Gmap> {
       mapType: mapType,
       markers: _markers,
       onMapCreated: _onMapCreated,
+      onTap: (latLng) {
+        print(latLng);
+        resetMarkers(_markers, listOfFireStoreObjects, scrollController);
+      },
       myLocationEnabled: true,
     );
   }
