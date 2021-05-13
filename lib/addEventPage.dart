@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+// import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
@@ -8,6 +9,12 @@ import 'package:vanderhoof_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:vanderhoof_app/event.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+// import 'image_source_sheet.dart';
+// import 'package:firebase_core/firebase_core.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
@@ -25,6 +32,36 @@ class _AddEventPageState extends State<AddEventPage> {
   bool recurring = false;
   Event event;
   var recurringEventOptions = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+  /////////////////////
+  String _imagePath;
+  final picker = ImagePicker();
+  Future<void> uploadFile(String filePath) async {
+    File file = File(filePath);
+
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/file-to-upload.png')
+          .putFile(file);
+    } catch (e) {
+      print(e);
+      // e.g, e.code == 'canceled'
+    }
+  }
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    // setState(() {
+    if (pickedFile != null) {
+      print("not null");
+      _imagePath = pickedFile.path;
+      print("=================:$_imagePath");
+      // uploadFile(pickedFile.path);
+    } else {
+      print('No image selected.');
+    }
+    // });
+  }
 
   _AddEventPageState({this.event}) {
     if (event != null) {
@@ -134,7 +171,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   // Picker OR the DateTime Picker, depending on
                                   // the boolean: multiday.
                                   Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: (event != null)
+                                        ? EdgeInsets.only(top: 15)
+                                        : null,
                                     child: (multiday)
                                         ? FormBuilderDateRangePicker(
                                             firstDate: (event != null)
@@ -169,8 +208,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                         : Column(
                                             children: [
                                               Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 15),
                                                 child:
                                                     FormBuilderDateTimePicker(
                                                   initialValue: (event == null)
@@ -232,36 +269,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                // FormBuilderTextField(
-                                                //   initialValue: (event == null)
-                                                //       ? null
-                                                //       : "${event.duration}",
-                                                //   keyboardType:
-                                                //       TextInputType.number,
-                                                //   name: "duration",
-                                                //   validator:
-                                                //       FormBuilderValidators
-                                                //           .required(context),
-                                                //   // onTap: () => {},
-                                                //   decoration: InputDecoration(
-                                                //     labelText:
-                                                //         "Event duration (hr)",
-                                                //     hintText: "in hours",
-                                                //     icon: Icon(Icons
-                                                //         .description_outlined),
-                                                //     floatingLabelBehavior:
-                                                //         FloatingLabelBehavior
-                                                //             .always,
-                                                //     border: OutlineInputBorder(
-                                                //       borderRadius:
-                                                //           const BorderRadius
-                                                //               .all(
-                                                //         const Radius.circular(
-                                                //             10.0),
-                                                //       ),
-                                                //     ),
-                                                //   ),
-                                                // ),
                                               ),
                                             ],
                                           ),
@@ -340,59 +347,82 @@ class _AddEventPageState extends State<AddEventPage> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // Flexible(
-                                              //     child: Container(
-                                              //         margin: EdgeInsets.only(
-                                              //             bottom: 15),
-                                              //         child:
-                                              //             FormBuilderDropdown(
-                                              //                 validator:
-                                              //                     FormBuilderValidators
-                                              //                         .required(
-                                              //                             context),
-                                              //                 hint:
-                                              //                     Text("1 - 6"),
-                                              //                 name:
-                                              //                     "recurringRepeats",
-                                              //                 decoration:
-                                              //                     InputDecoration(
-                                              //                   icon: Spacer(),
-                                              //                   labelText:
-                                              //                       "Number of times?",
-                                              //                   floatingLabelBehavior:
-                                              //                       FloatingLabelBehavior
-                                              //                           .always,
-                                              //                   border:
-                                              //                       OutlineInputBorder(
-                                              //                     borderRadius:
-                                              //                         const BorderRadius
-                                              //                             .all(
-                                              //                       const Radius
-                                              //                               .circular(
-                                              //                           10.0),
-                                              //                     ),
-                                              //                   ),
-                                              //                 ),
-                                              //                 allowClear: true,
-                                              //                 items: List
-                                              //                         .generate(
-                                              //                             11,
-                                              //                             (i) =>
-                                              //                                 i +
-                                              //                                 1)
-                                              //                     .map((choice) =>
-                                              //                         DropdownMenuItem(
-                                              //                             value:
-                                              //                                 choice,
-                                              //                             child:
-                                              //                                 Text("$choice")))
-                                              //                     .toList())))
                                             ],
                                           )
                                         : null,
                                   ),
-                                  SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: Center(
+                                              child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 15),
+                                                  child: ElevatedButton(
+                                                    onPressed: getImage,
+                                                    child: Text('Image'),
+                                                  )))),
+                                      // if (_imagePath != null)
+                                      //   Expanded(
+                                      //       child: Center(
+                                      //           child: Text("File selected"))),
+                                      Spacer(),
+                                      Spacer()
+                                    ],
+                                  ),
+                                  // if (_imagePath != null)
+                                  //   Container(
+                                  //       width: 50,
+                                  //       height: 50,
+                                  //       child: Image.file(File(_imagePath))),
+                                  ////////////////////////
+                                  // FormBuilderImagePicker(
+                                  //   name: 'image',
+                                  //   decoration: const InputDecoration(
+                                  //       labelText: 'Pick Photos'),
+                                  //   // maxImages: 1,
+                                  // ),
+
+                                  // ImageSourceBottomShee
+                                  SizedBox(
+                                    height: 32,
+                                  ),
+                                  // Center(
+                                  //   child: GestureDetector(
+                                  //     onTap:
+                                  //         // _showPicker(context);
+                                  //         getImage,
+                                  //     child: CircleAvatar(
+                                  //       radius: 55,
+                                  //       backgroundColor: Color(0xffFDCF09),
+                                  //       child: _imagePath != null
+                                  //           ? ClipRRect(
+                                  //               borderRadius:
+                                  //                   BorderRadius.circular(50),
+                                  //               child: Image.file(
+                                  //                 File(_imagePath),
+                                  //                 width: 100,
+                                  //                 height: 100,
+                                  //                 fit: BoxFit.fitHeight,
+                                  //               ),
+                                  //             )
+                                  //           : Container(
+                                  //               decoration: BoxDecoration(
+                                  //                   color: Colors.grey[200],
+                                  //                   borderRadius:
+                                  //                       BorderRadius.circular(
+                                  //                           50)),
+                                  //               width: 100,
+                                  //               height: 100,
+                                  //               child: Icon(
+                                  //                 Icons.camera_alt,
+                                  //                 color: Colors.grey[800],
+                                  //               ),
+                                  //             ),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  SizedBox(height: 10),
                                   Row(
                                     children: [
                                       const Spacer(),
@@ -417,7 +447,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                               child: ElevatedButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('Cancel'),
-                                      )))
+                                      ))),
                                     ],
                                   ),
                                 ],
@@ -568,3 +598,55 @@ class _AddEventPageState extends State<AddEventPage> {
     }
   }
 }
+
+// _imgFromCamera() async {
+//   File image = await ImagePicker.getImage(
+//       source: ImageSource.camera, imageQuality: 50
+//   );
+//
+//   setState(() {
+//     _image = image;
+//   });
+// }
+
+// _imgFromGallery() async {
+//   final imagePath = await  ImagePicker.getImage(
+//       source: ImageSource.gallery, imageQuality: 50
+//   );
+//   File image = File(imagePath);
+//
+//   setState(() {
+//     _image = image;
+//   });
+// }
+//
+// void _showPicker(context) {
+//   showModalBottomSheet(
+//       context: context,
+//       builder: (BuildContext bc) {
+//         return SafeArea(
+//           child: Container(
+//             child: new Wrap(
+//               children: <Widget>[
+//                 new ListTile(
+//                     leading: new Icon(Icons.photo_library),
+//                     title: new Text('Photo Library'),
+//                     onTap: () {
+//                       _imgFromGallery();
+//                       Navigator.of(context).pop();
+//                     }),
+//                 // new ListTile(
+//                 //   leading: new Icon(Icons.photo_camera),
+//                 //   title: new Text('Camera'),
+//                 //   onTap: () {
+//                 //     _imgFromCamera();
+//                 //     Navigator.of(context).pop();
+//                 //   },
+//                 // ),
+//               ],
+//             ),
+//           ),
+//         );
+//       }
+//   );
+// }
