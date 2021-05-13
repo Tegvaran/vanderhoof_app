@@ -317,31 +317,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                           )
                                         : null,
                                   ),
-                                  // Row(
-                                  //   children: [
-                                  //     Expanded(
-                                  //         child: Center(
-                                  //             child: Container(
-                                  //                 margin:
-                                  //                     EdgeInsets.only(top: 15),
-                                  //                 child: ElevatedButton(
-                                  //                   onPressed: getImage,
-                                  //                   child: Text('Image'),
-                                  //                 )))),
-                                  //     if (_imagePath != null)
-                                  //       Expanded(
-                                  //           child: Center(
-                                  //               child: Text("File selected"))),
-                                  //     Spacer(),
-                                  //     Spacer()
-                                  //   ],
-                                  // ),
-                                  // if (_imagePath != null)
-                                  //   Container(
-                                  //       width: 50,
-                                  //       height: 50,
-                                  //       child: Image.file(File(_imagePath))),
-                                  //////////////////////
                                   FormBuilderImagePicker(
                                     name: 'image',
                                     decoration: const InputDecoration(
@@ -349,58 +324,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                     ),
                                     maxImages: 1,
                                   ),
-                                  // Center(
-                                  //   child: GestureDetector(
-                                  //     onTap:
-                                  //         // _showPicker(context);
-                                  //         getImage,
-                                  //     child: Stack(children: [
-                                  //       CircleAvatar(
-                                  //         radius: 55,
-                                  //         backgroundColor: Color(0xffFDCF09),
-                                  //         child: _imagePath != null
-                                  //             ? ClipRRect(
-                                  //                 borderRadius:
-                                  //                     BorderRadius.circular(50),
-                                  //                 child: Image.file(
-                                  //                   File(_imagePath),
-                                  //                   width: 100,
-                                  //                   height: 100,
-                                  //                   fit: BoxFit.fitHeight,
-                                  //                 ),
-                                  //               )
-                                  //             : Container(
-                                  //                 decoration: BoxDecoration(
-                                  //                     color: Colors.grey[200],
-                                  //                     borderRadius:
-                                  //                         BorderRadius.circular(
-                                  //                             50)),
-                                  //                 width: 100,
-                                  //                 height: 100,
-                                  //                 child: Icon(
-                                  //                   Icons.camera_alt,
-                                  //                   color: Colors.grey[800],
-                                  //                 ),
-                                  //               ),
-                                  //       ),
-                                  //       Positioned(
-                                  //         top: 0,
-                                  //         right: 0,
-                                  //         child: GestureDetector(
-                                  //           // onTap: (){
-                                  //           //   print('delete image from List');
-                                  //           //   setState((){
-                                  //           //     print('set new state of images');
-                                  //           //   })
-                                  //           // },
-                                  //           child: Icon(
-                                  //             Icons.clear,
-                                  //           ),
-                                  //         ),
-                                  //       ),
-                                  //     ]),
-                                  //   ),
-                                  // ),
                                   SizedBox(height: 10),
                                   Row(
                                     children: [
