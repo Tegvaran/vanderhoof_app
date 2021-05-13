@@ -116,7 +116,6 @@ class GmapState extends State<Gmap> {
   static final CameraPosition _kGooglePlex =
       CameraPosition(target: LatLng(54.0117956, -124.0177679), zoom: 13);
 
-
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
 
