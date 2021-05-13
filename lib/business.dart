@@ -128,8 +128,16 @@ class _BusinessPageState extends State<BusinessState> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      resetMarkers(_markers, filteredBusinesses);
+      resetMarkers(_markers, filteredBusinesses, _scrollController);
     });
+  }
+
+  void scrollToIndex(int index) {
+    _scrollController.scrollTo(
+      index: index,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Widget build for Admin Menu Hamburger Drawer
@@ -240,6 +248,14 @@ class _BusinessPageState extends State<BusinessState> {
             : _isScrollButtonVisible = false;
       });
     });
+
+    void scrollToIndex(int index) {
+      _scrollController.scrollTo(
+        index: index,
+        duration: Duration(seconds: 1),
+        curve: Curves.easeInOut,
+      );
+    }
 
     Widget _buildScrollToTopButton() {
       return _isScrollButtonVisible
@@ -368,7 +384,7 @@ class _BusinessPageState extends State<BusinessState> {
             return false;
           }
         }).toList();
-        resetMarkers(_markers, filteredBusinesses);
+        resetMarkers(_markers, filteredBusinesses, _scrollController);
       });
     }
 
@@ -389,7 +405,7 @@ class _BusinessPageState extends State<BusinessState> {
             } else {
               _selectedIndex = null;
               filteredBusinesses = businesses;
-              resetMarkers(_markers, filteredBusinesses);
+              resetMarkers(_markers, filteredBusinesses, _scrollController);
             }
           });
         },
@@ -436,7 +452,8 @@ class _BusinessPageState extends State<BusinessState> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 9,
-                      child: Gmap(filteredBusinesses, _markers),
+                      child:
+                          Gmap(filteredBusinesses, _markers, _scrollController),
                     ),
                     Expanded(flex: 2, child: _buildChips()),
                     Expanded(

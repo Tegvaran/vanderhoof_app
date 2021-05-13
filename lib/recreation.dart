@@ -95,7 +95,7 @@ class _RecreationPageState extends State<Recreation> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      resetMarkers(_markers, filteredRecs);
+      resetMarkers(_markers, filteredRecs, _scrollController);
     });
   }
 
@@ -343,7 +343,7 @@ class _RecreationPageState extends State<Recreation> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 9,
-                      child: Gmap(filteredRecs, _markers),
+                      child: Gmap(filteredRecs, _markers, _scrollController),
                     ),
                     Expanded(
                         flex: 16,

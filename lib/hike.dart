@@ -73,7 +73,7 @@ class _HikePageState extends State<Hike> {
           .toList();
     });
 
-    resetMarkers(_markers, filteredHikes);
+    resetMarkers(_markers, filteredHikes, _scrollController);
   }
 
   /// Widget build for AppBar with Search
@@ -195,7 +195,7 @@ class _HikePageState extends State<Hike> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 9,
-                      child: Gmap(filteredHikes, _markers),
+                      child: Gmap(filteredHikes, _markers, _scrollController),
                     ),
                     Expanded(
                         flex: 16,
