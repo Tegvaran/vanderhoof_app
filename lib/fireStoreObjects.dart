@@ -47,17 +47,19 @@ class Event extends FireStoreObject {
   final DateTime datetimeStart;
   final String id;
   final bool isMultiday;
+  final String imgURL;
 
-  Event({
-    name,
-    address,
-    location,
-    description,
-    this.datetimeEnd,
-    this.datetimeStart,
-    this.id,
-    this.isMultiday,
-  }) : super(name, address, location, description);
+  Event(
+      {name,
+      address,
+      location,
+      description,
+      this.datetimeEnd,
+      this.datetimeStart,
+      this.id,
+      this.isMultiday,
+      this.imgURL})
+      : super(name, address, location, description);
 }
 
 /// Represents a hike trail.

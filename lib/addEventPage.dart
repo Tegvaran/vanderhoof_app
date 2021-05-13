@@ -7,7 +7,6 @@ import 'package:vanderhoof_app/main.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
-import 'package:vanderhoof_app/event.dart';
 import 'dart:io';
 
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
@@ -319,8 +318,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   FormBuilderImagePicker(
                                     name: 'image',
+                                    placeholderImage:
+                                        NetworkImage(event.imgURL),
                                     decoration: const InputDecoration(
-                                      labelText: 'Pick Photos',
+                                      labelText: 'Pick Photo',
                                     ),
                                     maxImages: 1,
                                   ),
@@ -459,6 +460,14 @@ class _AddEventPageState extends State<AddEventPage> {
     }
 
     Future<void> _editEvent(Map<String, dynamic> form) {
+      if (form['image'] != null) {
+        if (form['image'].isNotEmpty) {
+          print(form['image']);
+          uploadFile(form['image'][0], event.id).then((v) =>
+              downloadURL(event.id).then((imgURL) =>
+                  fireStore.doc(event.id).update({"imgURL": imgURL})));
+        }
+      }
       DateTime timeEnd = DateTime(
           form['datetimeStart'].year,
           form['datetimeStart'].month,
@@ -498,13 +507,9 @@ class _AddEventPageState extends State<AddEventPage> {
       }
 
       // Navigate back to Previous Page
-      Navigator.pop(context);
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EventState(),
-          ));
+      setState(() {
+        Navigator.pop(context);
+      });
     }
   }
 }
