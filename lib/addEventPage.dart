@@ -8,6 +8,9 @@ import 'package:vanderhoof_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:vanderhoof_app/event.dart';
+import 'dart:io';
+
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
@@ -134,7 +137,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   // Picker OR the DateTime Picker, depending on
                                   // the boolean: multiday.
                                   Container(
-                                    margin: EdgeInsets.only(top: 15),
+                                    margin: (event != null)
+                                        ? EdgeInsets.only(top: 15)
+                                        : null,
                                     child: (multiday)
                                         ? FormBuilderDateRangePicker(
                                             firstDate: (event != null)
@@ -169,8 +174,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                         : Column(
                                             children: [
                                               Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 15),
                                                 child:
                                                     FormBuilderDateTimePicker(
                                                   initialValue: (event == null)
@@ -232,36 +235,6 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     ),
                                                   ),
                                                 ),
-                                                // FormBuilderTextField(
-                                                //   initialValue: (event == null)
-                                                //       ? null
-                                                //       : "${event.duration}",
-                                                //   keyboardType:
-                                                //       TextInputType.number,
-                                                //   name: "duration",
-                                                //   validator:
-                                                //       FormBuilderValidators
-                                                //           .required(context),
-                                                //   // onTap: () => {},
-                                                //   decoration: InputDecoration(
-                                                //     labelText:
-                                                //         "Event duration (hr)",
-                                                //     hintText: "in hours",
-                                                //     icon: Icon(Icons
-                                                //         .description_outlined),
-                                                //     floatingLabelBehavior:
-                                                //         FloatingLabelBehavior
-                                                //             .always,
-                                                //     border: OutlineInputBorder(
-                                                //       borderRadius:
-                                                //           const BorderRadius
-                                                //               .all(
-                                                //         const Radius.circular(
-                                                //             10.0),
-                                                //       ),
-                                                //     ),
-                                                //   ),
-                                                // ),
                                               ),
                                             ],
                                           ),
@@ -340,59 +313,18 @@ class _AddEventPageState extends State<AddEventPage> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // Flexible(
-                                              //     child: Container(
-                                              //         margin: EdgeInsets.only(
-                                              //             bottom: 15),
-                                              //         child:
-                                              //             FormBuilderDropdown(
-                                              //                 validator:
-                                              //                     FormBuilderValidators
-                                              //                         .required(
-                                              //                             context),
-                                              //                 hint:
-                                              //                     Text("1 - 6"),
-                                              //                 name:
-                                              //                     "recurringRepeats",
-                                              //                 decoration:
-                                              //                     InputDecoration(
-                                              //                   icon: Spacer(),
-                                              //                   labelText:
-                                              //                       "Number of times?",
-                                              //                   floatingLabelBehavior:
-                                              //                       FloatingLabelBehavior
-                                              //                           .always,
-                                              //                   border:
-                                              //                       OutlineInputBorder(
-                                              //                     borderRadius:
-                                              //                         const BorderRadius
-                                              //                             .all(
-                                              //                       const Radius
-                                              //                               .circular(
-                                              //                           10.0),
-                                              //                     ),
-                                              //                   ),
-                                              //                 ),
-                                              //                 allowClear: true,
-                                              //                 items: List
-                                              //                         .generate(
-                                              //                             11,
-                                              //                             (i) =>
-                                              //                                 i +
-                                              //                                 1)
-                                              //                     .map((choice) =>
-                                              //                         DropdownMenuItem(
-                                              //                             value:
-                                              //                                 choice,
-                                              //                             child:
-                                              //                                 Text("$choice")))
-                                              //                     .toList())))
                                             ],
                                           )
                                         : null,
                                   ),
-                                  SizedBox(height: 20),
+                                  FormBuilderImagePicker(
+                                    name: 'image',
+                                    decoration: const InputDecoration(
+                                      labelText: 'Pick Photos',
+                                    ),
+                                    maxImages: 1,
+                                  ),
+                                  SizedBox(height: 10),
                                   Row(
                                     children: [
                                       const Spacer(),
@@ -417,7 +349,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                               child: ElevatedButton(
                                         onPressed: () => Navigator.pop(context),
                                         child: Text('Cancel'),
-                                      )))
+                                      ))),
                                     ],
                                   ),
                                 ],
@@ -480,14 +412,16 @@ class _AddEventPageState extends State<AddEventPage> {
     //Method to add business to FireStore
     //=========================================
     Future<void> _addEvent(Map<String, dynamic> event) {
-      void _addRepeatingEvent(var event) {
+      File imgFile;
+      // below is helper method to add repeating(recurring events)
+      void _addRepeatingEvent(var event, {File imageFile}) {
         String repeatType = event['recurringType'];
         DateTime end =
             event['recurringEnd'].add(Duration(hours: 23, minutes: 59));
         event.remove('recurringType');
         event.remove('recurringEnd');
         while (event['datetimeStart'].isBefore(end)) {
-          addEvent(event, fireStore);
+          addEvent(event, fireStore, imageFile: imageFile);
           event['datetimeStart'] = addDateTime(
               dateTime: event['datetimeStart'], repeatType: repeatType);
           event['datetimeEnd'] = addDateTime(
@@ -510,11 +444,17 @@ class _AddEventPageState extends State<AddEventPage> {
             event['timeEnd'].minute);
         eventInfo.remove('timeEnd');
       }
-      eventInfo.remove('isRecurring');
-      if (recurring) {
-        _addRepeatingEvent(eventInfo);
+      if (eventInfo['image'].isNotEmpty) {
+        imgFile = eventInfo['image'][0];
       } else {
-        return addEvent(eventInfo, fireStore);
+        eventInfo['imgURL'] = null;
+      }
+      eventInfo.remove('isRecurring');
+      eventInfo.remove('image');
+      if (recurring) {
+        _addRepeatingEvent(eventInfo, imageFile: imgFile);
+      } else {
+        return addEvent(eventInfo, fireStore, imageFile: imgFile);
       }
     }
 
