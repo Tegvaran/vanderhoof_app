@@ -818,11 +818,12 @@ class ResourceCard extends StatelessWidget {
     return result;
   }
 
-  void _launchWebsiteURL(String website) async => await canLaunch(website)
-      ? launch(website)
-      : Fluttertoast.showToast(
-          msg: "Could not open website $website",
-          toastLength: Toast.LENGTH_SHORT);
+  void _launchWebsiteURL(String website) async =>
+      await canLaunch('http:$website')
+          ? launch('http:$website')
+          : Fluttertoast.showToast(
+              msg: "Could not open website $website",
+              toastLength: Toast.LENGTH_SHORT);
 
   @override
   Widget build(BuildContext context) {
