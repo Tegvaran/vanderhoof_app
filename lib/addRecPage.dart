@@ -4,69 +4,21 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:getwidget/getwidget.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'commonFunction.dart';
 
-class AddHikePage extends StatefulWidget {
+class AddRecPage extends StatefulWidget {
   @override
-  _AddHikePageSate createState() => _AddHikePageSate();
+  _AddRecPageSate createState() => _AddRecPageSate();
 }
 
-class _AddHikePageSate extends State<AddHikePage> {
+class _AddRecPageSate extends State<AddRecPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
   var difficultyOptions = ["Easy", "Medium", "Hard"];
   var wheelchairAccessibilityOptions = ["Accessible", "Inaccessible"];
   static var pointsOfInterest = [];
-
-  List<Widget> _getPoI() {
-    print("************************************");
-    List<Widget> poiTextFieldList = [];
-    for (int i = 0; i < pointsOfInterest.length; i++) {
-      poiTextFieldList.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: PoIFields(i),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            _addRemoveButton(i == pointsOfInterest.length - 1, i),
-          ],
-        ),
-      ));
-    }
-  }
-
-  Widget _addRemoveButton(bool add, int index) {
-    return InkWell(
-      onTap: () {
-        if (add) {
-          pointsOfInterest.insert(0, null);
-        } else
-          pointsOfInterest.removeAt(index);
-        setState(
-          () {},
-        );
-      },
-      child: Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          color: (add) ? Colors.green : Colors.red,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          (add) ? Icons.add : Icons.remove,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +47,14 @@ class _AddHikePageSate extends State<AddHikePage> {
                                 children: [
                                   GFTypography(
                                     type: GFTypographyType.typo1,
-                                    text: 'Hike/Trail information',
+                                    text: 'Recreational Activity Information',
                                   ),
                                   SizedBox(height: 20),
                                   _getTextField(
                                       "name",
                                       "Name",
-                                      "Riverside Nature Trail",
-                                      Icon(MdiIcons.hiking),
+                                      "Name of the Recreational Activity",
+                                      Icon(Icons.directions_bike),
                                       true),
                                   _getTextField(
                                       "address",
@@ -119,69 +71,20 @@ class _AddHikePageSate extends State<AddHikePage> {
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  FormBuilderDropdown(
-                                      name: "Difficulty",
-                                      hint: Text("Difficulty"),
-                                      decoration: InputDecoration(
-                                        labelText:
-                                            "Difficluty of the hike/trail",
-                                        icon:
-                                            Icon(FontAwesomeIcons.exclamation),
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.always,
-                                        border: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            const Radius.circular(10.0),
-                                          ),
-                                        ),
-                                      ),
-                                      allowClear: true,
-                                      items: difficultyOptions
-                                          .map((choice) => DropdownMenuItem(
-                                              value: choice,
-                                              child: Text("$choice")))
-                                          .toList()),
-                                  SizedBox(height: 20),
-                                  FormBuilderDropdown(
-                                      name: "Wheelchair Accessibility",
-                                      hint: Text(
-                                          "Is the hike/trail wheelchair accessible?"),
-                                      decoration: InputDecoration(
-                                        labelText: "Wheelchair Accessibility",
-                                        icon: Icon(FontAwesomeIcons.wheelchair),
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.always,
-                                        border: OutlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                            const Radius.circular(10.0),
-                                          ),
-                                        ),
-                                      ),
-                                      allowClear: true,
-                                      items: wheelchairAccessibilityOptions
-                                          .map((choice) => DropdownMenuItem(
-                                              value: choice,
-                                              child: Text("$choice")))
-                                          .toList()),
+                                  _getTextField("email", "Email", "Email",
+                                      Icon(FontAwesomeIcons.road), false,
+                                      email: true),
                                   _getTextField(
-                                      "distance",
-                                      "Distance",
-                                      "'1.35 km' or '540 m'",
-                                      Icon(FontAwesomeIcons.road),
-                                      false),
-                                  _getTextField(
-                                      "time",
-                                      "Time",
-                                      "'2 hr' or '45 min'",
+                                      "phone",
+                                      "Phone Number",
+                                      "Phone Number",
                                       Icon(FontAwesomeIcons.clock),
-                                      false),
+                                      false,
+                                      phone: true),
                                   SizedBox(height: 20),
-                                  Text(
-                                    "Points of Interest",
-                                    style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
+                                  _getTextField("website", "Website", "Website",
+                                      Icon(FontAwesomeIcons.clock), false,
+                                      url: true),
                                   SizedBox(
                                     height: 20,
                                   ),
@@ -235,8 +138,31 @@ class _AddHikePageSate extends State<AddHikePage> {
   }
 
   Widget _getTextField(
-      String name, String labelText, String hintText, Icon icon, required) {
+      String name, String labelText, String hintText, Icon icon, required,
+      {email = false, url = false, phone = false}) {
+    var formValidator;
     TextInputType inputType = TextInputType.text;
+    if (email == true) {
+      inputType = TextInputType.emailAddress;
+      formValidator =
+          FormBuilderValidators.compose([FormBuilderValidators.email(context)]);
+    } else if (url == true) {
+      inputType = TextInputType.url;
+      formValidator =
+          FormBuilderValidators.compose([FormBuilderValidators.url(context)]);
+    } else if (phone == true) {
+      inputType = TextInputType.phone;
+      formValidator = FormBuilderValidators.compose([
+        (value) {
+          value = value.replaceAll('-', '');
+          if (!RegExp(r'^[0-9]+$').hasMatch(value) || value.length != 10) {
+            return "This field must be a phone number";
+          } else {
+            return null;
+          }
+        }
+      ]);
+    }
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: FormBuilderTextField(
@@ -269,8 +195,6 @@ class _AddHikePageSate extends State<AddHikePage> {
     );
   }
 
-  Widget _createPointOfInterest() {}
-
   void _onSubmitPressed() {
     print("-------------Submit clicked------------");
 
@@ -283,60 +207,17 @@ class _AddHikePageSate extends State<AddHikePage> {
       print("submitted data:  ${_formKey.currentState.value}");
       String address = _formKey.currentState.value['address'];
       toLatLng(address).then((geopoint) {
-        Map<String, dynamic> hike = {
+        Map<String, dynamic> rec = {
           ..._formKey.currentState.value,
-          'imgURL': null,
           'LatLng': geopoint,
         };
-        addHike(hike);
-        print(hike);
+        addRec(rec);
+        print(rec);
         //=========================================
         //Navigate back to Business Page
         //=========================================
         Navigator.pop(context);
       });
     }
-  }
-}
-
-class PoIFields extends StatefulWidget {
-  final int index;
-  PoIFields(this.index);
-
-  @override
-  _PoIFieldsState createState() => _PoIFieldsState();
-}
-
-class _PoIFieldsState extends State<PoIFields> {
-  TextEditingController _nameController;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _nameController.text =
-          _AddHikePageSate.pointsOfInterest[widget.index] ?? '';
-    });
-
-    return TextFormField(
-      controller: _nameController,
-      onChanged: (v) => _AddHikePageSate.pointsOfInterest[widget.index] = v,
-      decoration:
-          InputDecoration(hintText: 'Enter the name of the point of interest'),
-      validator: (v) {
-        if (v.trim().isEmpty) return 'Please enter something';
-        return null;
-      },
-    );
   }
 }

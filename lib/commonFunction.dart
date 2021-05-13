@@ -49,6 +49,19 @@ Future<void> addHike(Map<String, dynamic> hikeInfo) {
       .catchError((error) => print("Failed to add Business: $error"));
 }
 
+Future<void> addRec(Map<String, dynamic> recInfo) {
+// Used to add businesses
+  CollectionReference hike =
+      FirebaseFirestore.instance.collection('recreation');
+  return hike
+      .add(recInfo)
+      .then((value) => {
+            print("Rec Added:  ${value.id}, ${recInfo['name']}"),
+            hike.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Business: $error"));
+}
+
 void deleteCard(String cardName, String docID, int index, State thisContext,
     BuildContext context, List filteredList, CollectionReference fireStore) {
   {

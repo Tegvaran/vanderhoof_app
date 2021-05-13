@@ -64,15 +64,16 @@ class _RecreationPageState extends State<Recreation> {
     await fireStore.get().then((QuerySnapshot snap) {
       recs = filteredRecs = [];
       snap.docs.forEach((doc) {
-        // String phone = _parsePhoneNumber(doc['phone']);
         Recreational b = Recreational(
-            doc['name'],
-            doc['address'],
-            doc['LatLng'],
-            doc["description"],
-            doc["phone"],
-            doc['email'],
-            doc['website']);
+            doc.get('name'),
+            doc.get('address'),
+            doc.get('LatLng'),
+            doc.get("description"),
+            doc.get("phone"),
+            doc.get('email'),
+            doc.get('website'));
+        print("**********************************");
+        print(b);
         recs.add(b);
       });
     });

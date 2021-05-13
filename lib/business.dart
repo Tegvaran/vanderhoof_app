@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
 import 'addHikePage.dart';
+import 'addRecPage.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
@@ -179,6 +180,18 @@ class _BusinessPageState extends State<BusinessState> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddHikePage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Rec"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddRecPage(),
                 ));
           },
         ),
