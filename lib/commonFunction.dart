@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'dart:io';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
@@ -74,15 +76,38 @@ DateTime addDateTime({DateTime dateTime, String repeatType}) {
   }
 }
 
-Future<void> addEvent(event, CollectionReference fireStore) {
+Future<void> addEvent(event, CollectionReference fireStore, {File imageFile}) {
   print("adding to firebase: $event");
   return fireStore
       .add(event)
       .then((value) => {
             print("Event Added: ${value.id} : ${event['title']}"),
-            fireStore.doc(value.id).update({"id": value.id})
+            fireStore.doc(value.id).update({"id": value.id}),
+            if (imageFile != null)
+              {
+                uploadFile(imageFile, value.id).then((v) =>
+                    downloadURL(value.id).then((imgURL) =>
+                        fireStore.doc(value.id).update({"imgURL": imgURL}))),
+              }
           })
       .catchError((error) => print("Failed to add Event: $error"));
+}
+
+Future<void> uploadFile(File file, String filename) async {
+  try {
+    await firebase_storage.FirebaseStorage.instance
+        .ref('uploads/$filename.png')
+        .putFile(file);
+  } on FirebaseException catch (e) {
+    print("upload fail: $e");
+    // e.g, e.code == 'canceled'
+  }
+}
+
+Future<String> downloadURL(String filename) async {
+  return await firebase_storage.FirebaseStorage.instance
+      .ref('uploads/$filename.png')
+      .getDownloadURL();
 }
 
 /// uses a Color with a hex code and returns a MaterialColor object

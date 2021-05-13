@@ -8,14 +8,9 @@ import 'package:vanderhoof_app/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:vanderhoof_app/event.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
-// import 'image_source_sheet.dart';
-// import 'package:firebase_core/firebase_core.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
@@ -33,36 +28,6 @@ class _AddEventPageState extends State<AddEventPage> {
   bool recurring = false;
   Event event;
   var recurringEventOptions = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
-  /////////////////////
-  // String _imagePath;
-  // final picker = ImagePicker();
-  Future<void> uploadFile(File file) async {
-    // File file = File(filePath);
-
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('uploads/file-to-upload.png')
-          .putFile(file);
-    } catch (e) {
-      print(e);
-      // e.g, e.code == 'canceled'
-    }
-  }
-
-  // Future getImage() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
-  //
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       print("not null");
-  //       _imagePath = pickedFile.path;
-  //       print("=================:$_imagePath");
-  //       // uploadFile(pickedFile.path);
-  //     } else {
-  //       print('No image selected.');
-  //     }
-  //   });
-  // }
 
   _AddEventPageState({this.event}) {
     if (event != null) {
@@ -524,14 +489,16 @@ class _AddEventPageState extends State<AddEventPage> {
     //Method to add business to FireStore
     //=========================================
     Future<void> _addEvent(Map<String, dynamic> event) {
-      void _addRepeatingEvent(var event) {
+      File imgFile;
+      // below is helper method to add repeating(recurring events)
+      void _addRepeatingEvent(var event, {File imageFile}) {
         String repeatType = event['recurringType'];
         DateTime end =
             event['recurringEnd'].add(Duration(hours: 23, minutes: 59));
         event.remove('recurringType');
         event.remove('recurringEnd');
         while (event['datetimeStart'].isBefore(end)) {
-          addEvent(event, fireStore);
+          addEvent(event, fireStore, imageFile: imageFile);
           event['datetimeStart'] = addDateTime(
               dateTime: event['datetimeStart'], repeatType: repeatType);
           event['datetimeEnd'] = addDateTime(
@@ -554,11 +521,17 @@ class _AddEventPageState extends State<AddEventPage> {
             event['timeEnd'].minute);
         eventInfo.remove('timeEnd');
       }
-      eventInfo.remove('isRecurring');
-      if (recurring) {
-        _addRepeatingEvent(eventInfo);
+      if (eventInfo['image'].isNotEmpty) {
+        imgFile = eventInfo['image'][0];
       } else {
-        return addEvent(eventInfo, fireStore);
+        eventInfo['imgURL'] = null;
+      }
+      eventInfo.remove('isRecurring');
+      eventInfo.remove('image');
+      if (recurring) {
+        _addRepeatingEvent(eventInfo, imageFile: imgFile);
+      } else {
+        return addEvent(eventInfo, fireStore, imageFile: imgFile);
       }
     }
 
@@ -592,24 +565,23 @@ class _AddEventPageState extends State<AddEventPage> {
     if (validationSuccess) {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
-      print(_formKey.currentState.value['image'][0]);
-      uploadFile(_formKey.currentState.value['image'][0]);
-      // if (event == null) {
-      //   print("adding event");
-      //   _addEvent(_formKey.currentState.value);
-      // } else {
-      //   print("editing event");
-      //   _editEvent(_formKey.currentState.value);
-      // }
+
+      if (event == null) {
+        print("adding event");
+        _addEvent(_formKey.currentState.value);
+      } else {
+        print("editing event");
+        _editEvent(_formKey.currentState.value);
+      }
 
       // Navigate back to Previous Page
-      // Navigator.pop(context);
-      //
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => EventState(),
-      //     ));
+      Navigator.pop(context);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventState(),
+          ));
     }
   }
 }
