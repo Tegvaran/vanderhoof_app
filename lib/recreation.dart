@@ -226,23 +226,29 @@ class _RecreationPageState extends State<Recreation> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, int index) {
+    void _deleteRec(String recName, int index) {
       {
         // Remove the item from the data source.
         setState(() {
           filteredRecs.removeAt(index);
         });
-        // Delete from fireStore
-        String docID = businessName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$businessName Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
+        FirebaseFirestore.instance
+            .collection("recreation")
+            .where("name", isEqualTo: recName)
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            FirebaseFirestore.instance
+                .collection("recreation")
+                .doc(element.id)
+                .delete()
+                .then((value) => print("$recName Deleted"))
+                .catchError((error) => print("Failed to delete user: $error"));
+          });
+        });
         // Then show a snackbar.
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$businessName deleted")));
+            .showSnackBar(SnackBar(content: Text("$recName deleted")));
       }
     }
 
@@ -277,7 +283,7 @@ class _RecreationPageState extends State<Recreation> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
+                          _deleteRec(item.name, index);
                           Navigator.of(context).pop(true);
                         },
                       ),
