@@ -39,25 +39,15 @@ Future<void> addBusiness(Map<String, dynamic> businessInfo) {
       .catchError((error) => print("Failed to add Business: $error"));
 }
 
-void deleteCard(String cardName, String docID, int index, State thisContext,
-    BuildContext context, List filteredList, CollectionReference fireStore) {
-  {
-    // Remove the item from the data source.
-    thisContext.setState(() {
-      filteredList.removeAt(index);
-    });
-    // Delete from fireStore
-    // String docID = businessName.replaceAll('/', '|');
-    fireStore
-        .doc(docID)
-        .delete()
-        .then((value) => print("$docID Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-
-    // Then show a snackbar.
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("$cardName deleted")));
-  }
+Future<void> deleteCard(
+    String cardName, String docID, int index, CollectionReference fireStore) {
+  // Delete from fireStore
+  // String docID = businessName.replaceAll('/', '|');
+  return fireStore
+      .doc(docID)
+      .delete()
+      .then((value) => print("$docID Deleted"))
+      .catchError((error) => print("Failed to delete user: $error"));
 }
 
 DateTime addDateTime({DateTime dateTime, String repeatType}) {

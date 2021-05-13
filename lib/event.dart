@@ -42,15 +42,15 @@ class _EventPageState extends State<EventState> {
       events = filteredEvents = [];
       snap.docs.forEach((doc) {
         Event e = Event(
-          name: doc['title'],
-          address: doc['address'],
-          location: doc['LatLng'],
-          description: doc["description"],
-          datetimeEnd: doc['datetimeEnd'].toDate(),
-          datetimeStart: doc['datetimeStart'].toDate(),
-          id: doc['id'],
-          isMultiday: doc['isMultiday'],
-        );
+            name: doc['title'],
+            address: doc['address'],
+            location: doc['LatLng'],
+            description: doc["description"],
+            datetimeEnd: doc['datetimeEnd'].toDate(),
+            datetimeStart: doc['datetimeStart'].toDate(),
+            id: doc['id'],
+            isMultiday: doc['isMultiday'],
+            imgURL: doc['imgURL']);
         // print('event.dar: ${e.name}');
         events.add(e);
       });
@@ -167,25 +167,6 @@ class _EventPageState extends State<EventState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    // void _deleteBusiness(String docID, int index) {
-    //   {
-    //     // Remove the item from the data source.
-    //     setState(() {
-    //       filteredEvents.removeAt(index);
-    //     });
-    //     // Delete from fireStore
-    //     fireStore
-    //         .doc(docID)
-    //         .delete()
-    //         .then((value) => print("$eventName Deleted"))
-    //         .catchError((error) => print("Failed to delete user: $error"));
-    //
-    //     // Then show a snackbar.
-    //     ScaffoldMessenger.of(context)
-    //         .showSnackBar(SnackBar(content: Text("$eventName deleted")));
-    //   }
-    // }
-
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredEvents[index];
       return Dismissible(
@@ -199,10 +180,17 @@ class _EventPageState extends State<EventState> {
             String confirm = 'Confirm Deletion';
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
-              // _deleteBusiness(item.name, index);
-              deleteCard(item.name, item.id, index, this, context,
-                  filteredEvents, fireStore);
-              Navigator.of(context).pop(true);
+              deleteCard(item.name, item.id, index, fireStore).then((v) {
+                // Remove the item from the data source.
+                setState(() {
+                  filteredEvents.removeAt(index);
+                });
+                // Then show a snackbar.
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${item.name} deleted")));
+
+                Navigator.of(context).pop(true);
+              });
             };
             if (direction == DismissDirection.startToEnd) {
               confirm = 'Confirm to go to edit page';
@@ -214,7 +202,9 @@ class _EventPageState extends State<EventState> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AddEventPage(event: item),
-                    ));
+                    )).then((v) => setState(() {
+                      _getEvents();
+                    }));
                 //
                 //
               };
