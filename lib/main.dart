@@ -73,6 +73,69 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  bool isLandingPage = true;
+
+  /// build for a GoToPage button, will navigate to pageIndex when selected
+  Widget buildGoToPageButton(Widget pageIcon, String pageName, int pageIndex) {
+    return Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Align(
+          alignment: Alignment.center,
+          child: TextButton.icon(
+              style: TextButton.styleFrom(
+                  backgroundColor: colorPrimary,
+                  primary: colorAccent,
+                  minimumSize: Size(230, 45),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  alignment: Alignment.centerLeft,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  )),
+              icon: pageIcon,
+              label: Text('$pageName',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  )),
+              onPressed: () {
+                setState(() {
+                  isLandingPage = false;
+                  _selectedIndex = pageIndex;
+                });
+              }),
+        ));
+  }
+
+  /// build for a Landing Page, select a page to navigate out of it
+  Widget buildLandingPage() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: ListView(children: [
+        Container(width: double.infinity, height: 100), //empty space
+        Image(
+            image:
+                AssetImage('assets/images/vanderhoof_chamber_logo_large.png')),
+        buildGoToPageButton(
+            Icon(MdiIcons.briefcaseVariant), 'Business Directory', 0),
+        buildGoToPageButton(
+            FaIcon(FontAwesomeIcons.infoCircle), 'Business Resources', 1),
+        buildGoToPageButton(Icon(Icons.event), 'Events', 2),
+        buildGoToPageButton(Icon(MdiIcons.hiking), 'Hiking Trails', 3),
+        buildGoToPageButton(Icon(Icons.directions_bike), 'Recreational', 4),
+        // todo - Admin App Statistics: add more widgets here
+        // for example, uncomment the 5 widgets below to see more buttons
+        // buildGoToPageButton(
+        //     Icon(MdiIcons.briefcaseVariant), 'Business Directory', 0),
+        // buildGoToPageButton(
+        //     FaIcon(FontAwesomeIcons.infoCircle), 'Business Resources', 1),
+        // buildGoToPageButton(Icon(Icons.event), 'Events', 2),
+        // buildGoToPageButton(Icon(MdiIcons.hiking), 'Hiking Trails', 3),
+        // buildGoToPageButton(Icon(Icons.directions_bike), 'Recreational', 4),
+      ]),
+    );
+  }
+
   final List<Widget> _children = [
     BusinessState(),
     ResourceState(),
@@ -95,40 +158,42 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: _children[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.briefcaseVariant),
-            label: 'Businesses',
-            backgroundColor: colorPrimary,
-          ),
-          BottomNavigationBarItem(
-            icon: FaIcon(FontAwesomeIcons.infoCircle),
-            label: 'Resources',
-            backgroundColor: colorPrimary,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Events',
-            backgroundColor: colorPrimary,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(MdiIcons.hiking), // hiking
-            label: 'Hiking',
-            backgroundColor: colorPrimary,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_bike),
-            label: 'Recreational',
-            backgroundColor: colorPrimary,
-          )
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: colorAccent,
-        unselectedItemColor: Colors.white,
-      ),
+      body: isLandingPage ? buildLandingPage() : _children[_selectedIndex],
+      bottomNavigationBar: isLandingPage
+          ? Container(width: 0, height: 0)
+          : BottomNavigationBar(
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(MdiIcons.briefcaseVariant),
+                  label: 'Businesses',
+                  backgroundColor: colorPrimary,
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.infoCircle),
+                  label: 'Resources',
+                  backgroundColor: colorPrimary,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.event),
+                  label: 'Events',
+                  backgroundColor: colorPrimary,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(MdiIcons.hiking), // hiking
+                  label: 'Hiking',
+                  backgroundColor: colorPrimary,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.directions_bike),
+                  label: 'Recreational',
+                  backgroundColor: colorPrimary,
+                )
+              ],
+              currentIndex: _selectedIndex,
+              onTap: _onTabTapped,
+              selectedItemColor: colorAccent,
+              unselectedItemColor: Colors.white,
+            ),
     );
   }
 }

@@ -1,13 +1,17 @@
 import 'dart:collection';
 
+import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
 import 'package:vanderhoof_app/map.dart';
+
+import 'main.dart';
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -24,6 +28,8 @@ class _HikePageState extends State<Hike> {
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  bool _isScrollButtonVisible = false;
   Set<Marker> _markers = HashSet<Marker>();
 
   /// firebase async method to get data
@@ -68,7 +74,7 @@ class _HikePageState extends State<Hike> {
           .toList();
     });
 
-    resetMarkers(_markers, filteredHikes);
+    resetMarkers(_markers, filteredHikes, _scrollController);
   }
 
   /// Widget build for AppBar with Search
@@ -116,15 +122,54 @@ class _HikePageState extends State<Hike> {
 
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
+    //=================================================
+    // Scrolling Listener + ScrollToTop Button
+    //=================================================
+
+    // listener for the current scroll position
+    // if scroll position is not near the very top, set FloatingActionButton visibility to true
+    _itemPositionsListener.itemPositions.addListener(() {
+      int firstPositionIndex =
+          _itemPositionsListener.itemPositions.value.first.index;
+      setState(() {
+        firstPositionIndex > 5
+            ? _isScrollButtonVisible = true
+            : _isScrollButtonVisible = false;
+      });
+    });
+
+    Widget _buildScrollToTopButton() {
+      return _isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null;
+    }
+
+    //=================================================
+    // Build Widget for HikesList
+    //=================================================
     return new Scaffold(
-        body: Container(
-            child: ScrollablePositionedList.builder(
-                itemScrollController: _scrollController,
-                itemCount: filteredHikes.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return HikeCard(
-                      filteredHikes[index], _scrollController, index, _markers, filteredHikes);
-                })));
+      body: Container(
+          child: ScrollablePositionedList.builder(
+              itemScrollController: _scrollController,
+              itemCount: filteredHikes.length,
+              itemBuilder: (BuildContext context, int index) {
+                return HikeCard(filteredHikes[index], _scrollController, index,
+                    _markers, filteredHikes);
+              })),
+      floatingActionButton: _buildScrollToTopButton(),
+    );
   }
 
   ///=========================
@@ -141,10 +186,21 @@ class _HikePageState extends State<Hike> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,11 +208,11 @@ class _HikePageState extends State<Hike> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 2,
-                      child: Gmap(filteredHikes, _markers),
+                      flex: 9,
+                      child: Gmap(filteredHikes, _markers, _scrollController),
                     ),
                     Expanded(
-                        flex: 4,
+                        flex: 16,
                         child: filteredHikes.length != 0
                             ? _buildHikesList()
                             : Container(

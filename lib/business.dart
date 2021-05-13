@@ -1,18 +1,19 @@
 import 'dart:collection';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'package:awesome_loader/awesome_loader.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'scraper.dart';
-
 import 'main.dart';
 
 class BusinessState extends StatefulWidget {
@@ -80,6 +81,7 @@ class _BusinessPageState extends State<BusinessState> {
     String _parsePhoneNumber(String phone) {
       String parsedPhone = "";
       if (phone != null && phone.trim() != "" && phone != ".") {
+        phone = phone.replaceAll(new RegExp(r'[^\d]+'), "");
         parsedPhone = "(" +
             phone.substring(0, 3) +
             ") " +
@@ -128,8 +130,16 @@ class _BusinessPageState extends State<BusinessState> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      resetMarkers(_markers, filteredBusinesses);
+      resetMarkers(_markers, filteredBusinesses, _scrollController);
     });
+  }
+
+  void scrollToIndex(int index) {
+    _scrollController.scrollTo(
+      index: index,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Widget build for Admin Menu Hamburger Drawer
@@ -344,15 +354,14 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index, _markers, filteredBusinesses),
+              BusinessCard(filteredBusinesses[index], _scrollController, index,
+                  _markers, filteredBusinesses),
               index);
         },
       )),
       floatingActionButton: _buildScrollToTopButton(),
     );
   }
-
-
 
   /// Widget build for ChoiceChip for filtering businesses by category
   Widget _buildChips() {
@@ -369,7 +378,7 @@ class _BusinessPageState extends State<BusinessState> {
             return false;
           }
         }).toList();
-        resetMarkers(_markers, filteredBusinesses);
+        resetMarkers(_markers, filteredBusinesses, _scrollController);
       });
     }
 
@@ -378,7 +387,7 @@ class _BusinessPageState extends State<BusinessState> {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
         label: Text(_options[i], style: TextStyle(color: Colors.black)),
-        elevation: 5,
+        elevation: 3,
         pressElevation: 5,
         shadowColor: colorPrimary,
         selectedColor: colorAccent,
@@ -390,7 +399,7 @@ class _BusinessPageState extends State<BusinessState> {
             } else {
               _selectedIndex = null;
               filteredBusinesses = businesses;
-              resetMarkers(_markers, filteredBusinesses);
+              resetMarkers(_markers, filteredBusinesses, _scrollController);
             }
           });
         },
@@ -425,10 +434,21 @@ class _BusinessPageState extends State<BusinessState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return Center(
+                  child: AwesomeLoader(
+                    loaderType: AwesomeLoader.AwesomeLoader3,
+                    color: colorPrimary,
+                  ),
+                );
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -436,12 +456,13 @@ class _BusinessPageState extends State<BusinessState> {
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
-                      flex: 4,
-                      child: Gmap(filteredBusinesses, _markers),
+                      flex: 9,
+                      child:
+                          Gmap(filteredBusinesses, _markers, _scrollController),
                     ),
-                    Expanded(flex: 1, child: _buildChips()),
+                    Expanded(flex: 2, child: _buildChips()),
                     Expanded(
-                        flex: 8,
+                        flex: 14,
                         child: filteredBusinesses.length != 0
                             ? _buildBusinessesList()
                             : Container(

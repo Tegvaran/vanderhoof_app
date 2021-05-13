@@ -16,7 +16,7 @@ import 'hikeInformation.dart';
 const double TITLE_SIZE = 22;
 const double BODY_SIZE = 18;
 const double ICON_SIZE = 24;
-const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 12, 12, 0);
+const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
 const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 5, 0, 0);
 
 TextStyle titleTextStyle = TextStyle(
@@ -39,7 +39,8 @@ class HikeCard extends StatelessWidget {
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[600];
 
-  HikeCard(this.hikeTrail, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
+  HikeCard(this.hikeTrail, this.scrollController, this.scrollIndex,
+      this._markers, this.listOfFireStoreObjects);
 
   Color getDifficultyColor() {
     Color difficultyColor;
@@ -71,7 +72,8 @@ class HikeCard extends StatelessWidget {
       child: ExpansionTile(
         onExpansionChanged: (_isExpanded) {
           if (_isExpanded) {
-            changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
+            changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                scrollController);
             // check if Expanded
             // let ExpansionTile expand, then scroll Tile to top of the list
             Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -82,7 +84,7 @@ class HikeCard extends StatelessWidget {
               );
             });
           } else {
-            resetMarkers(_markers, listOfFireStoreObjects);
+            resetMarkers(_markers, listOfFireStoreObjects, scrollController);
           }
         },
         title: Text(
@@ -262,8 +264,9 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(
-                    scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                    scrollController);
+                // moveToLatLng(business.location);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -275,7 +278,8 @@ class BusinessCard extends StatelessWidget {
                   );
                 });
               } else {
-                resetMarkers(_markers, listOfFireStoreObjects);
+                resetMarkers(
+                    _markers, listOfFireStoreObjects, scrollController);
               }
             },
             title: Text(business.name, style: titleTextStyle),
@@ -445,7 +449,8 @@ class RecreationalCard extends StatelessWidget {
   Set<Marker> _markers;
   List<FireStoreObject> listOfFireStoreObjects;
 
-  RecreationalCard(this.rec, this.scrollController, this.scrollIndex, this._markers, this.listOfFireStoreObjects);
+  RecreationalCard(this.rec, this.scrollController, this.scrollIndex,
+      this._markers, this.listOfFireStoreObjects);
 
   // Checks if a given field from the recreational object is empty or not.
   bool isFieldEmpty(String toCheck) {
@@ -494,7 +499,8 @@ class RecreationalCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                    scrollController);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -506,7 +512,8 @@ class RecreationalCard extends StatelessWidget {
                   // alignment: scrollAlignment,
                 });
               } else {
-                resetMarkers(_markers, listOfFireStoreObjects);
+                resetMarkers(
+                    _markers, listOfFireStoreObjects, scrollController);
               }
             },
             title: Text(rec.name, style: titleTextStyle),
@@ -815,11 +822,12 @@ class ResourceCard extends StatelessWidget {
     return result;
   }
 
-  void _launchWebsiteURL(String website) async => await canLaunch(website)
-      ? launch(website)
-      : Fluttertoast.showToast(
-          msg: "Could not open website $website",
-          toastLength: Toast.LENGTH_SHORT);
+  void _launchWebsiteURL(String website) async =>
+      await canLaunch('http:$website')
+          ? launch('http:$website')
+          : Fluttertoast.showToast(
+              msg: "Could not open website $website",
+              toastLength: Toast.LENGTH_SHORT);
 
   @override
   Widget build(BuildContext context) {
