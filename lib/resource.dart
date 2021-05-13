@@ -286,9 +286,10 @@ class _ResourcePageState extends State<ResourceState> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    // todo: add logo widget
-                    Expanded(flex: 2, child: Text("vcc logo widget")),
-                    Expanded(flex: 8, child: _buildResourcesList()),
+                    Image(
+                        image: AssetImage(
+                            'assets/images/vanderhoof_chamber_logo_large.png')),
+                    Expanded(flex: 1, child: _buildResourcesList()),
                   ],
                 );
               default:

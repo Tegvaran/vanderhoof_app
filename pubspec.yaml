@@ -61,15 +61,11 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
+  # adds Material Icons font with application, can use icons in the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
-   assets:
-     - assets/images/vanderhoof_chamber_logo_large.png
+  # adds image assets
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
