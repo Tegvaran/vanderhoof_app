@@ -2,12 +2,15 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
 import 'package:vanderhoof_app/map.dart';
+
+import 'main.dart';
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -24,6 +27,8 @@ class _HikePageState extends State<Hike> {
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  bool _isScrollButtonVisible = false;
   Set<Marker> _markers = HashSet<Marker>();
 
   /// firebase async method to get data
@@ -116,6 +121,43 @@ class _HikePageState extends State<Hike> {
 
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
+    //=================================================
+    // Scrolling Listener + ScrollToTop Button
+    //=================================================
+
+    // listener for the current scroll position
+    // if scroll position is not near the very top, set FloatingActionButton visibility to true
+    _itemPositionsListener.itemPositions.addListener(() {
+      int firstPositionIndex =
+          _itemPositionsListener.itemPositions.value.first.index;
+      setState(() {
+        firstPositionIndex > 5
+            ? _isScrollButtonVisible = true
+            : _isScrollButtonVisible = false;
+      });
+    });
+
+    Widget _buildScrollToTopButton() {
+      return _isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null;
+    }
+
+    //=================================================
+    // Build Widget for HikesList
+    //=================================================
     return new Scaffold(
         body: Container(
             child: ScrollablePositionedList.builder(
