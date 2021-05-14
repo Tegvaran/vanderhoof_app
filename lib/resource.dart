@@ -157,25 +157,6 @@ class _ResourcePageState extends State<ResourceState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    // void _deleteBusiness(String docID, int index) {
-    //   {
-    //     // Remove the item from the data source.
-    //     setState(() {
-    //       filteredEvents.removeAt(index);
-    //     });
-    //     // Delete from fireStore
-    //     fireStore
-    //         .doc(docID)
-    //         .delete()
-    //         .then((value) => print("$eventName Deleted"))
-    //         .catchError((error) => print("Failed to delete user: $error"));
-    //
-    //     // Then show a snackbar.
-    //     ScaffoldMessenger.of(context)
-    //         .showSnackBar(SnackBar(content: Text("$eventName deleted")));
-    //   }
-    // }
-
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredResources[index];
       return Dismissible(
@@ -190,9 +171,17 @@ class _ResourcePageState extends State<ResourceState> {
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
               // _deleteBusiness(item.name, index);
-              deleteCard(item.name, item.id, index, this, context,
-                  filteredResources, fireStore);
-              Navigator.of(context).pop(true);
+              deleteCard(item.name, item.id, index, fireStore).then((v) {
+                // Remove the item from the data source.
+                setState(() {
+                  filteredResources.removeAt(index);
+                });
+                // Then show a snackbar.
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${item.name} deleted")));
+
+                Navigator.of(context).pop(true);
+              });
             };
             //// todo: AddResourcePage.dart and uncomment this edit feature
             // if (direction == DismissDirection.startToEnd) {
@@ -284,7 +273,8 @@ class _ResourcePageState extends State<ResourceState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
                 return showLoadingScreen();

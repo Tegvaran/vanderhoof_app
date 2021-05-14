@@ -72,7 +72,8 @@ class HikeCard extends StatelessWidget {
       child: ExpansionTile(
         onExpansionChanged: (_isExpanded) {
           if (_isExpanded) {
-            changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
+            changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                scrollController);
             // check if Expanded
             // let ExpansionTile expand, then scroll Tile to top of the list
             Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -83,7 +84,7 @@ class HikeCard extends StatelessWidget {
               );
             });
           } else {
-            resetMarkers(_markers, listOfFireStoreObjects);
+            resetMarkers(_markers, listOfFireStoreObjects, scrollController);
           }
         },
         title: Text(
@@ -263,8 +264,9 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(
-                    scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                    scrollController);
+                // moveToLatLng(business.location);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -276,7 +278,8 @@ class BusinessCard extends StatelessWidget {
                   );
                 });
               } else {
-                resetMarkers(_markers, listOfFireStoreObjects);
+                resetMarkers(
+                    _markers, listOfFireStoreObjects, scrollController);
               }
             },
             title: Text(business.name, style: titleTextStyle),
@@ -496,8 +499,8 @@ class RecreationalCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(
-                    scrollIndex, _markers, listOfFireStoreObjects);
+                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
+                    scrollController);
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -509,7 +512,8 @@ class RecreationalCard extends StatelessWidget {
                   // alignment: scrollAlignment,
                 });
               } else {
-                resetMarkers(_markers, listOfFireStoreObjects);
+                resetMarkers(
+                    _markers, listOfFireStoreObjects, scrollController);
               }
             },
             title: Text(rec.name, style: titleTextStyle),

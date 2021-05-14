@@ -81,7 +81,7 @@ class _HikePageState extends State<Hike> {
           .toList();
     });
 
-    resetMarkers(_markers, filteredHikes);
+    resetMarkers(_markers, filteredHikes, _scrollController);
   }
 
   /// Widget build for AppBar with Search
@@ -167,14 +167,16 @@ class _HikePageState extends State<Hike> {
     // Build Widget for HikesList
     //=================================================
     return new Scaffold(
-        body: Container(
-            child: ScrollablePositionedList.builder(
-                itemScrollController: _scrollController,
-                itemCount: filteredHikes.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return HikeCard(filteredHikes[index], _scrollController,
-                      index, _markers, filteredHikes);
-                })));
+      body: Container(
+          child: ScrollablePositionedList.builder(
+              itemScrollController: _scrollController,
+              itemCount: filteredHikes.length,
+              itemBuilder: (BuildContext context, int index) {
+                return HikeCard(filteredHikes[index], _scrollController, index,
+                    _markers, filteredHikes);
+              })),
+      floatingActionButton: _buildScrollToTopButton(),
+    );
   }
 
   ///=========================
@@ -191,7 +193,8 @@ class _HikePageState extends State<Hike> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                print("FutureBuilder snapshot.connectionState => none");
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
                 return showLoadingScreen();
@@ -203,7 +206,7 @@ class _HikePageState extends State<Hike> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 9,
-                      child: Gmap(filteredHikes, _markers),
+                      child: Gmap(filteredHikes, _markers, _scrollController),
                     ),
                     Expanded(
                         flex: 16,

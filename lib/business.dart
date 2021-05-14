@@ -2,6 +2,8 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,9 +14,7 @@ import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'scraper.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
-
 import 'main.dart';
 
 bool businessFirstTime = true;
@@ -36,6 +36,11 @@ class BusinessState extends StatefulWidget {
 List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
+  // Businesses populated from firebase
+  List<Business> businesses = [];
+
+  // Businesses after filtering search - this is whats shown in ListView
+  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -137,8 +142,16 @@ class _BusinessPageState extends State<BusinessState> {
           .where((businessCard) =>
               businessCard.name.toLowerCase().contains(value.toLowerCase()))
           .toList();
-      resetMarkers(_markers, filteredBusinesses);
+      resetMarkers(_markers, filteredBusinesses, _scrollController);
     });
+  }
+
+  void scrollToIndex(int index) {
+    _scrollController.scrollTo(
+      index: index,
+      duration: Duration(seconds: 1),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// Widget build for Admin Menu Hamburger Drawer
@@ -377,7 +390,7 @@ class _BusinessPageState extends State<BusinessState> {
             return false;
           }
         }).toList();
-        resetMarkers(_markers, filteredBusinesses);
+        resetMarkers(_markers, filteredBusinesses, _scrollController);
       });
     }
 
@@ -398,7 +411,7 @@ class _BusinessPageState extends State<BusinessState> {
             } else {
               _selectedIndex = null;
               filteredBusinesses = businesses;
-              resetMarkers(_markers, filteredBusinesses);
+              resetMarkers(_markers, filteredBusinesses, _scrollController);
             }
           });
         },
@@ -433,7 +446,7 @@ class _BusinessPageState extends State<BusinessState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                return Text('non');
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
                 return showLoadingScreen();
@@ -445,7 +458,8 @@ class _BusinessPageState extends State<BusinessState> {
                     // note: play around with flex int value to adjust vertical spaces between widgets
                     Expanded(
                       flex: 9,
-                      child: Gmap(filteredBusinesses, _markers),
+                      child:
+                          Gmap(filteredBusinesses, _markers, _scrollController),
                     ),
                     Expanded(flex: 2, child: _buildChips()),
                     Expanded(
