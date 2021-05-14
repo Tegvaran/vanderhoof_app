@@ -318,9 +318,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   FormBuilderImagePicker(
                                     name: 'image',
-                                    placeholderImage: (event != null)
-                                        ? NetworkImage(event.imgURL)
-                                        : null,
+                                    placeholderImage:
+                                        (event != null && event.imgURL != null)
+                                            ? NetworkImage(event.imgURL)
+                                            : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
                                     ),
