@@ -11,7 +11,7 @@ import 'package:vanderhoof_app/main.dart';
 import 'commonFunction.dart';
 
 class AddHikePage extends StatefulWidget {
-  final Hike hike;
+  final HikeTrail hike;
 
   AddHikePage({edit = false, this.hike}) {
     print(hike.name);
@@ -24,7 +24,7 @@ class AddHikePage extends StatefulWidget {
 class _AddHikePageSate extends State<AddHikePage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
-  Hike hike;
+  HikeTrail hike;
   var difficultyOptions = ["Easy", "Medium", "Hard"];
   var wheelchairAccessibilityOptions = ["Accessible", "Inaccessible"];
   static var pointsOfInterest = [];

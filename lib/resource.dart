@@ -51,7 +51,7 @@ class _ResourcePageState extends State<ResourceState> {
               name: doc['name'],
               description: doc['description'],
               website: doc['website'],
-              id: doc['id']);
+              id: '');
           resources.add(resource);
         });
       });

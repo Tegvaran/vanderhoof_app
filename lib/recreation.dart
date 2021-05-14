@@ -7,7 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'addRecPage.dart';
 import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
@@ -258,8 +260,8 @@ class _RecreationPageState extends State<Recreation> {
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
               // _deleteBusiness(item.name, index);
-              deleteCard(item.name, item.id, index, this, context, filteredRecs,
-                  fireStore);
+              deleteCardHikeRec(item.name, item.id, index, this, context,
+                  filteredRecs, fireStore);
               Navigator.of(context).pop(true);
             };
             if (direction == DismissDirection.startToEnd) {
@@ -283,11 +285,11 @@ class _RecreationPageState extends State<Recreation> {
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -299,8 +301,7 @@ class _RecreationPageState extends State<Recreation> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteRec(item.name, index);
-                          Navigator.of(context).pop(true);
+                          function();
                         },
                       ),
                       TextButton(

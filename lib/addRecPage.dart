@@ -11,10 +11,7 @@ import 'commonFunction.dart';
 
 class AddRecPage extends StatefulWidget {
   final Recreational rec;
-  AddRecPage({edit = false, this.rec}) {
-    print("--------------------------------------");
-    print(rec.name);
-  }
+  AddRecPage({edit = false, this.rec}) {}
   @override
   _AddRecPageSate createState() => _AddRecPageSate(rec: rec);
 }

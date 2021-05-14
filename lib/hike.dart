@@ -12,11 +12,10 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
 import 'addHikePage.dart';
+
 bool hikeFirstTime = true;
 List<HikeTrail> hikes = [];
 List<HikeTrail> filteredHikes = [];
-
-
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -35,7 +34,8 @@ class _HikePageState extends State<Hike> {
   bool _isScrollButtonVisible = false;
   Set<Marker> _markers = HashSet<Marker>();
   CollectionReference fireStore =
-  FirebaseFirestore.instance.collection('trails');
+      FirebaseFirestore.instance.collection('trails');
+
   /// firebase async method to get data
   Future _getHikes() async {
     if (hikeFirstTime) {
@@ -144,8 +144,8 @@ class _HikePageState extends State<Hike> {
           String bodyMsg = 'Are you sure you want to delete:';
           var function = () {
             // _deleteBusiness(item.name, index);
-            deleteCard(item.name, item.id, index, this, context, filteredHikes,
-                fireStore);
+            deleteCardHikeRec(item.name, item.id, index, this, context,
+                filteredHikes, fireStore);
             Navigator.of(context).pop(true);
           };
           if (direction == DismissDirection.startToEnd) {
@@ -249,9 +249,10 @@ class _HikePageState extends State<Hike> {
                 itemBuilder: (BuildContext context, int index) {
                   return _dismissibleTile(
                       HikeCard(filteredHikes[index], _scrollController, index,
-                          _markers, filteredHikes)
-                      , index);}),
-      floatingActionButton: _buildScrollToTopButton(),
+                          _markers, filteredHikes),
+                      index);
+                })),
+        floatingActionButton: _buildScrollToTopButton());
   }
 
   ///=========================

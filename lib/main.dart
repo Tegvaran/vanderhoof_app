@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     BusinessState(),
     ResourceState(),
     EventState(),
-    HikeTrail(),
+    Hike(),
     Recreation(),
   ];
 

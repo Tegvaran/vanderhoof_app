@@ -86,6 +86,33 @@ Future<void> deleteCard(
       .catchError((error) => print("Failed to delete user: $error"));
 }
 
+void deleteCardHikeRec(
+    String cardName,
+    String docID,
+    int index,
+    State thisContext,
+    BuildContext context,
+    List filteredList,
+    CollectionReference fireStore) {
+  {
+    // Remove the item from the data source.
+    thisContext.setState(() {
+      filteredList.removeAt(index);
+    });
+    // Delete from fireStore
+    // String docID = businessName.replaceAll('/', '|');
+    fireStore
+        .doc(docID)
+        .delete()
+        .then((value) => print("$docID Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+
+    // Then show a snackbar.
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("$cardName deleted")));
+  }
+}
+
 DateTime addDateTime({DateTime dateTime, String repeatType}) {
   if (repeatType == 'Daily') {
     return DateTime(dateTime.year, dateTime.month, dateTime.day + 1,
@@ -220,7 +247,6 @@ Widget showLoadingScreen() {
 //     ],
 //   );
 // }
-
 
 //=================================================
 // Backgrounds for Edit/Delete

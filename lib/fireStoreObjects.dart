@@ -37,20 +37,19 @@ class Business extends FireStoreObject {
   final String imgURL;
   final List category;
 
-  Business(
-      {name,
-      address,
-      location,
-      description,
-        id,
-      this.phoneNumber,
-      this.email,
-      this.socialMedia,
-      this.website,
-      this.imgURL,
-      this.category,
-      })
-      : super(name, address, location, description, id);
+  Business({
+    name,
+    address,
+    location,
+    description,
+    id,
+    this.phoneNumber,
+    this.email,
+    this.socialMedia,
+    this.website,
+    this.imgURL,
+    this.category,
+  }) : super(name, address, location, description, id);
 }
 
 /// Represents an event.
@@ -65,7 +64,7 @@ class Event extends FireStoreObject {
       address,
       location,
       description,
-        id,
+      id,
       this.datetimeEnd,
       this.datetimeStart,
       this.isMultiday,
@@ -74,7 +73,7 @@ class Event extends FireStoreObject {
 }
 
 /// Represents a hike trail.
-class Hike extends FireStoreObject {
+class HikeTrail extends FireStoreObject {
   final String distance;
   final String rating;
   final String time;
@@ -82,11 +81,11 @@ class Hike extends FireStoreObject {
   var pointsOfInterest;
   final String imgURL;
 
-  Hike(
+  HikeTrail(
       {name,
       address,
       location,
-        id,
+      id,
       this.distance,
       this.rating,
       this.time,
@@ -108,7 +107,7 @@ class Recreational extends FireStoreObject {
       address,
       location,
       description,
-        id,
+      id,
       this.phoneNumber,
       this.email,
       this.website})
@@ -121,6 +120,6 @@ class Resource extends FireStoreObject {
   final String description;
   final String website;
 
-  Resource({this.name, this.description, this.website})
+  Resource({this.name, this.description, this.website, id})
       : super('', '', null, '', '');
 }
