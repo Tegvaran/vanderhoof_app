@@ -6,6 +6,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'commonFunction.dart';
+import 'data.dart';
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'dart:io';
 
 class AddBusinessPage extends StatefulWidget {
   @override
@@ -15,6 +18,7 @@ class AddBusinessPage extends StatefulWidget {
 class _AddBusinessPageSate extends State<AddBusinessPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
+  List<dynamic> category;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +77,95 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                       "Description",
                                       "description of business",
                                       Icon(Icons.description_outlined)),
-                                  SizedBox(height: 20),
+                                  Container(
+                                      margin: EdgeInsets.only(top: 15),
+                                      child: Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              final _key =
+                                                  GlobalKey<FormBuilderState>();
+                                              showDialog(
+                                                  context: context,
+                                                  barrierDismissible:
+                                                      false, // user must tap button!
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return AlertDialog(
+                                                      insetPadding:
+                                                          EdgeInsets.all(10),
+                                                      title: Text(
+                                                          'Confirm Deletion'),
+                                                      content:
+                                                          SingleChildScrollView(
+                                                        child: ListBody(
+                                                          children: <Widget>[
+                                                            Text(
+                                                                'Are you sure you want to delete:'),
+                                                            // _buildChips(this),
+                                                            Center(
+                                                              child:
+                                                                  FormBuilder(
+                                                                      key: _key,
+                                                                      child: Column(
+                                                                          children: [
+                                                                            FormBuilderFilterChip(
+                                                                                spacing: 5,
+                                                                                name: "category",
+                                                                                options: _buildFieldOptions()),
+                                                                          ])),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child: Text('Yes'),
+                                                          onPressed: () {
+                                                            _key.currentState
+                                                                .save();
+                                                            category = _key
+                                                                    .currentState
+                                                                    .value[
+                                                                'category'];
+
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(true);
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                          child: Text('Cancel'),
+                                                          onPressed: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(false);
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  });
+                                            },
+                                            child: Text('Category'),
+                                          ),
+                                          Container(
+                                              margin: EdgeInsets.only(left: 15),
+                                              child: Text((category == null)
+                                                  ? ""
+                                                  : category.join(', '))),
+                                        ],
+                                      )),
+                                  FormBuilderImagePicker(
+                                    name: 'image',
+                                    // placeholderImage: (event != null)
+                                    //     ? NetworkImage(event.imgURL)
+                                    //     : null,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Pick Photo',
+                                    ),
+                                    maxImages: 1,
+                                  ),
+                                  SizedBox(height: 10),
                                   Row(
                                     children: [
                                       const Spacer(),
@@ -188,23 +280,39 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
     if (validationSuccess) {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
+      File imgFile;
+      // // String imgURL;
+      if (_formKey.currentState.value['image'].isNotEmpty) {
+        imgFile = _formKey.currentState.value['image'][0];
+      }
       String address = _formKey.currentState.value['address'];
       toLatLng(address).then((geopoint) {
         Map<String, dynamic> business = {
           ..._formKey.currentState.value,
           'imgURL': null,
-          'category': null,
           'LatLng': geopoint,
-          'socialMedia': {'facebook': ".", 'instagram': ".", 'twitter': "."}
+          'socialMedia': {'facebook': ".", 'instagram': ".", 'twitter': "."},
+          'category': category
         };
-        addBusiness(business);
-        print(business);
+        business.remove('image');
+        addBusiness(business, imageFile: imgFile);
+        // print(business);
 
         //=========================================
         //Navigate back to Business Page
         //=========================================
-        Navigator.pop(context);
+        // Navigator.pop(context);
       });
     }
   }
+}
+
+List<FormBuilderFieldOption<dynamic>> _buildFieldOptions() {
+  List<FormBuilderFieldOption<dynamic>> options = [];
+  for (int i = 0; i < categoryOptions.length; i++) {
+    options.add(FormBuilderFieldOption(
+        value: categoryOptions[i],
+        child: Text(categoryOptions[i], textScaleFactor: 0.9)));
+  }
+  return options;
 }

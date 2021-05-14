@@ -14,7 +14,7 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 class AddEventPage extends StatefulWidget {
   final Event event;
   AddEventPage({edit = false, this.event}) {
-    print(event);
+    // print(event);
   }
   @override
   _AddEventPageState createState() => _AddEventPageState(event: event);
@@ -318,8 +318,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   FormBuilderImagePicker(
                                     name: 'image',
-                                    placeholderImage:
-                                        NetworkImage(event.imgURL),
+                                    placeholderImage: (event != null)
+                                        ? NetworkImage(event.imgURL)
+                                        : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
                                     ),
@@ -410,7 +411,7 @@ class _AddEventPageState extends State<AddEventPage> {
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('events');
     //=========================================
-    //Method to add business to FireStore
+    //Method to add Event to FireStore
     //=========================================
     Future<void> _addEvent(Map<String, dynamic> event) {
       File imgFile;
@@ -463,8 +464,8 @@ class _AddEventPageState extends State<AddEventPage> {
       if (form['image'] != null) {
         if (form['image'].isNotEmpty) {
           print(form['image']);
-          uploadFile(form['image'][0], event.id).then((v) =>
-              downloadURL(event.id).then((imgURL) =>
+          uploadFile(form['image'][0], event.id, "events").then((v) =>
+              downloadURL(event.id, "events").then((imgURL) =>
                   fireStore.doc(event.id).update({"imgURL": imgURL})));
         }
       }

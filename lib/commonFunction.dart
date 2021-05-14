@@ -5,9 +5,9 @@ import 'package:geocoder/geocoder.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io';
 
-import 'cards.dart';
+// import 'cards.dart';
 import 'main.dart';
-import 'map.dart';
+// import 'map.dart';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
@@ -31,15 +31,21 @@ Future<GeoPoint> toLatLng(String addr) async {
 //=========================================
 //Method to add business to FireStore
 //=========================================
-Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
 // Used to add businesses
   CollectionReference business =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('businesses_testa');
   return business
       .add(businessInfo)
       .then((value) => {
             print("Business Added:  ${value.id}, ${businessInfo['name']}"),
-            business.doc(value.id).update({"id": value.id})
+            business.doc(value.id).update({"id": value.id}),
+            if (imageFile != null)
+              {
+                uploadFile(imageFile, value.id, "businesses").then((v) =>
+                    downloadURL(value.id, "businesses").then((imgURL) =>
+                        business.doc(value.id).update({"imgURL": imgURL}))),
+              }
           })
       .catchError((error) => print("Failed to add Business: $error"));
 }
@@ -80,18 +86,18 @@ Future<void> addEvent(event, CollectionReference fireStore, {File imageFile}) {
             fireStore.doc(value.id).update({"id": value.id}),
             if (imageFile != null)
               {
-                uploadFile(imageFile, value.id).then((v) =>
-                    downloadURL(value.id).then((imgURL) =>
+                uploadFile(imageFile, value.id, "events").then((v) =>
+                    downloadURL(value.id, "events").then((imgURL) =>
                         fireStore.doc(value.id).update({"imgURL": imgURL}))),
               }
           })
       .catchError((error) => print("Failed to add Event: $error"));
 }
 
-Future<void> uploadFile(File file, String filename) async {
+Future<void> uploadFile(File file, String filename, String folderName) async {
   try {
     await firebase_storage.FirebaseStorage.instance
-        .ref('uploads/$filename.png')
+        .ref('$folderName/$filename.png')
         .putFile(file);
   } on FirebaseException catch (e) {
     print("upload fail: $e");
@@ -99,9 +105,9 @@ Future<void> uploadFile(File file, String filename) async {
   }
 }
 
-Future<String> downloadURL(String filename) async {
+Future<String> downloadURL(String filename, String folderName) async {
   return await firebase_storage.FirebaseStorage.instance
-      .ref('uploads/$filename.png')
+      .ref('$folderName/$filename.png')
       .getDownloadURL();
 }
 

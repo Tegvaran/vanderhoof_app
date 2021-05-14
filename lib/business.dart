@@ -15,6 +15,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'scraper.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
 import 'main.dart';
+import 'data.dart';
 
 bool businessFirstTime = true;
 // Businesses populated from firebase
@@ -52,30 +53,6 @@ class _BusinessPageState extends State<BusinessState> {
 
   // Choice Chips for Category
   int _selectedIndex;
-  List<String> _options = [
-    'Accommodation',
-    'Agriculture & Animal',
-    'Automotive',
-    'Business Services',
-    'Construction',
-    'Employment Services & Education',
-    'Entertainment',
-    'Environmental',
-    'Financial Services',
-    'Food & Dining',
-    'Forestry Related',
-    'Government Services',
-    'Health Services',
-    'Industry',
-    'Media & Design',
-    'Non-Profit Groups & Clubs',
-    'Professional Services',
-    'Real Estate',
-    'Restaurant',
-    'Retail Sales',
-    'Technical',
-    'Trades',
-  ];
 
   /// firebase async method to get data
   Future _getBusinesses() async {
@@ -117,6 +94,7 @@ class _BusinessPageState extends State<BusinessState> {
       });
       businessFirstTime = false;
     }
+    businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
   }
 
@@ -389,10 +367,10 @@ class _BusinessPageState extends State<BusinessState> {
     }
 
     // get a ChoiceChip widget for each category
-    for (int i = 0; i < _options.length; i++) {
+    for (int i = 0; i < categoryOptions.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(_options[i], style: TextStyle(color: Colors.black)),
+        label: Text(categoryOptions[i], style: TextStyle(color: Colors.black)),
         elevation: 3,
         pressElevation: 5,
         shadowColor: colorPrimary,
@@ -401,7 +379,7 @@ class _BusinessPageState extends State<BusinessState> {
           setState(() {
             if (selected) {
               _selectedIndex = i;
-              _filterSearchItemsByCategory(_options[i]);
+              _filterSearchItemsByCategory(categoryOptions[i]);
             } else {
               _selectedIndex = null;
               filteredBusinesses = businesses;
