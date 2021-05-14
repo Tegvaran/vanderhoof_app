@@ -132,59 +132,60 @@ Widget showLoadingScreen() {
     size: 50.0,
   );
 }
+//***************************Same as below************************************
+// Widget buildBody(isFirstTime, future, filteredItem, markers, buildList,
+//     {buildChips}) {
+//   return Container(
+//     padding: EdgeInsets.all(0.0),
+//     child: isFirstTime
+//         ? FutureBuilder(
+//             future: future,
+//             builder: (context, snapshot) {
+//               switch (snapshot.connectionState) {
+//                 case ConnectionState.none:
+//                   return Text('non');
+//                 case ConnectionState.active:
+//                 case ConnectionState.waiting:
+//                   return showLoadingScreen();
+//                 case ConnectionState.done:
+//                   {
+//                     print(buildChips);
+//                     return _buildBody(filteredItem, markers, buildList,
+//                         buildChips: buildChips);
+//                   }
+//                 default:
+//                   return Text("Default");
+//               }
+//             },
+//           )
+//         : _buildBody(filteredItem, markers, buildList, buildChips: buildChips),
+//   );
+// }
 
-Widget buildBody(isFirstTime, future, filteredItem, markers, buildList,
-    {buildChips}) {
-  return Container(
-    padding: EdgeInsets.all(0.0),
-    child: isFirstTime
-        ? FutureBuilder(
-            future: future,
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                  return Text('non');
-                case ConnectionState.active:
-                case ConnectionState.waiting:
-                  return showLoadingScreen();
-                case ConnectionState.done:
-                  {
-                    print(buildChips);
-                    return _buildBody(filteredItem, markers, buildList,
-                        buildChips: buildChips);
-                  }
-                default:
-                  return Text("Default");
-              }
-            },
-          )
-        : _buildBody(filteredItem, markers, buildList, buildChips: buildChips),
-  );
-}
-
-Widget _buildBody(filteredItem, markers, buildList, {buildChips}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // insert widgets here wrapped in `Expanded` as a child
-      // note: play around with flex int value to adjust vertical spaces between widgets
-      Expanded(
-        flex: 9,
-        child: Gmap(filteredItem, markers),
-      ),
-      (buildChips != null && buildChips != "")
-          ? Expanded(flex: 2, child: buildChips())
-          : Container(),
-      Expanded(
-        flex: 14,
-        child: filteredItem.length != 0
-            ? buildList()
-            : Container(
-                child: Center(
-                  child: Text("No results found", style: titleTextStyle),
-                ),
-              ),
-      ),
-    ],
-  );
-}
+// ************Saving for later can be deleted if we don't end up doing this.
+// Widget _buildBody(filteredItem, markers, buildList, {buildChips}) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       // insert widgets here wrapped in `Expanded` as a child
+//       // note: play around with flex int value to adjust vertical spaces between widgets
+//       Expanded(
+//         flex: 9,
+//         child: Gmap(filteredItem, markers),
+//       ),
+//       (buildChips != null && buildChips != "")
+//           ? Expanded(flex: 2, child: buildChips())
+//           : Container(),
+//       Expanded(
+//         flex: 14,
+//         child: filteredItem.length != 0
+//             ? buildList()
+//             : Container(
+//                 child: Center(
+//                   child: Text("No results found", style: titleTextStyle),
+//                 ),
+//               ),
+//       ),
+//     ],
+//   );
+// }
