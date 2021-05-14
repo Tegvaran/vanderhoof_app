@@ -2,12 +2,33 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
 import 'package:vanderhoof_app/map.dart';
+
+import 'main.dart';
+
+bool isCardExpanded = false;
+bool isMapVisible = true;
+
+// sets listener for whether or not a businessCard is expanded
+void setCardExpanded(bool boolean) {
+  isCardExpanded = boolean;
+}
+
+// hides googleMap widget (when scrolling down a list)
+void hideMap() {
+  isMapVisible = false;
+}
+
+// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+void showMap() {
+  isMapVisible = true;
+}
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -24,6 +45,8 @@ class _HikePageState extends State<Hike> {
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  bool isScrollButtonVisible = false;
   Set<Marker> _markers = HashSet<Marker>();
 
   /// firebase async method to get data
@@ -116,6 +139,47 @@ class _HikePageState extends State<Hike> {
 
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
+    //=================================================
+    // Scrolling Listener + ScrollToTop Button
+    //=================================================
+
+    // listener for the current scroll position
+    // if scroll position is not near the very top, set FloatingActionButton visibility to true
+    _itemPositionsListener.itemPositions.addListener(() {
+      int firstPositionIndex =
+          _itemPositionsListener.itemPositions.value.first.index;
+      setState(() {
+        if (firstPositionIndex > 5) {
+          isScrollButtonVisible = true;
+          if (!isCardExpanded) {
+            hideMap();
+          }
+        } else {
+          isScrollButtonVisible = false;
+          setCardExpanded(false);
+          showMap();
+        }
+      });
+    });
+
+    Widget _buildScrollToTopButton() {
+      return isScrollButtonVisible
+          ? FloatingActionButton(
+              // scroll to top of the list
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
+              mini: true,
+              onPressed: () {
+                _scrollController.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              })
+          : null;
+    }
+
     return new Scaffold(
         body: Container(
             child: ScrollablePositionedList.builder(
@@ -151,10 +215,16 @@ class _HikePageState extends State<Hike> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child: Gmap(filteredHikes, _markers),
-                    ),
+                    // Expanded(
+                    //   flex: 9,
+                    //   child: Gmap(filteredHikes, _markers),
+                    // ),
+                    AnimatedContainer(
+                        width: double.infinity,
+                        height: isMapVisible ? 200.0 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.fastOutSlowIn,
+                        child: Gmap(filteredHikes, _markers)),
                     Expanded(
                         flex: 16,
                         child: filteredHikes.length != 0

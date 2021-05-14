@@ -14,6 +14,24 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'main.dart';
 
+bool isCardExpanded = false;
+bool isMapVisible = true;
+
+// sets listener for whether or not a businessCard is expanded
+void setCardExpanded(bool boolean) {
+  isCardExpanded = boolean;
+}
+
+// hides googleMap widget (when scrolling down a list)
+void hideMap() {
+  isMapVisible = false;
+}
+
+// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+void showMap() {
+  isMapVisible = true;
+}
+
 class Recreation extends StatefulWidget {
   Recreation({Key key}) : super(key: key);
 
@@ -39,7 +57,7 @@ class _RecreationPageState extends State<Recreation> {
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
-  bool _isScrollButtonVisible = false;
+  bool isScrollButtonVisible = false;
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
@@ -197,14 +215,21 @@ class _RecreationPageState extends State<Recreation> {
       int firstPositionIndex =
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
-        firstPositionIndex > 5
-            ? _isScrollButtonVisible = true
-            : _isScrollButtonVisible = false;
+        if (firstPositionIndex > 5) {
+          isScrollButtonVisible = true;
+          if (!isCardExpanded) {
+            hideMap();
+          }
+        } else {
+          isScrollButtonVisible = false;
+          setCardExpanded(false);
+          showMap();
+        }
       });
     });
 
     Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
+      return isScrollButtonVisible
           ? FloatingActionButton(
               // scroll to top of the list
               child: FaIcon(FontAwesomeIcons.angleUp),
@@ -341,10 +366,16 @@ class _RecreationPageState extends State<Recreation> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child: Gmap(filteredRecs, _markers),
-                    ),
+                    // Expanded(
+                    //   flex: 9,
+                    //   child: Gmap(filteredRecs, _markers),
+                    // ),
+                    AnimatedContainer(
+                        width: double.infinity,
+                        height: isMapVisible ? 200.0 : 1.0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.fastOutSlowIn,
+                        child: Gmap(filteredRecs, _markers)),
                     Expanded(
                         flex: 16,
                         child: filteredRecs.length != 0
