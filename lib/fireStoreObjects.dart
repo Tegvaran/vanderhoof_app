@@ -118,7 +118,8 @@ class Resource extends FireStoreObject {
   final String description;
   final String website;
   final String id;
+  final String imgURL;
 
-  Resource({this.name, this.description, this.website, this.id})
+  Resource({this.name, this.description, this.website, this.id, this.imgURL})
       : super('', '', null, '');
 }
