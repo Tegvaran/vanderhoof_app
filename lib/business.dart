@@ -12,8 +12,17 @@ import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'scraper.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
 
 import 'main.dart';
+
+bool businessFirstTime = true;
+// Businesses populated from firebase
+List<Business> businesses = [];
+
+// Businesses after filtering search - this is whats shown in ListView
+List<Business> filteredBusinesses = [];
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -27,11 +36,6 @@ class BusinessState extends StatefulWidget {
 List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
-  // Businesses populated from firebase
-  List<Business> businesses = [];
-
-  // Businesses after filtering search - this is whats shown in ListView
-  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -76,39 +80,44 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    // helper method - parses phone string to correct format
-    String _parsePhoneNumber(String phone) {
-      String parsedPhone = "";
-      if (phone != null && phone.trim() != "" && phone != ".") {
-        parsedPhone = "(" +
-            phone.substring(0, 3) +
-            ") " +
-            phone.substring(3, 6) +
-            "-" +
-            phone.substring(6);
+    print("tst---------tst------------------tst-------tst");
+    if (businessFirstTime) {
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
+      // helper method - parses phone string to correct format
+      String _parsePhoneNumber(String phone) {
+        String parsedPhone = "";
+        if (phone != null && phone.trim() != "" && phone != ".") {
+          parsedPhone = "(" +
+              phone.substring(0, 3) +
+              ") " +
+              phone.substring(3, 6) +
+              "-" +
+              phone.substring(6);
+        }
+        return parsedPhone;
       }
-      return parsedPhone;
-    }
 
-    await fireStore.get().then((QuerySnapshot snap) {
-      businesses = filteredBusinesses = [];
-      snap.docs.forEach((doc) {
-        String phone = _parsePhoneNumber(doc['phone']);
-        Business b = Business(
-            doc['name'],
-            doc['address'],
-            doc['LatLng'],
-            doc["description"],
-            phone,
-            doc['email'],
-            doc['socialMedia'],
-            doc['website'],
-            doc['imgURL'],
-            doc['category'],
-            doc['id']);
-        businesses.add(b);
+      await fireStore.get().then((QuerySnapshot snap) {
+        businesses = filteredBusinesses = [];
+        snap.docs.forEach((doc) {
+          String phone = _parsePhoneNumber(doc['phone']);
+          Business b = Business(
+              doc['name'],
+              doc['address'],
+              doc['LatLng'],
+              doc["description"],
+              phone,
+              doc['email'],
+              doc['socialMedia'],
+              doc['website'],
+              doc['imgURL'],
+              doc['category'],
+              doc['id']);
+          businesses.add(b);
+        });
       });
-    });
+      businessFirstTime = false;
+    }
     return businesses;
   }
 
@@ -427,7 +436,7 @@ class _BusinessPageState extends State<BusinessState> {
                 return Text('non');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

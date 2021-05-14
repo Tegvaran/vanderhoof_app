@@ -2,10 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:vanderhoof_app/recreation.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
+
+bool resourceFirstTime = true;
+
+// Events populated from firebase
+List<Resource> resources = [];
+
+// Events after filtering search - this is whats shown in ListView
+List<Resource> filteredResources = [];
 
 class ResourceState extends StatefulWidget {
   ResourceState({Key key}) : super(key: key);
@@ -17,11 +26,6 @@ class ResourceState extends StatefulWidget {
 }
 
 class _ResourcePageState extends State<ResourceState> {
-  // Events populated from firebase
-  List<Resource> resources = [];
-
-  // Events after filtering search - this is whats shown in ListView
-  List<Resource> filteredResources = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -37,14 +41,18 @@ class _ResourcePageState extends State<ResourceState> {
 
   /// firebase async method to get data
   Future _getResources() async {
-    await fireStore.get().then((QuerySnapshot snap) {
-      resources = filteredResources = [];
-      snap.docs.forEach((doc) {
-        Resource resource = Resource(
-            doc['name'], doc['description'], doc['website'], doc['id']);
-        resources.add(resource);
+    if (recreationFirstTime) {
+      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      await fireStore.get().then((QuerySnapshot snap) {
+        resources = filteredResources = [];
+        snap.docs.forEach((doc) {
+          Resource resource = Resource(
+              doc['name'], doc['description'], doc['website'], doc['id']);
+          resources.add(resource);
+        });
       });
-    });
+      resourceFirstTime = false;
+    }
 
     return resources;
   }
@@ -279,7 +287,7 @@ class _ResourcePageState extends State<ResourceState> {
                 return Text('non');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

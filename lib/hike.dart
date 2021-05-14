@@ -7,10 +7,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'package:vanderhoof_app/map.dart';
 
 import 'main.dart';
+
+bool hikeFirstTime = true;
+List<HikeTrail> hikes = [];
+List<HikeTrail> filteredHikes = [];
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -22,8 +27,6 @@ class Hike extends StatefulWidget {
 }
 
 class _HikePageState extends State<Hike> {
-  List<HikeTrail> hikes = [];
-  List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
@@ -33,27 +36,32 @@ class _HikePageState extends State<Hike> {
 
   /// firebase async method to get data
   Future _getHikes() async {
-    CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('trails');
+    if (hikeFirstTime) {
+      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      CollectionReference fireStore =
+          FirebaseFirestore.instance.collection('trails');
 
-    await fireStore.get().then((QuerySnapshot snap) {
-      hikes = filteredHikes = [];
-      snap.docs.forEach((doc) {
-        HikeTrail h = HikeTrail(
-          doc['name'],
-          doc['address'],
-          doc['location'],
-          doc['distance'],
-          doc['difficulty'],
-          doc['time'],
-          doc['wheelchair'],
-          doc['description'],
-          doc['pointsOfInterest'],
-          doc['imgURL'],
-        );
-        hikes.add(h);
+      await fireStore.get().then((QuerySnapshot snap) {
+        hikes = filteredHikes = [];
+        snap.docs.forEach((doc) {
+          HikeTrail h = HikeTrail(
+            doc['name'],
+            doc['address'],
+            doc['location'],
+            doc['distance'],
+            doc['difficulty'],
+            doc['time'],
+            doc['wheelchair'],
+            doc['description'],
+            doc['pointsOfInterest'],
+            doc['imgURL'],
+          );
+          hikes.add(h);
+          filteredHikes.add(h);
+        });
       });
-    });
+      hikeFirstTime = false;
+    }
     return hikes;
   }
 
@@ -186,7 +194,7 @@ class _HikePageState extends State<Hike> {
                 return Text('non');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

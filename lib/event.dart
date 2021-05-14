@@ -8,6 +8,13 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
 
+bool eventFirstTime = true;
+// Events populated from firebase
+List<Event> events = [];
+
+// Events after filtering search - this is whats shown in ListView
+List<Event> filteredEvents = [];
+
 class EventState extends StatefulWidget {
   EventState({Key key}) : super(key: key);
 
@@ -18,11 +25,6 @@ class EventState extends StatefulWidget {
 }
 
 class _EventPageState extends State<EventState> {
-  // Events populated from firebase
-  List<Event> events = [];
-
-  // Events after filtering search - this is whats shown in ListView
-  List<Event> filteredEvents = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -38,23 +40,27 @@ class _EventPageState extends State<EventState> {
 
   /// firebase async method to get data
   Future _getEvents() async {
-    await fireStore.get().then((QuerySnapshot snap) {
-      events = filteredEvents = [];
-      snap.docs.forEach((doc) {
-        Event e = Event(
-          name: doc['title'],
-          address: doc['address'],
-          location: doc['LatLng'],
-          description: doc["description"],
-          datetimeEnd: doc['datetimeEnd'].toDate(),
-          datetimeStart: doc['datetimeStart'].toDate(),
-          id: doc['id'],
-          isMultiday: doc['isMultiday'],
-        );
-        // print('event.dar: ${e.name}');
-        events.add(e);
+    if (eventFirstTime) {
+      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      await fireStore.get().then((QuerySnapshot snap) {
+        events = filteredEvents = [];
+        snap.docs.forEach((doc) {
+          Event e = Event(
+            name: doc['title'],
+            address: doc['address'],
+            location: doc['LatLng'],
+            description: doc["description"],
+            datetimeEnd: doc['datetimeEnd'].toDate(),
+            datetimeStart: doc['datetimeStart'].toDate(),
+            id: doc['id'],
+            isMultiday: doc['isMultiday'],
+          );
+          // print('event.dar: ${e.name}');
+          events.add(e);
+        });
       });
-    });
+      eventFirstTime = false;
+    }
 
     // sort all events by starting date
     events.sort((a, b) {
@@ -296,7 +302,7 @@ class _EventPageState extends State<EventState> {
                 return Text('non');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Text('Active or waiting');
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
