@@ -8,16 +8,22 @@ import 'commonFunction.dart';
 import 'data.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'dart:io';
+import 'fireStoreObjects.dart';
 
 class AddBusinessPage extends StatefulWidget {
+  final Business business;
+  AddBusinessPage({this.business});
   @override
-  _AddBusinessPageSate createState() => _AddBusinessPageSate();
+  _AddBusinessPageState createState() =>
+      _AddBusinessPageState(business: business);
 }
 
-class _AddBusinessPageSate extends State<AddBusinessPage> {
+class _AddBusinessPageState extends State<AddBusinessPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
   List<dynamic> category;
+  Business business;
+  _AddBusinessPageState({this.business});
 
   @override
   Widget build(BuildContext context) {

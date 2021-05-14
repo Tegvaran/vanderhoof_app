@@ -13,9 +13,7 @@ import 'main.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
-  AddEventPage({edit = false, this.event}) {
-    // print(event);
-  }
+  AddEventPage({edit = false, this.event});
   @override
   _AddEventPageState createState() => _AddEventPageState(event: event);
 }
