@@ -4,17 +4,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/main.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:intl/intl.dart';
-import 'package:vanderhoof_app/map.dart';
-import 'package:vanderhoof_app/business.dart' as businessPage;
-import 'package:vanderhoof_app/recreation.dart' as recreationPage;
-import 'package:vanderhoof_app/hike.dart' as hikePage;
-import 'package:vanderhoof_app/commonFunction.dart';
 
+import 'main.dart';
+import 'fireStoreObjects.dart';
+import 'map.dart';
+import 'business.dart' as businessPage;
+import 'recreation.dart' as recreationPage;
+import 'hike.dart' as hikePage;
+import 'commonFunction.dart';
 import 'hikeInformation.dart';
 
 const double TITLE_SIZE = 22;

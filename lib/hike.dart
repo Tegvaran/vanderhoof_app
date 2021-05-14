@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/cards.dart';
 
+import 'cards.dart';
+import 'map.dart';
 import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
-import 'package:vanderhoof_app/map.dart';
-
 import 'main.dart';
 
 // variables to show & hide map, default: map shown
