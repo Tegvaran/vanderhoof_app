@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:getwidget/getwidget.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
-import 'package:vanderhoof_app/main.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:getwidget/getwidget.dart';
+
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
+import 'main.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;

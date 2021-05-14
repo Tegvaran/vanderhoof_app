@@ -1,12 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/addEventPage.dart';
+
+import 'addEventPage.dart';
 import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
 
 bool eventFirstTime = true;
 // Events populated from firebase
@@ -54,6 +55,7 @@ class _EventPageState extends State<EventState> {
             datetimeStart: doc['datetimeStart'].toDate(),
             id: doc['id'],
             isMultiday: doc['isMultiday'],
+            imgURL: doc['imgURL'],
           );
           // print('event.dar: ${e.name}');
           events.add(e);

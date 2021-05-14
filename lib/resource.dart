@@ -1,12 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/recreation.dart';
+
+import 'commonFunction.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
+import 'recreation.dart';
 
 bool resourceFirstTime = true;
 
@@ -47,7 +48,10 @@ class _ResourcePageState extends State<ResourceState> {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
           Resource resource = Resource(
-              doc['name'], doc['description'], doc['website'], doc['id']);
+              name: doc['name'],
+              description: doc['description'],
+              website: doc['website'],
+              id: doc['id']);
           resources.add(resource);
         });
       });

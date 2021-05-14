@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
@@ -24,8 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text('App Name'),
       ),
-      body:
-      new Column(
+      body: new Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,15 +36,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   new Text(
                     "Login Page",
-                    style: new TextStyle(fontSize:20.0,
+                    style: new TextStyle(
+                        fontSize: 20.0,
                         color: const Color(0xFF000000),
                         fontWeight: FontWeight.w400,
                         fontFamily: "Roboto"),
                   )
-                ]
-
-            ),
-
+                ]),
             new Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
@@ -58,20 +55,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         new Text(
                           "Email Address:",
-                          style: new TextStyle(fontSize:13.0,
+                          style: new TextStyle(
+                              fontSize: 13.0,
                               color: const Color(0xFF000000),
                               fontWeight: FontWeight.w300,
                               fontFamily: "Roboto"),
                         ),
-
                         new TextField(
-                          style: new TextStyle(fontSize:12.0,
+                          style: new TextStyle(
+                              fontSize: 12.0,
                               color: const Color(0xFF000000),
                               fontWeight: FontWeight.w200,
                               fontFamily: "Roboto"),
-                              controller: emailController,
+                          controller: emailController,
                         ),
-
                         new Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
@@ -84,73 +81,66 @@ class _MyHomePageState extends State<MyHomePage> {
                                   children: <Widget>[
                                     new Text(
                                       "Password:",
-                                      style: new TextStyle(fontSize:13.0,
+                                      style: new TextStyle(
+                                          fontSize: 13.0,
                                           color: const Color(0xFF000000),
                                           fontWeight: FontWeight.w300,
                                           fontFamily: "Roboto"),
                                     ),
-
                                     new TextField(
-                                      style: new TextStyle(fontSize:12.0,
+                                      style: new TextStyle(
+                                          fontSize: 12.0,
                                           color: const Color(0xFF000000),
                                           fontWeight: FontWeight.w200,
                                           fontFamily: "Roboto"),
-                                          controller: passwordController,
+                                      controller: passwordController,
                                     ),
-
                                     new Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          new RaisedButton(key:null, onPressed:buttonPressed,
+                                          new RaisedButton(
+                                              key: null,
+                                              onPressed: buttonPressed,
                                               color: const Color(0xFFe0e0e0),
-                                              child:
-                                              new Text(
+                                              child: new Text(
                                                 "Login",
-                                                style: new TextStyle(fontSize:13.0,
-                                                    color: const Color(0xFF000000),
+                                                style: new TextStyle(
+                                                    fontSize: 13.0,
+                                                    color:
+                                                        const Color(0xFF000000),
                                                     fontWeight: FontWeight.w200,
                                                     fontFamily: "Roboto"),
-                                              )
-                                          )
-                                        ]
-
-                                    )
-                                  ]
-
-                              )
-                            ]
-
-                        )
-                      ]
-
-                  )
-                ]
-
-            ),
-
+                                              ))
+                                        ])
+                                  ])
+                            ])
+                      ])
+                ]),
             new Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
             ),
-
             new Row(
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
             )
-          ]
-
-      ),
-
+          ]),
     );
   }
-  void buttonPressed(){
+
+  void buttonPressed() {
     String email = emailController.text;
     String password = passwordController.text;
-    if (email == null || password == null || email.isEmpty || password.isEmpty) {
+    if (email == null ||
+        password == null ||
+        email.isEmpty ||
+        password.isEmpty) {
       //input is incorrect
       showDialog(
         context: context,
@@ -158,7 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // return object of type Dialog
           return AlertDialog(
             title: new Text("Error"),
-            content: new Text("Issue logging in. Double check the entered email and password"),
+            content: new Text(
+                "Issue logging in. Double check the entered email and password"),
             actions: <Widget>[
               // usually buttons at the bottom of the dialog
               new FlatButton(
@@ -174,7 +165,5 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       auth.signInWithEmailAndPassword(email: email, password: password);
     }
-
   }
-
 }

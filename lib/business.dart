@@ -1,17 +1,19 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vanderhoof_app/map.dart';
-import 'cards.dart';
-import 'fireStoreObjects.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'cards.dart';
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
+import 'main.dart';
+import 'map.dart';
 import 'scraper.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
 import 'main.dart';
@@ -78,17 +80,17 @@ class _BusinessPageState extends State<BusinessState> {
         snap.docs.forEach((doc) {
           String phone = _parsePhoneNumber(doc['phone']);
           Business b = Business(
-              doc['name'],
-              doc['address'],
-              doc['LatLng'],
-              doc["description"],
-              phone,
-              doc['email'],
-              doc['socialMedia'],
-              doc['website'],
-              doc['imgURL'],
-              doc['category'],
-              doc['id']);
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: phone,
+              email: doc['email'],
+              socialMedia: doc['socialMedia'],
+              website: doc['website'],
+              imgURL: doc['imgURL'],
+              category: doc['category'],
+              id: doc['id']);
           businesses.add(b);
         });
       });

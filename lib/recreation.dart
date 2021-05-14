@@ -1,19 +1,19 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
-import 'package:vanderhoof_app/map.dart';
-import 'cards.dart';
-import 'fireStoreObjects.dart';
-import 'addBusinessPage.dart';
-import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import 'addBusinessPage.dart';
+import 'addEventPage.dart';
+import 'cards.dart';
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
 import 'main.dart';
+import 'map.dart';
 
 bool recreationFirstTime = true;
 
@@ -56,13 +56,13 @@ class _RecreationPageState extends State<Recreation> {
         snap.docs.forEach((doc) {
           // String phone = _parsePhoneNumber(doc['phone']);
           Recreational b = Recreational(
-              doc['name'],
-              doc['address'],
-              doc['LatLng'],
-              doc["description"],
-              doc["phone"],
-              doc['email'],
-              doc['website']);
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: doc["phone"],
+              email: doc['email'],
+              website: doc['website']);
           recs.add(b);
         });
       });

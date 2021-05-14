@@ -36,8 +36,18 @@ class Business extends FireStoreObject {
   final String category;
   final String id;
 
-  Business(name, address, location, description, this.phoneNumber, this.email,
-      this.socialMedia, this.website, this.imgURL, this.category, this.id)
+  Business(
+      {name,
+      address,
+      location,
+      description,
+      this.phoneNumber,
+      this.email,
+      this.socialMedia,
+      this.website,
+      this.imgURL,
+      this.category,
+      this.id})
       : super(name, address, location, description);
 }
 
@@ -71,8 +81,17 @@ class HikeTrail extends FireStoreObject {
   var pointsOfInterest;
   final String imgURL;
 
-  HikeTrail(name, address, location, this.distance, this.rating, this.time,
-      this.wheelchair, description, this.pointsOfInterest, this.imgURL)
+  HikeTrail(
+      {name,
+      address,
+      location,
+      this.distance,
+      this.rating,
+      this.time,
+      this.wheelchair,
+      description,
+      this.pointsOfInterest,
+      this.imgURL})
       : super(name, address, location, description);
 }
 
@@ -82,8 +101,14 @@ class Recreational extends FireStoreObject {
   final String email;
   final String website;
 
-  Recreational(name, address, location, description, this.phoneNumber,
-      this.email, this.website)
+  Recreational(
+      {name,
+      address,
+      location,
+      description,
+      this.phoneNumber,
+      this.email,
+      this.website})
       : super(name, address, location, description);
 }
 
@@ -94,6 +119,6 @@ class Resource extends FireStoreObject {
   final String website;
   final String id;
 
-  Resource(this.name, this.description, this.website, this.id)
+  Resource({this.name, this.description, this.website, this.id})
       : super('', '', null, '');
 }
