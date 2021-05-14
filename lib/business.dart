@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
+import 'addHikePage.dart';
+import 'addRecPage.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'cards.dart';
@@ -164,6 +165,30 @@ class _BusinessPageState extends State<BusinessState> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddEventPage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Hike/Trail"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddHikePage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Rec"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddRecPage(),
                 ));
           },
         ),
@@ -356,10 +381,9 @@ class _BusinessPageState extends State<BusinessState> {
     void _filterSearchItemsByCategory(value) {
       setState(() {
         filteredBusinesses = businesses.where((businessCard) {
-          if (businessCard.category != null) {
-            return businessCard.category
-                .toLowerCase()
-                .contains(value.toLowerCase());
+          if (businessCard.category != null &&
+              businessCard.category.length != 0) {
+            return (businessCard.category).contains(value);
           } else {
             return false;
           }

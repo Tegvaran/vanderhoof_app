@@ -50,6 +50,31 @@ Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
       .catchError((error) => print("Failed to add Business: $error"));
 }
 
+Future<void> addHike(Map<String, dynamic> hikeInfo) {
+// Used to add businesses
+  CollectionReference hike = FirebaseFirestore.instance.collection('trails');
+  return hike
+      .add(hikeInfo)
+      .then((value) => {
+            print("Business Added:  ${value.id}, ${hikeInfo['name']}"),
+            hike.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Business: $error"));
+}
+
+Future<void> addRec(Map<String, dynamic> recInfo) {
+// Used to add businesses
+  CollectionReference hike =
+      FirebaseFirestore.instance.collection('recreation');
+  return hike
+      .add(recInfo)
+      .then((value) => {
+            print("Rec Added:  ${value.id}, ${recInfo['name']}"),
+            hike.doc(value.id).update({"id": value.id})
+          })
+      .catchError((error) => print("Failed to add Business: $error"));
+}
+
 Future<void> deleteCard(
     String cardName, String docID, int index, CollectionReference fireStore) {
   // Delete from fireStore
@@ -195,3 +220,65 @@ Widget showLoadingScreen() {
 //     ],
 //   );
 // }
+
+
+//=================================================
+// Backgrounds for Edit/Delete
+//=================================================
+Widget slideRightEditBackground() {
+  return Container(
+    color: Colors.green,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+          ),
+          Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+          Text(
+            " Edit",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerLeft,
+    ),
+  );
+}
+
+Widget slideLeftDeleteBackground() {
+  return Container(
+    color: Colors.red,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          Text(
+            " Delete",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.right,
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerRight,
+    ),
+  );
+}

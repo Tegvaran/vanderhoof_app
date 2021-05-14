@@ -6,12 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
+import 'package:vanderhoof_app/map.dart';
+import 'cards.dart';
+import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
-import 'cards.dart';
-import 'commonFunction.dart';
-import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
 
@@ -60,6 +59,7 @@ class _RecreationPageState extends State<Recreation> {
               address: doc['address'],
               location: doc['LatLng'],
               description: doc["description"],
+              id: doc['id'],
               phoneNumber: doc["phone"],
               email: doc['email'],
               website: doc['website']);
@@ -218,36 +218,66 @@ class _RecreationPageState extends State<Recreation> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, int index) {
+    void _deleteRec(String recName, int index) {
       {
         // Remove the item from the data source.
         setState(() {
           filteredRecs.removeAt(index);
         });
-        // Delete from fireStore
-        String docID = businessName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$businessName Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
+        FirebaseFirestore.instance
+            .collection("recreation")
+            .where("name", isEqualTo: recName)
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            FirebaseFirestore.instance
+                .collection("recreation")
+                .doc(element.id)
+                .delete()
+                .then((value) => print("$recName Deleted"))
+                .catchError((error) => print("Failed to delete user: $error"));
+          });
+        });
         // Then show a snackbar.
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$businessName deleted")));
+            .showSnackBar(SnackBar(content: Text("$recName deleted")));
       }
     }
 
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredRecs[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
+          // direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              // _deleteBusiness(item.name, index);
+              deleteCard(item.name, item.id, index, this, context, filteredRecs,
+                  fireStore);
+              Navigator.of(context).pop(true);
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                print(item);
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddRecPage(rec: item),
+                    ));
+                //
+                //
+              };
+            }
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
@@ -269,7 +299,7 @@ class _RecreationPageState extends State<Recreation> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
+                          _deleteRec(item.name, index);
                           Navigator.of(context).pop(true);
                         },
                       ),
@@ -283,7 +313,8 @@ class _RecreationPageState extends State<Recreation> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 

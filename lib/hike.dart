@@ -11,10 +11,12 @@ import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
-
+import 'addHikePage.dart';
 bool hikeFirstTime = true;
 List<HikeTrail> hikes = [];
 List<HikeTrail> filteredHikes = [];
+
+
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -32,7 +34,8 @@ class _HikePageState extends State<Hike> {
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isScrollButtonVisible = false;
   Set<Marker> _markers = HashSet<Marker>();
-
+  CollectionReference fireStore =
+  FirebaseFirestore.instance.collection('trails');
   /// firebase async method to get data
   Future _getHikes() async {
     if (hikeFirstTime) {
@@ -48,6 +51,7 @@ class _HikePageState extends State<Hike> {
             address: doc['address'],
             location: doc['location'],
             description: doc['description'],
+            id: doc['id'],
             distance: doc['distance'],
             rating: doc['difficulty'],
             time: doc['time'],
@@ -126,6 +130,78 @@ class _HikePageState extends State<Hike> {
     );
   }
 
+  Widget _dismissibleTile(Widget child, int index) {
+    final item = filteredHikes[index];
+    return Dismissible(
+        // direction: DismissDirection.endToStart,
+        // Each Dismissible must contain a Key. Keys allow Flutter to
+        // uniquely identify widgets.
+        key: Key(item.name),
+        // Provide a function that tells the app
+        // what to do after an item has been swiped away.
+        confirmDismiss: (direction) async {
+          String confirm = 'Confirm Deletion';
+          String bodyMsg = 'Are you sure you want to delete:';
+          var function = () {
+            // _deleteBusiness(item.name, index);
+            deleteCard(item.name, item.id, index, this, context, filteredHikes,
+                fireStore);
+            Navigator.of(context).pop(true);
+          };
+          if (direction == DismissDirection.startToEnd) {
+            confirm = 'Confirm to go to edit page';
+            bodyMsg = "Would you like to edit this item?";
+            function = () {
+              // Navigator.of(context).pop(false);
+              print(item);
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddHikePage(hike: item),
+                  ));
+              //
+              //
+            };
+          }
+          return await showDialog(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(confirm),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(bodyMsg),
+                        Center(
+                            child: Text(item.name,
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('Yes'),
+                      onPressed: () {
+                        function();
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                  ],
+                );
+              });
+        },
+        background: slideRightEditBackground(),
+        secondaryBackground: slideLeftDeleteBackground(),
+        child: child);
+  }
+
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
     //=================================================
@@ -166,16 +242,16 @@ class _HikePageState extends State<Hike> {
     // Build Widget for HikesList
     //=================================================
     return new Scaffold(
-      body: Container(
-          child: ScrollablePositionedList.builder(
-              itemScrollController: _scrollController,
-              itemCount: filteredHikes.length,
-              itemBuilder: (BuildContext context, int index) {
-                return HikeCard(filteredHikes[index], _scrollController, index,
-                    _markers, filteredHikes);
-              })),
+        body: Container(
+            child: ScrollablePositionedList.builder(
+                itemScrollController: _scrollController,
+                itemCount: filteredHikes.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _dismissibleTile(
+                      HikeCard(filteredHikes[index], _scrollController, index,
+                          _markers, filteredHikes)
+                      , index);}),
       floatingActionButton: _buildScrollToTopButton(),
-    );
   }
 
   ///=========================
