@@ -101,17 +101,17 @@ class _BusinessPageState extends State<BusinessState> {
         snap.docs.forEach((doc) {
           String phone = _parsePhoneNumber(doc['phone']);
           Business b = Business(
-              doc['name'],
-              doc['address'],
-              doc['LatLng'],
-              doc["description"],
-              phone,
-              doc['email'],
-              doc['socialMedia'],
-              doc['website'],
-              doc['imgURL'],
-              doc['category'],
-              doc['id']);
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: phone,
+              email: doc['email'],
+              socialMedia: doc['socialMedia'],
+              website: doc['website'],
+              imgURL: doc['imgURL'],
+              category: doc['category'],
+              id: doc['id']);
           businesses.add(b);
         });
       });

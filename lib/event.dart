@@ -55,6 +55,7 @@ class _EventPageState extends State<EventState> {
             datetimeStart: doc['datetimeStart'].toDate(),
             id: doc['id'],
             isMultiday: doc['isMultiday'],
+            imgURL: doc['imgURL'],
           );
           // print('event.dar: ${e.name}');
           events.add(e);

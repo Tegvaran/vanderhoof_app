@@ -728,33 +728,13 @@ class EventCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-
-              //// layout option 1: description wrapped around img (top-right corner)
-              // Padding(
-              //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              //     child: DropCapText(
-              //         (!isFieldEmpty(event.description))
-              //             ? event.description
-              //             : "",
-              //         style: bodyTextStyle,
-              //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-              //         dropCapPosition: DropCapPosition.end,
-              //         dropCap: (!isFieldEmpty(event.imgURL))
-              //             ? DropCap(
-              //             width: 120,
-              //             height: 120,
-              //             child: Image.network(event.imgURL,
-              //                 fit: BoxFit.contain))
-              //             : DropCap(width: 0, height: 0, child: null))),
-              //// layout option 2: img above and description below
-              // (event.imgURL != "" && event.imgURL != null)
-              //     ? Container(
-              //         height: 120,
-              //         alignment: Alignment.center,
-              //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.contain),
-              //       )
-              //     : Container(width: 0, height: 0),
+              (event.imgURL != "" && event.imgURL != null)
+                  ? Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Image.network(event.imgURL, fit: BoxFit.contain),
+                    )
+                  : Container(width: 0, height: 0),
               Padding(
                 padding: TEXT_INSET,
                 child: Text(

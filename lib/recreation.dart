@@ -56,13 +56,13 @@ class _RecreationPageState extends State<Recreation> {
         snap.docs.forEach((doc) {
           // String phone = _parsePhoneNumber(doc['phone']);
           Recreational b = Recreational(
-              doc['name'],
-              doc['address'],
-              doc['LatLng'],
-              doc["description"],
-              doc["phone"],
-              doc['email'],
-              doc['website']);
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: doc["phone"],
+              email: doc['email'],
+              website: doc['website']);
           recs.add(b);
         });
       });

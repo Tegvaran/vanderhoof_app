@@ -48,7 +48,10 @@ class _ResourcePageState extends State<ResourceState> {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
           Resource resource = Resource(
-              doc['name'], doc['description'], doc['website'], doc['id']);
+              name: doc['name'],
+              description: doc['description'],
+              website: doc['website'],
+              id: doc['id']);
           resources.add(resource);
         });
       });
