@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:vanderhoof_app/cards.dart';
 
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'package:vanderhoof_app/map.dart';
 
@@ -15,20 +16,20 @@ import 'main.dart';
 bool isCardExpanded = false;
 bool isMapVisible = true;
 
-// sets listener for whether or not a businessCard is expanded
-void setCardExpanded(bool boolean) {
-  isCardExpanded = boolean;
-}
-
-// hides googleMap widget (when scrolling down a list)
-void hideMap() {
-  isMapVisible = false;
-}
-
-// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
-void showMap() {
-  isMapVisible = true;
-}
+// // sets listener for whether or not a businessCard is expanded
+// void setCardExpanded(bool boolean) {
+//   isCardExpanded = boolean;
+// }
+//
+// // hides googleMap widget (when scrolling down a list)
+// void hideMap() {
+//   isMapVisible = false;
+// }
+//
+// // shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+// void showMap() {
+//   isMapVisible = true;
+// }
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -152,12 +153,12 @@ class _HikePageState extends State<Hike> {
         if (firstPositionIndex > 5) {
           isScrollButtonVisible = true;
           if (!isCardExpanded) {
-            hideMap();
+            isMapVisible = hideMap();
           }
         } else {
           isScrollButtonVisible = false;
-          setCardExpanded(false);
-          showMap();
+          isCardExpanded = setCardExpanded(false);
+          isMapVisible = showMap();
         }
       });
     });

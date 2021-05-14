@@ -105,3 +105,18 @@ MaterialColor createMaterialColor(Color color) {
   });
   return MaterialColor(color.value, swatch);
 }
+
+// sets listener for whether or not a businessCard is expanded
+bool setCardExpanded(bool boolean) {
+  return boolean;
+}
+
+// hides googleMap widget (when scrolling down a list)
+bool hideMap() {
+  return false;
+}
+
+// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+bool showMap() {
+  return true;
+}

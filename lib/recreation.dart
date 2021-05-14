@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
 import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
@@ -17,20 +18,20 @@ import 'main.dart';
 bool isCardExpanded = false;
 bool isMapVisible = true;
 
-// sets listener for whether or not a businessCard is expanded
-void setCardExpanded(bool boolean) {
-  isCardExpanded = boolean;
-}
-
-// hides googleMap widget (when scrolling down a list)
-void hideMap() {
-  isMapVisible = false;
-}
-
-// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
-void showMap() {
-  isMapVisible = true;
-}
+// // sets listener for whether or not a businessCard is expanded
+// void setCardExpanded(bool boolean) {
+//   isCardExpanded = boolean;
+// }
+//
+// // hides googleMap widget (when scrolling down a list)
+// void hideMap() {
+//   isMapVisible = false;
+// }
+//
+// // shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+// void showMap() {
+//   isMapVisible = true;
+// }
 
 class Recreation extends StatefulWidget {
   Recreation({Key key}) : super(key: key);
@@ -218,12 +219,12 @@ class _RecreationPageState extends State<Recreation> {
         if (firstPositionIndex > 5) {
           isScrollButtonVisible = true;
           if (!isCardExpanded) {
-            hideMap();
+            isMapVisible = showMap();
           }
         } else {
           isScrollButtonVisible = false;
-          setCardExpanded(false);
-          showMap();
+          isCardExpanded = setCardExpanded(false);
+          isMapVisible = showMap();
         }
       });
     });

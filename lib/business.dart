@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
@@ -18,20 +19,20 @@ import 'main.dart';
 bool isCardExpanded = false;
 bool isMapVisible = true;
 
-// sets listener for whether or not a businessCard is expanded
-void setCardExpanded(bool boolean) {
-  isCardExpanded = boolean;
-}
-
-// hides googleMap widget (when scrolling down a list)
-void hideMap() {
-  isMapVisible = false;
-}
-
-// shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
-void showMap() {
-  isMapVisible = true;
-}
+// // sets listener for whether or not a businessCard is expanded
+// void setCardExpanded(bool boolean) {
+//   isCardExpanded = boolean;
+// }
+//
+// // hides googleMap widget (when scrolling down a list)
+// void hideMap() {
+//   isMapVisible = false;
+// }
+//
+// // shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
+// void showMap() {
+//   isMapVisible = true;
+// }
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -257,12 +258,16 @@ class _BusinessPageState extends State<BusinessState> {
         if (firstPositionIndex > 5) {
           isScrollButtonVisible = true;
           if (!isCardExpanded) {
-            hideMap();
+            // hideMap();
+            isMapVisible = hideMap();
           }
         } else {
           isScrollButtonVisible = false;
-          setCardExpanded(false);
-          showMap();
+          // setCardExpanded(false);
+          // showMap();
+
+          isCardExpanded = setCardExpanded(false);
+          isMapVisible = showMap();
         }
         // firstPositionIndex > 5
         //     ? isScrollButtonVisible = true

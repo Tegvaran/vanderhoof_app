@@ -13,6 +13,7 @@ import 'package:vanderhoof_app/map.dart';
 import 'package:vanderhoof_app/business.dart' as businessPage;
 import 'package:vanderhoof_app/recreation.dart' as recreationPage;
 import 'package:vanderhoof_app/hike.dart' as hikePage;
+import 'package:vanderhoof_app/commonFunction.dart';
 
 import 'hikeInformation.dart';
 
@@ -86,14 +87,19 @@ class HikeCard extends StatelessWidget {
               );
             });
             // HikePage listener -> card is expanded and map should be shown
-            hikePage.setCardExpanded(true);
-            hikePage.showMap();
+            // hikePage.setCardExpanded(true);
+            // hikePage.showMap();
+
+            hikePage.isCardExpanded = setCardExpanded(true);
+            hikePage.isMapVisible = showMap();
 
             // Map listener -> highlight chosen hikeCard with a blue marker
             changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
           } else {
             // HikePage listener -> card is not expanded
-            hikePage.setCardExpanded(false);
+            // businessPage.setCardExpanded(false);
+            hikePage.isCardExpanded = setCardExpanded(false);
+
             // Map listener -> reset markers
             resetMarkers(_markers, listOfFireStoreObjects);
           }
@@ -286,15 +292,20 @@ class BusinessCard extends StatelessWidget {
                 });
 
                 // BusinessPage listener -> card is expanded and map should be shown
-                businessPage.setCardExpanded(true);
-                businessPage.showMap();
+                // businessPage.setCardExpanded(true);
+                // businessPage.showMap();
+
+                businessPage.isCardExpanded = setCardExpanded(true);
+                businessPage.isMapVisible = showMap();
 
                 // Map listener -> highlight chosen businessCard with a blue marker
                 changeMarkerColor(
                     scrollIndex, _markers, listOfFireStoreObjects);
               } else {
                 // BusinessPage listener -> card is not expanded
-                businessPage.setCardExpanded(false);
+                // businessPage.setCardExpanded(false);
+                businessPage.isCardExpanded = setCardExpanded(false);
+
                 // Map listener -> reset markers
                 resetMarkers(_markers, listOfFireStoreObjects);
               }
@@ -527,17 +538,21 @@ class RecreationalCard extends StatelessWidget {
                     curve: Curves.easeInOut,
                   );
                 });
-
                 // RecreationPage listener -> card is expanded and map should be shown
-                recreationPage.setCardExpanded(true);
-                recreationPage.showMap();
+                // recreationPage.setCardExpanded(true);
+                // recreationPage.showMap();
+
+                recreationPage.isCardExpanded = setCardExpanded(true);
+                recreationPage.isMapVisible = showMap();
 
                 // Map listener -> highlight chosen recreationCard with a blue marker
                 changeMarkerColor(
                     scrollIndex, _markers, listOfFireStoreObjects);
               } else {
                 // RecreationPage listener -> card is not expanded
-                recreationPage.setCardExpanded(false);
+                // recreationPage.setCardExpanded(false);
+                recreationPage.isCardExpanded = setCardExpanded(false);
+
                 // Map listener -> reset markers
                 resetMarkers(_markers, listOfFireStoreObjects);
               }
