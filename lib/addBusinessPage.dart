@@ -110,8 +110,8 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                                     return AlertDialog(
                                                       insetPadding:
                                                           EdgeInsets.all(10),
-                                                      title: Text(
-                                                          'Add category'),
+                                                      title:
+                                                          Text('Add category'),
                                                       content:
                                                           SingleChildScrollView(
                                                         child: ListBody(

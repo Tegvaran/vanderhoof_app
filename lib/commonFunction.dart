@@ -33,7 +33,7 @@ Future<GeoPoint> toLatLng(String addr) async {
 //Method to add business to FireStore
 //=========================================
 CollectionReference fireStore =
-    FirebaseFirestore.instance.collection('businesses_testa');
+    FirebaseFirestore.instance.collection('businesses');
 
 Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
 // Used to add businesses
