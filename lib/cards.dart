@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/main.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:intl/intl.dart';
-import 'package:vanderhoof_app/map.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'fireStoreObjects.dart';
 import 'hikeInformation.dart';
+import 'main.dart';
+import 'map.dart';
 
 const double TITLE_SIZE = 22;
 const double BODY_SIZE = 18;
