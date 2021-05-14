@@ -94,13 +94,13 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                                       insetPadding:
                                                           EdgeInsets.all(10),
                                                       title: Text(
-                                                          'Confirm Deletion'),
+                                                          'Add categories'),
                                                       content:
                                                           SingleChildScrollView(
                                                         child: ListBody(
                                                           children: <Widget>[
                                                             Text(
-                                                                'Are you sure you want to delete:'),
+                                                                'Choose one or multiple categories:'),
                                                             // _buildChips(this),
                                                             Center(
                                                               child:
