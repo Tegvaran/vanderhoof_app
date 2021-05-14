@@ -1,12 +1,12 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+
+import 'fireStoreObjects.dart';
 
 void scrollToIndex(ItemScrollController scrollController, int index) {
   scrollController.scrollTo(

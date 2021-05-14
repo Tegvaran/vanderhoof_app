@@ -1,13 +1,20 @@
-import 'package:awesome_loader/awesome_loader.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/addEventPage.dart';
+
+import 'addEventPage.dart';
 import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
+
+bool eventFirstTime = true;
+// Events populated from firebase
+List<Event> events = [];
+
+// Events after filtering search - this is whats shown in ListView
+List<Event> filteredEvents = [];
 
 class EventState extends StatefulWidget {
   EventState({Key key}) : super(key: key);
@@ -19,11 +26,6 @@ class EventState extends StatefulWidget {
 }
 
 class _EventPageState extends State<EventState> {
-  // Events populated from firebase
-  List<Event> events = [];
-
-  // Events after filtering search - this is whats shown in ListView
-  List<Event> filteredEvents = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -39,10 +41,12 @@ class _EventPageState extends State<EventState> {
 
   /// firebase async method to get data
   Future _getEvents() async {
-    await fireStore.get().then((QuerySnapshot snap) {
-      events = filteredEvents = [];
-      snap.docs.forEach((doc) {
-        Event e = Event(
+    if (eventFirstTime) {
+      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      await fireStore.get().then((QuerySnapshot snap) {
+        events = filteredEvents = [];
+        snap.docs.forEach((doc) {
+          Event e = Event(
             name: doc['title'],
             address: doc['address'],
             location: doc['LatLng'],
@@ -51,11 +55,14 @@ class _EventPageState extends State<EventState> {
             datetimeStart: doc['datetimeStart'].toDate(),
             id: doc['id'],
             isMultiday: doc['isMultiday'],
-            imgURL: doc['imgURL']);
-        // print('event.dar: ${e.name}');
-        events.add(e);
+            imgURL: doc['imgURL'],
+          );
+          // print('event.dar: ${e.name}');
+          events.add(e);
+        });
       });
-    });
+      eventFirstTime = false;
+    }
 
     // sort all events by starting date
     events.sort((a, b) {
@@ -181,16 +188,18 @@ class _EventPageState extends State<EventState> {
             String confirm = 'Confirm Deletion';
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
-              deleteCard(item.name, item.id, index, fireStore).then((v) {
-                // Remove the item from the data source.
-                setState(() {
-                  filteredEvents.removeAt(index);
-                });
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${item.name} deleted")));
+              setState(() {
+                deleteCard(item.name, item.id, index, fireStore).then((v) {
+                  // Remove the item from the data source.
+                  // Then show a snackbar.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${item.name} deleted")));
 
-                Navigator.of(context).pop(true);
+                  // remove event object visually (on the app)
+                  filteredEvents.removeAt(index);
+
+                  Navigator.of(context).pop(true);
+                });
               });
             };
             if (direction == DismissDirection.startToEnd) {
@@ -285,20 +294,10 @@ class _EventPageState extends State<EventState> {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 print("FutureBuilder snapshot.connectionState => none");
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

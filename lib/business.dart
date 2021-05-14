@@ -1,20 +1,30 @@
-import 'dart:collection';
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vanderhoof_app/map.dart';
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import 'cards.dart';
-import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
-import 'scraper.dart';
+import 'cards.dart';
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
 import 'main.dart';
+import 'map.dart';
+import 'scraper.dart';
+import 'package:vanderhoof_app/commonFunction.dart';
+// import 'main.dart';
+import 'data.dart';
+
+bool businessFirstTime = true;
+// Businesses populated from firebase
+List<Business> businesses = [];
+
+// Businesses after filtering search - this is whats shown in ListView
+List<Business> filteredBusinesses = [];
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -28,11 +38,6 @@ class BusinessState extends StatefulWidget {
 List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
-  // Businesses populated from firebase
-  List<Business> businesses = [];
-
-  // Businesses after filtering search - this is whats shown in ListView
-  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -50,67 +55,48 @@ class _BusinessPageState extends State<BusinessState> {
 
   // Choice Chips for Category
   int _selectedIndex;
-  List<String> _options = [
-    'Accommodation',
-    'Agriculture & Animal',
-    'Automotive',
-    'Business Services',
-    'Construction',
-    'Employment Services & Education',
-    'Entertainment',
-    'Environmental',
-    'Financial Services',
-    'Food & Dining',
-    'Forestry Related',
-    'Government Services',
-    'Health Services',
-    'Industry',
-    'Media & Design',
-    'Non-Profit Groups & Clubs',
-    'Professional Services',
-    'Real Estate',
-    'Restaurant',
-    'Retail Sales',
-    'Technical',
-    'Trades',
-  ];
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    // helper method - parses phone string to correct format
-    String _parsePhoneNumber(String phone) {
-      String parsedPhone = "";
-      if (phone != null && phone.trim() != "" && phone != ".") {
-        phone = phone.replaceAll(new RegExp(r'[^\d]+'), "");
-        parsedPhone = "(" +
-            phone.substring(0, 3) +
-            ") " +
-            phone.substring(3, 6) +
-            "-" +
-            phone.substring(6);
+    print("tst---------tst------------------tst-------tst");
+    if (businessFirstTime) {
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
+      // helper method - parses phone string to correct format
+      String _parsePhoneNumber(String phone) {
+        String parsedPhone = "";
+        if (phone != null && phone.trim() != "" && phone != ".") {
+          parsedPhone = "(" +
+              phone.substring(0, 3) +
+              ") " +
+              phone.substring(3, 6) +
+              "-" +
+              phone.substring(6);
+        }
+        return parsedPhone;
       }
-      return parsedPhone;
-    }
 
-    await fireStore.get().then((QuerySnapshot snap) {
-      businesses = filteredBusinesses = [];
-      snap.docs.forEach((doc) {
-        String phone = _parsePhoneNumber(doc['phone']);
-        Business b = Business(
-            doc['name'],
-            doc['address'],
-            doc['LatLng'],
-            doc["description"],
-            phone,
-            doc['email'],
-            doc['socialMedia'],
-            doc['website'],
-            doc['imgURL'],
-            doc['category'],
-            doc['id']);
-        businesses.add(b);
+      await fireStore.get().then((QuerySnapshot snap) {
+        businesses = filteredBusinesses = [];
+        snap.docs.forEach((doc) {
+          String phone = _parsePhoneNumber(doc['phone']);
+          Business b = Business(
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: phone,
+              email: doc['email'],
+              socialMedia: doc['socialMedia'],
+              website: doc['website'],
+              imgURL: doc['imgURL'],
+              category: doc['category'],
+              id: doc['id']);
+          businesses.add(b);
+        });
       });
-    });
+      businessFirstTime = false;
+    }
+    businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
   }
 
@@ -383,10 +369,10 @@ class _BusinessPageState extends State<BusinessState> {
     }
 
     // get a ChoiceChip widget for each category
-    for (int i = 0; i < _options.length; i++) {
+    for (int i = 0; i < categoryOptions.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(_options[i], style: TextStyle(color: Colors.black)),
+        label: Text(categoryOptions[i], style: TextStyle(color: Colors.black)),
         elevation: 3,
         pressElevation: 5,
         shadowColor: colorPrimary,
@@ -395,7 +381,7 @@ class _BusinessPageState extends State<BusinessState> {
           setState(() {
             if (selected) {
               _selectedIndex = i;
-              _filterSearchItemsByCategory(_options[i]);
+              _filterSearchItemsByCategory(categoryOptions[i]);
             } else {
               _selectedIndex = null;
               filteredBusinesses = businesses;
@@ -434,21 +420,10 @@ class _BusinessPageState extends State<BusinessState> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
-                print("FutureBuilder snapshot.connectionState => none");
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

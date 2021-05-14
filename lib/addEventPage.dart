@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:getwidget/getwidget.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
-import 'package:vanderhoof_app/main.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:getwidget/getwidget.dart';
+
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
+import 'main.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
   AddEventPage({edit = false, this.event}) {
-    print(event);
+    // print(event);
   }
   @override
   _AddEventPageState createState() => _AddEventPageState(event: event);
@@ -319,7 +319,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   FormBuilderImagePicker(
                                     name: 'image',
                                     placeholderImage:
-                                        NetworkImage(event.imgURL),
+                                        (event != null && event.imgURL != null)
+                                            ? NetworkImage(event.imgURL)
+                                            : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
                                     ),
@@ -410,7 +412,7 @@ class _AddEventPageState extends State<AddEventPage> {
     CollectionReference fireStore =
         FirebaseFirestore.instance.collection('events');
     //=========================================
-    //Method to add business to FireStore
+    //Method to add Event to FireStore
     //=========================================
     Future<void> _addEvent(Map<String, dynamic> event) {
       File imgFile;
@@ -445,7 +447,8 @@ class _AddEventPageState extends State<AddEventPage> {
             event['timeEnd'].minute);
         eventInfo.remove('timeEnd');
       }
-      if (eventInfo['image'].isNotEmpty) {
+
+      if (eventInfo['image'] != null && eventInfo['image'].isNotEmpty) {
         imgFile = eventInfo['image'][0];
       } else {
         eventInfo['imgURL'] = null;
@@ -463,8 +466,8 @@ class _AddEventPageState extends State<AddEventPage> {
       if (form['image'] != null) {
         if (form['image'].isNotEmpty) {
           print(form['image']);
-          uploadFile(form['image'][0], event.id).then((v) =>
-              downloadURL(event.id).then((imgURL) =>
+          uploadFile(form['image'][0], event.id, "events").then((v) =>
+              downloadURL(event.id, "events").then((imgURL) =>
                   fireStore.doc(event.id).update({"imgURL": imgURL})));
         }
       }

@@ -1,19 +1,27 @@
+import 'dart:async';
 import 'dart:collection';
 
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:vanderhoof_app/map.dart';
-import 'cards.dart';
-import 'fireStoreObjects.dart';
-import 'addBusinessPage.dart';
-import 'addEventPage.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import 'addBusinessPage.dart';
+import 'addEventPage.dart';
+import 'cards.dart';
+import 'commonFunction.dart';
+import 'fireStoreObjects.dart';
 import 'main.dart';
+import 'map.dart';
+
+bool recreationFirstTime = true;
+
+// Businesses populated from firebase
+List<Recreational> recs = [];
+
+// Businesses after filtering search - this is whats shown in ListView
+List<Recreational> filteredRecs = [];
 
 class Recreation extends StatefulWidget {
   Recreation({Key key}) : super(key: key);
@@ -25,11 +33,6 @@ class Recreation extends StatefulWidget {
 }
 
 class _RecreationPageState extends State<Recreation> {
-  // Businesses populated from firebase
-  List<Recreational> recs = [];
-
-  // Businesses after filtering search - this is whats shown in ListView
-  List<Recreational> filteredRecs = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
@@ -47,37 +50,25 @@ class _RecreationPageState extends State<Recreation> {
 
   /// firebase async method to get data
   Future _getRecs() async {
-    // helper method - parses phone string to correct format
-    String _parsePhoneNumber(String phone) {
-      String parsedPhone = "";
-      if (phone != null && phone.trim() != "" && phone != ".") {
-        phone = phone.replaceAll(new RegExp(r'[^\d]+'), "");
-        parsedPhone = "(" +
-            phone.substring(0, 3) +
-            ") " +
-            phone.substring(3, 6) +
-            "-" +
-            phone.substring(6);
-      }
-      return parsedPhone;
+    if (recreationFirstTime) {
+      await fireStore.get().then((QuerySnapshot snap) {
+        recs = filteredRecs = [];
+        snap.docs.forEach((doc) {
+          // String phone = _parsePhoneNumber(doc['phone']);
+          Recreational b = Recreational(
+              name: doc['name'],
+              address: doc['address'],
+              location: doc['LatLng'],
+              description: doc["description"],
+              phoneNumber: doc["phone"],
+              email: doc['email'],
+              website: doc['website']);
+          recs.add(b);
+        });
+      });
+      recreationFirstTime = false;
     }
 
-    // TODO check the phone format verification
-    await fireStore.get().then((QuerySnapshot snap) {
-      recs = filteredRecs = [];
-      snap.docs.forEach((doc) {
-        String phone = _parsePhoneNumber(doc['phone']);
-        Recreational b = Recreational(
-            doc['name'],
-            doc['address'],
-            doc['LatLng'],
-            doc["description"],
-            phone,
-            doc['email'],
-            doc['website']);
-        recs.add(b);
-      });
-    });
     return recs;
   }
 
@@ -334,20 +325,10 @@ class _RecreationPageState extends State<Recreation> {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 print("FutureBuilder snapshot.connectionState => none");
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,17 +1,20 @@
 import 'dart:collection';
 
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/cards.dart';
 
+import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
-import 'package:vanderhoof_app/map.dart';
-
 import 'main.dart';
+import 'map.dart';
+
+bool hikeFirstTime = true;
+List<HikeTrail> hikes = [];
+List<HikeTrail> filteredHikes = [];
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -23,8 +26,6 @@ class Hike extends StatefulWidget {
 }
 
 class _HikePageState extends State<Hike> {
-  List<HikeTrail> hikes = [];
-  List<HikeTrail> filteredHikes = [];
   bool isSearching = false;
   Future future;
   ItemScrollController _scrollController = ItemScrollController();
@@ -34,27 +35,32 @@ class _HikePageState extends State<Hike> {
 
   /// firebase async method to get data
   Future _getHikes() async {
-    CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('trails');
+    if (hikeFirstTime) {
+      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      CollectionReference fireStore =
+          FirebaseFirestore.instance.collection('trails');
 
-    await fireStore.get().then((QuerySnapshot snap) {
-      hikes = filteredHikes = [];
-      snap.docs.forEach((doc) {
-        HikeTrail h = HikeTrail(
-          doc['name'],
-          doc['address'],
-          doc['location'],
-          doc['distance'],
-          doc['difficulty'],
-          doc['time'],
-          doc['wheelchair'],
-          doc['description'],
-          doc['pointsOfInterest'],
-          doc['imgURL'],
-        );
-        hikes.add(h);
+      await fireStore.get().then((QuerySnapshot snap) {
+        hikes = filteredHikes = [];
+        snap.docs.forEach((doc) {
+          HikeTrail h = HikeTrail(
+            name: doc['name'],
+            address: doc['address'],
+            location: doc['location'],
+            description: doc['description'],
+            distance: doc['distance'],
+            rating: doc['difficulty'],
+            time: doc['time'],
+            wheelchair: doc['wheelchair'],
+            pointsOfInterest: doc['pointsOfInterest'],
+            imgURL: doc['imgURL'],
+          );
+          hikes.add(h);
+          filteredHikes.add(h);
+        });
       });
-    });
+      hikeFirstTime = false;
+    }
     return hikes;
   }
 
@@ -187,20 +193,10 @@ class _HikePageState extends State<Hike> {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 print("FutureBuilder snapshot.connectionState => none");
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return Center(
-                  child: AwesomeLoader(
-                    loaderType: AwesomeLoader.AwesomeLoader3,
-                    color: colorPrimary,
-                  ),
-                );
+                return showLoadingScreen();
               case ConnectionState.done:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

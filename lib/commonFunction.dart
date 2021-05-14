@@ -1,8 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'dart:io';
+
+// import 'cards.dart';
+import 'main.dart';
+// import 'map.dart';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
@@ -26,15 +31,21 @@ Future<GeoPoint> toLatLng(String addr) async {
 //=========================================
 //Method to add business to FireStore
 //=========================================
-Future<void> addBusiness(Map<String, dynamic> businessInfo) {
+Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
 // Used to add businesses
   CollectionReference business =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('businesses_testa');
   return business
       .add(businessInfo)
       .then((value) => {
             print("Business Added:  ${value.id}, ${businessInfo['name']}"),
-            business.doc(value.id).update({"id": value.id})
+            business.doc(value.id).update({"id": value.id}),
+            if (imageFile != null)
+              {
+                uploadFile(imageFile, value.id, "businesses").then((v) =>
+                    downloadURL(value.id, "businesses").then((imgURL) =>
+                        business.doc(value.id).update({"imgURL": imgURL}))),
+              }
           })
       .catchError((error) => print("Failed to add Business: $error"));
 }
@@ -75,18 +86,18 @@ Future<void> addEvent(event, CollectionReference fireStore, {File imageFile}) {
             fireStore.doc(value.id).update({"id": value.id}),
             if (imageFile != null)
               {
-                uploadFile(imageFile, value.id).then((v) =>
-                    downloadURL(value.id).then((imgURL) =>
+                uploadFile(imageFile, value.id, "events").then((v) =>
+                    downloadURL(value.id, "events").then((imgURL) =>
                         fireStore.doc(value.id).update({"imgURL": imgURL}))),
               }
           })
       .catchError((error) => print("Failed to add Event: $error"));
 }
 
-Future<void> uploadFile(File file, String filename) async {
+Future<void> uploadFile(File file, String filename, String folderName) async {
   try {
     await firebase_storage.FirebaseStorage.instance
-        .ref('uploads/$filename.png')
+        .ref('$folderName/$filename.png')
         .putFile(file);
   } on FirebaseException catch (e) {
     print("upload fail: $e");
@@ -94,9 +105,9 @@ Future<void> uploadFile(File file, String filename) async {
   }
 }
 
-Future<String> downloadURL(String filename) async {
+Future<String> downloadURL(String filename, String folderName) async {
   return await firebase_storage.FirebaseStorage.instance
-      .ref('uploads/$filename.png')
+      .ref('$folderName/$filename.png')
       .getDownloadURL();
 }
 
@@ -120,3 +131,67 @@ MaterialColor createMaterialColor(Color color) {
   });
   return MaterialColor(color.value, swatch);
 }
+
+Widget showLoadingScreen() {
+  return SpinKitWave(
+    color: colorPrimary,
+    size: 50.0,
+  );
+}
+//***************************Same as below************************************
+// Widget buildBody(isFirstTime, future, filteredItem, markers, buildList,
+//     {buildChips}) {
+//   return Container(
+//     padding: EdgeInsets.all(0.0),
+//     child: isFirstTime
+//         ? FutureBuilder(
+//             future: future,
+//             builder: (context, snapshot) {
+//               switch (snapshot.connectionState) {
+//                 case ConnectionState.none:
+//                   return Text('non');
+//                 case ConnectionState.active:
+//                 case ConnectionState.waiting:
+//                   return showLoadingScreen();
+//                 case ConnectionState.done:
+//                   {
+//                     print(buildChips);
+//                     return _buildBody(filteredItem, markers, buildList,
+//                         buildChips: buildChips);
+//                   }
+//                 default:
+//                   return Text("Default");
+//               }
+//             },
+//           )
+//         : _buildBody(filteredItem, markers, buildList, buildChips: buildChips),
+//   );
+// }
+
+// ************Saving for later can be deleted if we don't end up doing this.
+// Widget _buildBody(filteredItem, markers, buildList, {buildChips}) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       // insert widgets here wrapped in `Expanded` as a child
+//       // note: play around with flex int value to adjust vertical spaces between widgets
+//       Expanded(
+//         flex: 9,
+//         child: Gmap(filteredItem, markers),
+//       ),
+//       (buildChips != null && buildChips != "")
+//           ? Expanded(flex: 2, child: buildChips())
+//           : Container(),
+//       Expanded(
+//         flex: 14,
+//         child: filteredItem.length != 0
+//             ? buildList()
+//             : Container(
+//                 child: Center(
+//                   child: Text("No results found", style: titleTextStyle),
+//                 ),
+//               ),
+//       ),
+//     ],
+//   );
+// }
