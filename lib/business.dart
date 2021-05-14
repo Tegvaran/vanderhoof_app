@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,11 +35,6 @@ class BusinessState extends StatefulWidget {
 List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
-  // Businesses populated from firebase
-  List<Business> businesses = [];
-
-  // Businesses after filtering search - this is whats shown in ListView
-  List<Business> filteredBusinesses = [];
   bool isSearching = false;
 
   // Async Future variable that holds FireStore's data and functions
