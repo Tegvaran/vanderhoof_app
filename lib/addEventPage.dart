@@ -213,7 +213,22 @@ class _AddEventPageState extends State<AddEventPage> {
                                                   inputType: InputType.time,
                                                   validator:
                                                       FormBuilderValidators
-                                                          .required(context),
+                                                          .compose([
+                                                    FormBuilderValidators
+                                                        .required(context),
+                                                    (value) {
+                                                      _formKey.currentState
+                                                          .save();
+                                                      DateTime startTime =
+                                                          _formKey.currentState
+                                                                  .value[
+                                                              'datetimeStart'];
+                                                      print(startTime);
+                                                      print(value);
+                                                    }
+                                                  ]),
+                                                  // FormBuilderValidators
+                                                  //     .required(context),
                                                   decoration: InputDecoration(
                                                     labelText: "Event End Time",
                                                     hintText: "pick end time",
@@ -316,9 +331,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   FormBuilderImagePicker(
                                     name: 'image',
-                                    placeholderImage: (event != null)
-                                        ? NetworkImage(event.imgURL)
-                                        : null,
+                                    placeholderImage:
+                                        (event != null && event.imgURL != null)
+                                            ? NetworkImage(event.imgURL)
+                                            : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
                                     ),

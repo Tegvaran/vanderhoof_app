@@ -312,7 +312,7 @@ class _BusinessPageState extends State<BusinessState> {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddBusinessPage(business: item),
+                          builder: (context) => AddBusinessPage(),
                         ))
                     //     .then((v) => setState(() {
                     //       // _getEvents();
