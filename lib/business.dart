@@ -463,20 +463,13 @@ class _BusinessPageState extends State<BusinessState> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // // note: play around with flex int value to adjust vertical spaces between widgets
-                    // AnimatedContainer(
-                    //   width: double.infinity,
-                    //   height: isScrollingDownList ? 0.0 : 200.0,
-                    //   duration: const Duration(milliseconds: 300),
-                    //   curve: Curves.fastOutSlowIn,
-                    //   child: Gmap(filteredBusinesses, _markers),
-                    // ),
                     // Expanded(
                     //   flex: 9,
                     //   child: Gmap(filteredBusinesses, _markers),
                     // ),
                     AnimatedContainer(
                         width: double.infinity,
-                        height: isMapVisible ? 200.0 : 0.0,
+                        height: isMapVisible ? 200.0 : 1.0,
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.fastOutSlowIn,
                         child: Gmap(filteredBusinesses, _markers)),
