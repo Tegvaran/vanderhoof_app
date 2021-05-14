@@ -44,7 +44,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('businesses_testa');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -312,7 +312,7 @@ class _BusinessPageState extends State<BusinessState> {
                 Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddBusinessPage(),
+                          builder: (context) => AddBusinessPage(business: item),
                         ))
                     //     .then((v) => setState(() {
                     //       // _getEvents();
@@ -348,7 +348,7 @@ class _BusinessPageState extends State<BusinessState> {
                         onPressed: () {
                           function();
                           // _deleteBusiness(item.name, item.id, index);
-                          Navigator.of(context).pop(true);
+                          // Navigator.of(context).pop(true);
                         },
                       ),
                       TextButton(

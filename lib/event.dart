@@ -41,7 +41,7 @@ class _EventPageState extends State<EventState> {
 
   /// firebase async method to get data
   Future _getEvents() async {
-    if (true) {
+    if (eventFirstTime) {
       print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
       await fireStore.get().then((QuerySnapshot snap) {
         events = filteredEvents = [];
@@ -61,7 +61,7 @@ class _EventPageState extends State<EventState> {
           events.add(e);
         });
       });
-      // eventFirstTime = false;
+      eventFirstTime = false;
     }
 
     // sort all events by starting date

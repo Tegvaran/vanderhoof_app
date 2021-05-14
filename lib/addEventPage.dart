@@ -478,7 +478,6 @@ class _AddEventPageState extends State<AddEventPage> {
     Future<void> _editEvent(Map<String, dynamic> form) {
       if (form['image'] != null) {
         if (form['image'].isNotEmpty) {
-          print(form['image']);
           uploadFile(form['image'][0], event.id, "events").then((v) =>
               downloadURL(event.id, "events").then((imgURL) =>
                   fireStore.doc(event.id).update({"imgURL": imgURL})));
