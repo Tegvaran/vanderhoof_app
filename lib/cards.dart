@@ -29,7 +29,7 @@ Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
 /// Represents a hike card that is displayed on the hike page.
 /// Takes the values for Hike which is a hike object, scrollController, scrollIndex.
 class HikeCard extends StatelessWidget {
-  final HikeTrail hikeTrail;
+  final Hike hikeTrail;
   final ItemScrollController scrollController;
   final int scrollIndex;
 

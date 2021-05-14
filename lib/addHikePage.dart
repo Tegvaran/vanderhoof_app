@@ -5,21 +5,31 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:getwidget/getwidget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'commonFunction.dart';
 
 class AddHikePage extends StatefulWidget {
+  final Hike hike;
+
+  AddHikePage({edit = false, this.hike}) {
+    print(hike.name);
+  }
+
   @override
-  _AddHikePageSate createState() => _AddHikePageSate();
+  _AddHikePageSate createState() => _AddHikePageSate(hike: hike);
 }
 
 class _AddHikePageSate extends State<AddHikePage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
+  Hike hike;
   var difficultyOptions = ["Easy", "Medium", "Hard"];
   var wheelchairAccessibilityOptions = ["Accessible", "Inaccessible"];
   static var pointsOfInterest = [];
+
+  _AddHikePageSate({this.hike});
 
   List<Widget> _getPoI() {
     print("************************************");
@@ -103,19 +113,26 @@ class _AddHikePageSate extends State<AddHikePage> {
                                       "Name",
                                       "Riverside Nature Trail",
                                       Icon(MdiIcons.hiking),
-                                      true),
+                                      true,
+                                      initialValue:
+                                          (hike == null) ? null : hike.name),
                                   _getTextField(
                                       "address",
                                       "Address",
                                       "188 E Stewart Street, Unit 11, PO Box 126, Vanderhoof, BC,",
                                       Icon(Icons.add_location_alt_outlined),
-                                      true),
+                                      true,
+                                      initialValue:
+                                          (hike == null) ? null : hike.address),
                                   _getTextField(
                                       "description",
                                       "Description",
                                       "Description of hike",
                                       Icon(Icons.description_outlined),
-                                      false),
+                                      false,
+                                      initialValue: (hike == null)
+                                          ? null
+                                          : hike.description),
                                   SizedBox(
                                     height: 20,
                                   ),
@@ -140,7 +157,9 @@ class _AddHikePageSate extends State<AddHikePage> {
                                           .map((choice) => DropdownMenuItem(
                                               value: choice,
                                               child: Text("$choice")))
-                                          .toList()),
+                                          .toList(),
+                                      initialValue:
+                                          (hike == null) ? null : hike.rating),
                                   SizedBox(height: 20),
                                   FormBuilderDropdown(
                                       name: "Wheelchair Accessibility",
@@ -162,19 +181,27 @@ class _AddHikePageSate extends State<AddHikePage> {
                                           .map((choice) => DropdownMenuItem(
                                               value: choice,
                                               child: Text("$choice")))
-                                          .toList()),
+                                          .toList(),
+                                      initialValue: (hike == null)
+                                          ? null
+                                          : hike.wheelchair),
                                   _getTextField(
                                       "distance",
                                       "Distance",
                                       "'1.35 km' or '540 m'",
                                       Icon(FontAwesomeIcons.road),
-                                      false),
+                                      false,
+                                      initialValue: (hike == null)
+                                          ? null
+                                          : hike.distance),
                                   _getTextField(
                                       "time",
                                       "Time",
                                       "'2 hr' or '45 min'",
                                       Icon(FontAwesomeIcons.clock),
-                                      false),
+                                      false,
+                                      initialValue:
+                                          (hike == null) ? null : hike.time),
                                   SizedBox(height: 20),
                                   Text(
                                     "Points of Interest",
@@ -235,12 +262,14 @@ class _AddHikePageSate extends State<AddHikePage> {
   }
 
   Widget _getTextField(
-      String name, String labelText, String hintText, Icon icon, required) {
+      String name, String labelText, String hintText, Icon icon, required,
+      {String initialValue}) {
     TextInputType inputType = TextInputType.text;
     return Container(
       margin: EdgeInsets.only(top: 15),
       child: FormBuilderTextField(
         name: name,
+        initialValue: initialValue,
         validator: (value) {
           if (!required) {
             return null;

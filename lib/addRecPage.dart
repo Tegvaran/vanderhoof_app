@@ -4,27 +4,34 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:getwidget/getwidget.dart';
+import 'package:vanderhoof_app/fireStoreObjects.dart';
 import 'package:vanderhoof_app/main.dart';
 
 import 'commonFunction.dart';
 
 class AddRecPage extends StatefulWidget {
+  final Recreational rec;
+  AddRecPage({edit = false, this.rec}) {
+    print("--------------------------------------");
+    print(rec.name);
+  }
   @override
-  _AddRecPageSate createState() => _AddRecPageSate();
+  _AddRecPageSate createState() => _AddRecPageSate(rec: rec);
 }
 
 class _AddRecPageSate extends State<AddRecPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
-  var difficultyOptions = ["Easy", "Medium", "Hard"];
-  var wheelchairAccessibilityOptions = ["Accessible", "Inaccessible"];
   static var pointsOfInterest = [];
+  Recreational rec;
+
+  _AddRecPageSate({this.rec});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add a New Hike'),
+        title: (rec == null) ? Text('Add a New Rec') : Text('Edit a Rec'),
         backgroundColor: colorPrimary,
       ),
       body: Row(
@@ -46,45 +53,59 @@ class _AddRecPageSate extends State<AddRecPage> {
                               child: Column(
                                 children: [
                                   GFTypography(
-                                    type: GFTypographyType.typo1,
-                                    text: 'Recreational Activity Information',
-                                  ),
+                                      type: GFTypographyType.typo1,
+                                      text:
+                                          'Recreational Activity Information'),
                                   SizedBox(height: 20),
                                   _getTextField(
                                       "name",
                                       "Name",
                                       "Name of the Recreational Activity",
                                       Icon(Icons.directions_bike),
-                                      true),
+                                      true,
+                                      initialValue:
+                                          (rec == null) ? null : rec.name),
                                   _getTextField(
                                       "address",
                                       "Address",
                                       "188 E Stewart Street, Unit 11, PO Box 126, Vanderhoof, BC,",
                                       Icon(Icons.add_location_alt_outlined),
-                                      true),
+                                      true,
+                                      initialValue:
+                                          (rec == null) ? null : rec.address),
                                   _getTextField(
                                       "description",
                                       "Description",
                                       "Description of hike",
                                       Icon(Icons.description_outlined),
-                                      false),
+                                      false,
+                                      initialValue: (rec == null)
+                                          ? null
+                                          : rec.description),
                                   SizedBox(
                                     height: 20,
                                   ),
                                   _getTextField("email", "Email", "Email",
                                       Icon(FontAwesomeIcons.road), false,
-                                      email: true),
+                                      email: true,
+                                      initialValue:
+                                          (rec == null) ? null : rec.email),
                                   _getTextField(
                                       "phone",
                                       "Phone Number",
                                       "Phone Number",
                                       Icon(FontAwesomeIcons.clock),
                                       false,
-                                      phone: true),
+                                      phone: true,
+                                      initialValue: (rec == null)
+                                          ? null
+                                          : rec.phoneNumber),
                                   SizedBox(height: 20),
                                   _getTextField("website", "Website", "Website",
                                       Icon(FontAwesomeIcons.clock), false,
-                                      url: true),
+                                      url: true,
+                                      initialValue:
+                                          (rec == null) ? null : rec.website),
                                   SizedBox(
                                     height: 20,
                                   ),
@@ -139,7 +160,7 @@ class _AddRecPageSate extends State<AddRecPage> {
 
   Widget _getTextField(
       String name, String labelText, String hintText, Icon icon, required,
-      {email = false, url = false, phone = false}) {
+      {email = false, url = false, phone = false, String initialValue}) {
     var formValidator;
     TextInputType inputType = TextInputType.text;
     if (email == true) {
@@ -167,6 +188,7 @@ class _AddRecPageSate extends State<AddRecPage> {
       margin: EdgeInsets.only(top: 15),
       child: FormBuilderTextField(
         name: name,
+        initialValue: initialValue,
         validator: (value) {
           if (!required) {
             return null;

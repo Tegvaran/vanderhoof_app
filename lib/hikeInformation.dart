@@ -7,7 +7,7 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 
 class HikeInformation extends StatefulWidget {
-  final HikeTrail hikeTrail;
+  final Hike hikeTrail;
 
   HikeInformation({Key key, @required this.hikeTrail}) : super(key: key);
 
@@ -16,7 +16,7 @@ class HikeInformation extends StatefulWidget {
 }
 
 class _HikeInformationState extends State<HikeInformation> {
-  HikeTrail hikeTrail;
+  Hike hikeTrail;
   _HikeInformationState(this.hikeTrail);
   static const double TITLE_SIZE = 40;
   static const double BODY_SIZE = 20;

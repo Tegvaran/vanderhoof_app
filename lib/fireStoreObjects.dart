@@ -7,12 +7,14 @@ abstract class FireStoreObject {
   String address;
   String description;
   LatLng location;
+  String id;
 
-  FireStoreObject(
-      String name, String address, GeoPoint geoLocation, String description) {
+  FireStoreObject(String name, String address, GeoPoint geoLocation,
+      String description, String id) {
     this.name = name;
     this.address = address;
     this.description = description;
+    this.id = id;
 
     // If the address is not provided and or is bad,
     // the location is set to null and is not converted to LatLng.
@@ -34,18 +36,16 @@ class Business extends FireStoreObject {
   final String website;
   final String imgURL;
   final List category;
-  final String id;
 
-  Business(name, address, location, description, this.phoneNumber, this.email,
-      this.socialMedia, this.website, this.imgURL, this.category, this.id)
-      : super(name, address, location, description);
+  Business(name, address, location, description, id, this.phoneNumber,
+      this.email, this.socialMedia, this.website, this.imgURL, this.category)
+      : super(name, address, location, description, id);
 }
 
 /// Represents an event.
 class Event extends FireStoreObject {
   final DateTime datetimeEnd;
   final DateTime datetimeStart;
-  final String id;
   final bool isMultiday;
 
   Event({
@@ -53,15 +53,15 @@ class Event extends FireStoreObject {
     address,
     location,
     description,
+    id,
     this.datetimeEnd,
     this.datetimeStart,
-    this.id,
     this.isMultiday,
-  }) : super(name, address, location, description);
+  }) : super(name, address, location, description, id);
 }
 
 /// Represents a hike trail.
-class HikeTrail extends FireStoreObject {
+class Hike extends FireStoreObject {
   final String distance;
   final String rating;
   final String time;
@@ -69,9 +69,9 @@ class HikeTrail extends FireStoreObject {
   var pointsOfInterest;
   final String imgURL;
 
-  HikeTrail(name, address, location, this.distance, this.rating, this.time,
+  Hike(name, address, location, id, this.distance, this.rating, this.time,
       this.wheelchair, description, this.pointsOfInterest, this.imgURL)
-      : super(name, address, location, description);
+      : super(name, address, location, description, id);
 }
 
 /// Represents a recreational spot.
@@ -80,7 +80,7 @@ class Recreational extends FireStoreObject {
   final String email;
   final String website;
 
-  Recreational(name, address, location, description, this.phoneNumber,
+  Recreational(name, address, location, description, id, this.phoneNumber,
       this.email, this.website)
-      : super(name, address, location, description);
+      : super(name, address, location, description, id);
 }

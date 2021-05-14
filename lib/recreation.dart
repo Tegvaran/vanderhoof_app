@@ -6,7 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:vanderhoof_app/map.dart';
+import 'addRecPage.dart';
 import 'cards.dart';
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
@@ -69,6 +71,7 @@ class _RecreationPageState extends State<Recreation> {
             doc.get('address'),
             doc.get('LatLng'),
             doc.get("description"),
+            doc.get('id'),
             doc.get("phone"),
             doc.get('email'),
             doc.get('website'));
@@ -255,23 +258,47 @@ class _RecreationPageState extends State<Recreation> {
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredRecs[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
+          // direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              // _deleteBusiness(item.name, index);
+              deleteCard(item.name, item.id, index, this, context, filteredRecs,
+                  fireStore);
+              Navigator.of(context).pop(true);
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                print(item);
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddRecPage(rec: item),
+                    ));
+                //
+                //
+              };
+            }
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -283,8 +310,7 @@ class _RecreationPageState extends State<Recreation> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteRec(item.name, index);
-                          Navigator.of(context).pop(true);
+                          function();
                         },
                       ),
                       TextButton(
@@ -297,7 +323,8 @@ class _RecreationPageState extends State<Recreation> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 
