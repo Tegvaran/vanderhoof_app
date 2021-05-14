@@ -16,7 +16,7 @@ import 'main.dart';
 import 'map.dart';
 import 'scraper.dart';
 import 'package:vanderhoof_app/commonFunction.dart';
-import 'main.dart';
+// import 'main.dart';
 import 'data.dart';
 
 bool businessFirstTime = true;
