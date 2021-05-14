@@ -44,7 +44,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('businesses_testa');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -259,46 +259,82 @@ class _BusinessPageState extends State<BusinessState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, String docID, int index) {
-      {
-        // Remove the item from the data source.
-        setState(() {
-          filteredBusinesses.removeAt(index);
-        });
-        // Delete from fireStore
-        // String docID = businessName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$docID Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
-        // Then show a snackbar.
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$businessName deleted")));
-      }
-    }
+    // void _deleteBusiness(String businessName, String docID, int index) {
+    //   {
+    //     // Remove the item from the data source.
+    //     setState(() {
+    //       filteredBusinesses.removeAt(index);
+    //     });
+    //     // Delete from fireStore
+    //     // String docID = businessName.replaceAll('/', '|');
+    //     fireStore
+    //         .doc(docID)
+    //         .delete()
+    //         .then((value) => print("$docID Deleted"))
+    //         .catchError((error) => print("Failed to delete user: $error"));
+    //
+    //     // Then show a snackbar.
+    //     ScaffoldMessenger.of(context)
+    //         .showSnackBar(SnackBar(content: Text("$businessName deleted")));
+    //   }
+    // }
 
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredBusinesses[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              deleteCard(item.name, item.id, index, fireStore).then((v) {
+                // Remove the item from the data source.
+                setState(() {
+                  filteredBusinesses.removeAt(index);
+                });
+                // Then show a snackbar.
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${item.name} deleted")));
+
+                Navigator.of(context).pop(true);
+              });
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                Navigator.pop(context);
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddBusinessPage(business: item),
+                        ))
+                    //     .then((v) => setState(() {
+                    //       // _getEvents();
+                    //     }
+                    //     )
+                    // )
+                    ;
+                //
+                //
+              };
+            }
+            print(item.name);
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -310,8 +346,9 @@ class _BusinessPageState extends State<BusinessState> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, item.id, index);
-                          Navigator.of(context).pop(true);
+                          function();
+                          // _deleteBusiness(item.name, item.id, index);
+                          // Navigator.of(context).pop(true);
                         },
                       ),
                       TextButton(
@@ -324,7 +361,8 @@ class _BusinessPageState extends State<BusinessState> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 

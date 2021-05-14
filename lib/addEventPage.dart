@@ -13,9 +13,7 @@ import 'main.dart';
 
 class AddEventPage extends StatefulWidget {
   final Event event;
-  AddEventPage({edit = false, this.event}) {
-    // print(event);
-  }
+  AddEventPage({edit = false, this.event});
   @override
   _AddEventPageState createState() => _AddEventPageState(event: event);
 }
@@ -215,7 +213,22 @@ class _AddEventPageState extends State<AddEventPage> {
                                                   inputType: InputType.time,
                                                   validator:
                                                       FormBuilderValidators
-                                                          .required(context),
+                                                          .compose([
+                                                    FormBuilderValidators
+                                                        .required(context),
+                                                    (value) {
+                                                      _formKey.currentState
+                                                          .save();
+                                                      DateTime startTime =
+                                                          _formKey.currentState
+                                                                  .value[
+                                                              'datetimeStart'];
+                                                      print(startTime);
+                                                      print(value);
+                                                    }
+                                                  ]),
+                                                  // FormBuilderValidators
+                                                  //     .required(context),
                                                   decoration: InputDecoration(
                                                     labelText: "Event End Time",
                                                     hintText: "pick end time",
@@ -465,7 +478,6 @@ class _AddEventPageState extends State<AddEventPage> {
     Future<void> _editEvent(Map<String, dynamic> form) {
       if (form['image'] != null) {
         if (form['image'].isNotEmpty) {
-          print(form['image']);
           uploadFile(form['image'][0], event.id, "events").then((v) =>
               downloadURL(event.id, "events").then((imgURL) =>
                   fireStore.doc(event.id).update({"imgURL": imgURL})));

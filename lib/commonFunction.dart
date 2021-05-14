@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'fireStoreObjects.dart';
 
 // import 'cards.dart';
 import 'main.dart';
@@ -31,23 +32,52 @@ Future<GeoPoint> toLatLng(String addr) async {
 //=========================================
 //Method to add business to FireStore
 //=========================================
+CollectionReference fireStore =
+    FirebaseFirestore.instance.collection('businesses_testa');
+
 Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
 // Used to add businesses
-  CollectionReference business =
-      FirebaseFirestore.instance.collection('businesses_testa');
-  return business
+  return fireStore
       .add(businessInfo)
       .then((value) => {
             print("Business Added:  ${value.id}, ${businessInfo['name']}"),
-            business.doc(value.id).update({"id": value.id}),
+            fireStore.doc(value.id).update({"id": value.id}),
             if (imageFile != null)
               {
                 uploadFile(imageFile, value.id, "businesses").then((v) =>
                     downloadURL(value.id, "businesses").then((imgURL) =>
-                        business.doc(value.id).update({"imgURL": imgURL}))),
+                        fireStore.doc(value.id).update({"imgURL": imgURL}))),
               }
           })
       .catchError((error) => print("Failed to add Business: $error"));
+}
+
+Future<void> editBusiness(Map<String, dynamic> form, Business business,
+    {File imageFile}) {
+  if (imageFile != null) {
+    uploadFile(imageFile, business.id, "events").then((v) =>
+        downloadURL(business.id, "events").then(
+            (imgURL) => fireStore.doc(business.id).update({"imgURL": imgURL})));
+  }
+  toLatLng(form['address']).then((geopoint) {
+    fireStore
+        .doc(business.id)
+        .update({
+          'name': form['name'],
+          'address': form['address'],
+          'description': form['description'],
+          'email': form['email'],
+          'website': form['website'],
+          'category': form['category'],
+          'phone': form['phone'],
+          'LatLng': geopoint
+        })
+        .then((value) => {
+              print("Event updated: ${business.id} : ${business.name}"),
+              fireStore.doc(business.id).update({"id": business.id})
+            })
+        .catchError((error) => print("Failed to add Event: $error"));
+  });
 }
 
 Future<void> deleteCard(
@@ -138,6 +168,68 @@ Widget showLoadingScreen() {
     size: 50.0,
   );
 }
+
+//=================================================
+// Backgrounds for Edit/Delete
+//=================================================
+Widget slideRightEditBackground() {
+  return Container(
+    color: Colors.green,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+          ),
+          Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+          Text(
+            " Edit",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerLeft,
+    ),
+  );
+}
+
+Widget slideLeftDeleteBackground() {
+  return Container(
+    color: Colors.red,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          Text(
+            " Delete",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.right,
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerRight,
+    ),
+  );
+}
+
 //***************************Same as below************************************
 // Widget buildBody(isFirstTime, future, filteredItem, markers, buildList,
 //     {buildChips}) {
