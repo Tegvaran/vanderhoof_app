@@ -281,7 +281,8 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
       // // String imgURL;
-      if (_formKey.currentState.value['image'].isNotEmpty) {
+      if (_formKey.currentState.value['image'] != null &&
+          _formKey.currentState.value['image'].isNotEmpty) {
         imgFile = _formKey.currentState.value['image'][0];
       }
       String address = _formKey.currentState.value['address'];

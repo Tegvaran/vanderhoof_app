@@ -446,7 +446,8 @@ class _AddEventPageState extends State<AddEventPage> {
             event['timeEnd'].minute);
         eventInfo.remove('timeEnd');
       }
-      if (eventInfo['image'].isNotEmpty) {
+
+      if (eventInfo['image'] != null && eventInfo['image'].isNotEmpty) {
         imgFile = eventInfo['image'][0];
       } else {
         eventInfo['imgURL'] = null;
