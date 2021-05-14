@@ -13,23 +13,9 @@ import 'package:vanderhoof_app/map.dart';
 
 import 'main.dart';
 
+// variables to show & hide map, default: map shown
 bool isCardExpanded = false;
 bool isMapVisible = true;
-
-// // sets listener for whether or not a businessCard is expanded
-// void setCardExpanded(bool boolean) {
-//   isCardExpanded = boolean;
-// }
-//
-// // hides googleMap widget (when scrolling down a list)
-// void hideMap() {
-//   isMapVisible = false;
-// }
-//
-// // shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
-// void showMap() {
-//   isMapVisible = true;
-// }
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
@@ -151,11 +137,13 @@ class _HikePageState extends State<Hike> {
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
         if (firstPositionIndex > 5) {
+          // show ScrollToTopButton & hide Map
           isScrollButtonVisible = true;
           if (!isCardExpanded) {
             isMapVisible = hideMap();
           }
         } else {
+          // hide ScrollToTop button & show Map
           isScrollButtonVisible = false;
           isCardExpanded = setCardExpanded(false);
           isMapVisible = showMap();

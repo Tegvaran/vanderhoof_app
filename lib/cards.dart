@@ -87,9 +87,6 @@ class HikeCard extends StatelessWidget {
               );
             });
             // HikePage listener -> card is expanded and map should be shown
-            // hikePage.setCardExpanded(true);
-            // hikePage.showMap();
-
             hikePage.isCardExpanded = setCardExpanded(true);
             hikePage.isMapVisible = showMap();
 
@@ -97,7 +94,6 @@ class HikeCard extends StatelessWidget {
             changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects);
           } else {
             // HikePage listener -> card is not expanded
-            // businessPage.setCardExpanded(false);
             hikePage.isCardExpanded = setCardExpanded(false);
 
             // Map listener -> reset markers
@@ -290,11 +286,7 @@ class BusinessCard extends StatelessWidget {
                     // alignment: scrollAlignment,
                   );
                 });
-
                 // BusinessPage listener -> card is expanded and map should be shown
-                // businessPage.setCardExpanded(true);
-                // businessPage.showMap();
-
                 businessPage.isCardExpanded = setCardExpanded(true);
                 businessPage.isMapVisible = showMap();
 
@@ -303,7 +295,6 @@ class BusinessCard extends StatelessWidget {
                     scrollIndex, _markers, listOfFireStoreObjects);
               } else {
                 // BusinessPage listener -> card is not expanded
-                // businessPage.setCardExpanded(false);
                 businessPage.isCardExpanded = setCardExpanded(false);
 
                 // Map listener -> reset markers
@@ -539,9 +530,6 @@ class RecreationalCard extends StatelessWidget {
                   );
                 });
                 // RecreationPage listener -> card is expanded and map should be shown
-                // recreationPage.setCardExpanded(true);
-                // recreationPage.showMap();
-
                 recreationPage.isCardExpanded = setCardExpanded(true);
                 recreationPage.isMapVisible = showMap();
 
@@ -550,7 +538,6 @@ class RecreationalCard extends StatelessWidget {
                     scrollIndex, _markers, listOfFireStoreObjects);
               } else {
                 // RecreationPage listener -> card is not expanded
-                // recreationPage.setCardExpanded(false);
                 recreationPage.isCardExpanded = setCardExpanded(false);
 
                 // Map listener -> reset markers

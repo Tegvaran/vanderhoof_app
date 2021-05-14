@@ -16,23 +16,9 @@ import 'scraper.dart';
 
 import 'main.dart';
 
+// variables to show & hide map, default: map shown
 bool isCardExpanded = false;
 bool isMapVisible = true;
-
-// // sets listener for whether or not a businessCard is expanded
-// void setCardExpanded(bool boolean) {
-//   isCardExpanded = boolean;
-// }
-//
-// // hides googleMap widget (when scrolling down a list)
-// void hideMap() {
-//   isMapVisible = false;
-// }
-//
-// // shows GoogleMap widget (when at top of the list, or when businessCard is expanded)
-// void showMap() {
-//   isMapVisible = true;
-// }
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -256,22 +242,17 @@ class _BusinessPageState extends State<BusinessState> {
           _itemPositionsListener.itemPositions.value.first.index;
       setState(() {
         if (firstPositionIndex > 5) {
+          // show ScrollToTopButton & hide Map
           isScrollButtonVisible = true;
           if (!isCardExpanded) {
-            // hideMap();
             isMapVisible = hideMap();
           }
         } else {
+          // hide ScrollToTop button & show Map
           isScrollButtonVisible = false;
-          // setCardExpanded(false);
-          // showMap();
-
           isCardExpanded = setCardExpanded(false);
           isMapVisible = showMap();
         }
-        // firstPositionIndex > 5
-        //     ? isScrollButtonVisible = true
-        //     : isScrollButtonVisible = false;
       });
     });
 
