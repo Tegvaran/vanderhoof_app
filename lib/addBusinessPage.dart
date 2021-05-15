@@ -53,8 +53,8 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                   GFTypography(
                                     type: GFTypographyType.typo1,
                                     text: (business != null)
-                                        ? 'Business information'
-                                        : 'Edit Business Information',
+                                        ? 'Edit Business information'
+                                        : 'Business Information',
                                   ),
                                   SizedBox(height: 20),
                                   _getTextField(
@@ -173,9 +173,9 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                       )),
                                   FormBuilderImagePicker(
                                     name: 'image',
-                                    placeholderImage: (business != null &&
+                                    initialValue: (business != null &&
                                             business.imgURL != null)
-                                        ? NetworkImage(business.imgURL)
+                                        ? [business.imgURL]
                                         : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
@@ -298,12 +298,20 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
+      print(_formKey.currentState.value['image']);
+      print(business.imgURL);
       if (_formKey.currentState.value['image'] != null &&
-          _formKey.currentState.value['image'].isNotEmpty) {
+          _formKey.currentState.value['image'].isNotEmpty &&
+          _formKey.currentState.value['image'][0] != business.imgURL) {
         imgFile = _formKey.currentState.value['image'][0];
+      } else if (_formKey.currentState.value['image'].isEmpty &&
+          business.imgURL != null) {
+        businessFireStore.doc(business.id).update({"imgURL": null});
       }
-      String address = _formKey.currentState.value['address'];
-      toLatLng(address).then((geopoint) {
+      // if (business != null && category == null) {
+      //   category = business.category;
+      // }
+      toLatLng(_formKey.currentState.value['address']).then((geopoint) {
         Map<String, dynamic> businessInfo = {
           ..._formKey.currentState.value,
           'imgURL': null,
@@ -331,7 +339,7 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
         //=========================================
         //Navigate back to Business Page
         //=========================================
-        // Navigator.pop(context);
+        Navigator.pop(context);
       });
     }
   }

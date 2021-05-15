@@ -32,21 +32,23 @@ Future<GeoPoint> toLatLng(String addr) async {
 //=========================================
 //Method to add business to FireStore
 //=========================================
-CollectionReference fireStore =
+CollectionReference businessFireStore =
     FirebaseFirestore.instance.collection('businesses');
 
 Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
 // Used to add businesses
-  return fireStore
+  return businessFireStore
       .add(businessInfo)
       .then((value) => {
             print("Business Added:  ${value.id}, ${businessInfo['name']}"),
-            fireStore.doc(value.id).update({"id": value.id}),
+            businessFireStore.doc(value.id).update({"id": value.id}),
             if (imageFile != null)
               {
                 uploadFile(imageFile, value.id, "businesses").then((v) =>
                     downloadURL(value.id, "businesses").then((imgURL) =>
-                        fireStore.doc(value.id).update({"imgURL": imgURL}))),
+                        businessFireStore
+                            .doc(value.id)
+                            .update({"imgURL": imgURL}))),
               }
           })
       .catchError((error) => print("Failed to add Business: $error"));
@@ -56,11 +58,11 @@ Future<void> editBusiness(Map<String, dynamic> form, Business business,
     {File imageFile}) {
   if (imageFile != null) {
     uploadFile(imageFile, business.id, "events").then((v) =>
-        downloadURL(business.id, "events").then(
-            (imgURL) => fireStore.doc(business.id).update({"imgURL": imgURL})));
+        downloadURL(business.id, "events").then((imgURL) =>
+            businessFireStore.doc(business.id).update({"imgURL": imgURL})));
   }
   toLatLng(form['address']).then((geopoint) {
-    fireStore
+    businessFireStore
         .doc(business.id)
         .update({
           'name': form['name'],
@@ -74,7 +76,7 @@ Future<void> editBusiness(Map<String, dynamic> form, Business business,
         })
         .then((value) => {
               print("Event updated: ${business.id} : ${business.name}"),
-              fireStore.doc(business.id).update({"id": business.id})
+              businessFireStore.doc(business.id).update({"id": business.id})
             })
         .catchError((error) => print("Failed to add Event: $error"));
   });
