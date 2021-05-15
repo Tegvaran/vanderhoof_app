@@ -42,6 +42,7 @@ class _EventPageState extends State<EventState> {
   /// firebase async method to get data
   Future _getEvents() async {
     if (eventFirstTime) {
+      // if (true) {
       print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
       await fireStore.get().then((QuerySnapshot snap) {
         events = filteredEvents = [];
