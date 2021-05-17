@@ -74,8 +74,8 @@ class Event extends FireStoreObject {
 
 /// Represents a hike trail.
 class HikeTrail extends FireStoreObject {
-  final String distance;
-  final String rating;
+  String distance;
+  String rating;
   final String time;
   final String wheelchair;
   var pointsOfInterest;

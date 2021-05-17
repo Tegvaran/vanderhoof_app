@@ -50,31 +50,6 @@ Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
       .catchError((error) => print("Failed to add Business: $error"));
 }
 
-Future<void> addHike(Map<String, dynamic> hikeInfo) {
-// Used to add businesses
-  CollectionReference hike = FirebaseFirestore.instance.collection('trails');
-  return hike
-      .add(hikeInfo)
-      .then((value) => {
-            print("Business Added:  ${value.id}, ${hikeInfo['name']}"),
-            hike.doc(value.id).update({"id": value.id})
-          })
-      .catchError((error) => print("Failed to add Business: $error"));
-}
-
-Future<void> addRec(Map<String, dynamic> recInfo) {
-// Used to add businesses
-  CollectionReference hike =
-      FirebaseFirestore.instance.collection('recreation');
-  return hike
-      .add(recInfo)
-      .then((value) => {
-            print("Rec Added:  ${value.id}, ${recInfo['name']}"),
-            hike.doc(value.id).update({"id": value.id})
-          })
-      .catchError((error) => print("Failed to add Business: $error"));
-}
-
 Future<void> deleteCard(
     String cardName, String docID, int index, CollectionReference fireStore) {
   // Delete from fireStore
@@ -87,13 +62,13 @@ Future<void> deleteCard(
 }
 
 void deleteCardHikeRec(
-    String cardName,
-    String docID,
     int index,
     State thisContext,
     BuildContext context,
     List filteredList,
-    CollectionReference fireStore) {
+    CollectionReference fireStore,
+    String collectionName,
+    String itemName) {
   {
     // Remove the item from the data source.
     thisContext.setState(() {
@@ -101,15 +76,23 @@ void deleteCardHikeRec(
     });
     // Delete from fireStore
     // String docID = businessName.replaceAll('/', '|');
-    fireStore
-        .doc(docID)
-        .delete()
-        .then((value) => print("$docID Deleted"))
-        .catchError((error) => print("Failed to delete user: $error"));
-
+    FirebaseFirestore.instance
+        .collection(collectionName)
+        .where("name", isEqualTo: itemName)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        FirebaseFirestore.instance
+            .collection(collectionName)
+            .doc(element.id)
+            .delete()
+            .then((value) => print("$itemName Deleted"))
+            .catchError((error) => print("Failed to delete user: $error"));
+      });
+    });
     // Then show a snackbar.
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("$cardName deleted")));
+        .showSnackBar(SnackBar(content: Text("$itemName deleted")));
   }
 }
 

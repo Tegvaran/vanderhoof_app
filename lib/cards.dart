@@ -13,6 +13,10 @@ import 'hikeInformation.dart';
 import 'main.dart';
 import 'map.dart';
 
+bool isFieldEmpty(String toCheck) {
+  return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+}
+
 const double TITLE_SIZE = 22;
 const double BODY_SIZE = 18;
 const double ICON_SIZE = 24;
@@ -52,6 +56,10 @@ class HikeCard extends StatelessWidget {
       difficultyColor = redColor;
     }
     return difficultyColor;
+  }
+
+  bool buildInfoPageIcon(HikeTrail hike) {
+    return (hike.description != null || hike.pointsOfInterest != null);
   }
 
   Color getAccessibilityColor() {
@@ -109,72 +117,82 @@ class HikeCard extends StatelessWidget {
           // ),
           Padding(
             padding: TEXT_INSET,
-            child: RichText(
-                text: TextSpan(children: <TextSpan>[
-              TextSpan(text: 'Distance: ', style: headerTextStyle),
-              TextSpan(
-                text: '${hikeTrail.distance}',
-                style: bodyTextStyle,
-              ),
-            ])),
+            child: !isFieldEmpty(hikeTrail.distance)
+                ? RichText(
+                    text: TextSpan(children: <TextSpan>[
+                    TextSpan(text: 'Distance: ', style: headerTextStyle),
+                    TextSpan(
+                      text: '${hikeTrail.distance}',
+                      style: bodyTextStyle,
+                    ),
+                  ]))
+                : Container(),
           ),
-          Padding(
-            padding: TEXT_INSET,
-            child: RichText(
-                text: TextSpan(children: <TextSpan>[
-              TextSpan(text: 'Difficulty: ', style: headerTextStyle),
-              TextSpan(
-                text: '${hikeTrail.rating}',
-                style: TextStyle(
-                  fontSize: BODY_SIZE,
-                  color: getDifficultyColor(),
-                ),
-              ),
-            ])),
-          ),
-          Padding(
-            padding: TEXT_INSET,
-            child: RichText(
-                text: TextSpan(children: <TextSpan>[
-              TextSpan(text: 'Time: ', style: headerTextStyle),
-              TextSpan(
-                text: '${hikeTrail.time}',
-                style: bodyTextStyle,
-              ),
-            ])),
-          ),
+          !isFieldEmpty(hikeTrail.rating)
+              ? Padding(
+                  padding: TEXT_INSET,
+                  child: RichText(
+                      text: TextSpan(children: <TextSpan>[
+                    TextSpan(text: 'Difficulty: ', style: headerTextStyle),
+                    TextSpan(
+                      text: '${hikeTrail.rating}',
+                      style: TextStyle(
+                        fontSize: BODY_SIZE,
+                        color: getDifficultyColor(),
+                      ),
+                    ),
+                  ])),
+                )
+              : Container(),
+          !isFieldEmpty(hikeTrail.time)
+              ? Padding(
+                  padding: TEXT_INSET,
+                  child: RichText(
+                      text: TextSpan(children: <TextSpan>[
+                    TextSpan(text: 'Time: ', style: headerTextStyle),
+                    TextSpan(
+                      text: '${hikeTrail.time}',
+                      style: bodyTextStyle,
+                    ),
+                  ])),
+                )
+              : Container(),
           Padding(
             padding: TEXT_INSET,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                RichText(
-                    text: TextSpan(children: <TextSpan>[
-                  TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
-                  TextSpan(
-                    text: '${hikeTrail.wheelchair}',
-                    style: TextStyle(
-                      fontSize: BODY_SIZE,
-                      color: getAccessibilityColor(),
-                    ),
-                  ),
-                ])),
-                IconButton(
-                  icon: Icon(
-                    Icons.open_in_new_outlined,
-                    size: 36,
-                    color: colorPrimary,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              HikeInformation(hikeTrail: hikeTrail),
-                        ));
-                  },
-                ),
+                !isFieldEmpty(hikeTrail.wheelchair)
+                    ? RichText(
+                        text: TextSpan(children: <TextSpan>[
+                        TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
+                        TextSpan(
+                          text: '${hikeTrail.wheelchair}',
+                          style: TextStyle(
+                            fontSize: BODY_SIZE,
+                            color: getAccessibilityColor(),
+                          ),
+                        ),
+                      ]))
+                    : Container(),
+                buildInfoPageIcon(hikeTrail)
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.open_in_new_outlined,
+                          size: 36,
+                          color: colorPrimary,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HikeInformation(hikeTrail: hikeTrail),
+                              ));
+                        },
+                      )
+                    : Container(),
               ],
             ),
           ),

@@ -260,8 +260,8 @@ class _RecreationPageState extends State<Recreation> {
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
               // _deleteBusiness(item.name, index);
-              deleteCardHikeRec(item.name, item.id, index, this, context,
-                  filteredRecs, fireStore);
+              deleteCardHikeRec(index, this, context, filteredRecs, fireStore,
+                  "recreation", item.name);
               Navigator.of(context).pop(true);
             };
             if (direction == DismissDirection.startToEnd) {

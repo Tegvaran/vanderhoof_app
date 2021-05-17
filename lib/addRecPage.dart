@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -230,7 +231,13 @@ class _AddRecPageSate extends State<AddRecPage> {
           ..._formKey.currentState.value,
           'LatLng': geopoint,
         };
-        addRec(rec);
+
+        if (rec == null) {
+          addRec(rec);
+        } else {
+          _editRec(rec);
+        }
+
         print(rec);
         //=========================================
         //Navigate back to Business Page
@@ -238,5 +245,43 @@ class _AddRecPageSate extends State<AddRecPage> {
         Navigator.pop(context);
       });
     }
+  }
+
+  Future<void> addRec(Map<String, dynamic> recInfo) {
+// Used to add Recs
+    CollectionReference rec =
+        FirebaseFirestore.instance.collection('recreation');
+    return rec
+        .add(recInfo)
+        .then((value) => {
+              rec.doc(value.id).update({"id": value.id}),
+              SnackBar(content: Text("${recInfo['name']} updated"))
+            })
+        .catchError((error) => SnackBar(
+            content: Text("Failed to add ${recInfo['name']} Error: $error")));
+  }
+
+  Future<void> _editRec(Map<String, dynamic> newRec) async {
+    CollectionReference fireStore =
+        FirebaseFirestore.instance.collection('recreation');
+    fireStore
+        .doc(rec.id)
+        .update({
+          'name': newRec['name'],
+          'address': newRec['address'],
+          'description': newRec['description'],
+          'email': newRec['email'],
+          'phone': newRec['phone'],
+          'website': newRec['website']
+        })
+        .then((value) => {
+              fireStore.doc(newRec['id']).update({"id": newRec['id']}),
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${newRec['name']} updated")))
+            })
+        .catchError((error) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text("Failed to update ${newRec['name']} Error: $error"))));
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
+import 'package:vanderhoof_app/cards.dart';
 
 import 'fireStoreObjects.dart';
 import 'main.dart';
@@ -70,7 +71,7 @@ class _HikeInformationState extends State<HikeInformation> {
                 children: [
                   Container(
                     color: colorBackground,
-                    child: (hikeTrail.imgURL != "" && hikeTrail.imgURL != null)
+                    child: (!isFieldEmpty(hikeTrail.imgURL))
                         ? InteractiveViewer(
                             panEnabled: false,
                             boundaryMargin: EdgeInsets.all(100),
@@ -107,20 +108,133 @@ class _HikeInformationState extends State<HikeInformation> {
               ),
               content: Column(
                 children: [
+                  (hikeTrail.rating != null ||
+                          hikeTrail.distance != null ||
+                          hikeTrail.time != null ||
+                          hikeTrail.wheelchair != null)
+                      ? Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              color: colorAccent, width: 5))),
+                                  padding: EdgeInsets.all(5),
+                                  child: Text(
+                                    "Trail Details",
+                                    style: TextStyle(
+                                      fontSize: BODY_SIZE,
+                                      fontWeight: FontWeight.bold,
+                                      color: textColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  )),
+                              !isFieldEmpty(hikeTrail.distance)
+                                  ? Text(
+                                      "Distance: ${hikeTrail.distance}",
+                                      style: TextStyle(
+                                        fontSize: BODY_SIZE,
+                                        color: textColor,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    )
+                                  : Container(),
+                              !isFieldEmpty(hikeTrail.rating)
+                                  ? RichText(
+                                      text: TextSpan(
+                                          style: TextStyle(
+                                              fontSize: BODY_SIZE,
+                                              color: textColor),
+                                          children: <TextSpan>[
+                                          TextSpan(text: 'Difficulty: '),
+                                          TextSpan(
+                                            text: '${hikeTrail.rating}',
+                                            style: TextStyle(
+                                              fontSize: BODY_SIZE,
+                                              color: getDifficultyColor(),
+                                            ),
+                                          ),
+                                        ]))
+                                  : Container(),
+                              !isFieldEmpty(hikeTrail.time)
+                                  ? Text(
+                                      "Time: ${hikeTrail.time}",
+                                      style: TextStyle(
+                                        fontSize: BODY_SIZE,
+                                        color: textColor,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    )
+                                  : Container(),
+                              !isFieldEmpty(hikeTrail.wheelchair)
+                                  ? RichText(
+                                      text: TextSpan(
+                                          style: TextStyle(
+                                              fontSize: BODY_SIZE,
+                                              color: textColor),
+                                          children: <TextSpan>[
+                                          TextSpan(text: 'Wheelchair: '),
+                                          TextSpan(
+                                            text: '${hikeTrail.wheelchair}',
+                                            style: TextStyle(
+                                              fontSize: BODY_SIZE,
+                                              color: getAccessibilityColor(),
+                                            ),
+                                          ),
+                                        ]))
+                                  : Container(),
+                            ],
+                          ),
+                        )
+                      : Container(),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Container(
+                    margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
+                    child: !isFieldEmpty(hikeTrail.description)
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: colorAccent, width: 5))),
+                                padding: EdgeInsets.all(5),
+                                child: Text(
+                                  "Trail Description",
+                                  style: TextStyle(
+                                    fontSize: BODY_SIZE,
+                                    fontWeight: FontWeight.bold,
+                                    color: textColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                hikeTrail.description,
+                                style: TextStyle(
+                                  fontSize: BODY_SIZE,
+                                  color: textColor,
+                                ),
+                                textAlign: TextAlign.left,
+                              )
+                            ],
+                          )
+                        : Container(),
+                  ),
+                  (hikeTrail.pointsOfInterest != null)
+                      ? Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
                                       color: colorAccent, width: 5))),
                           padding: EdgeInsets.all(5),
                           child: Text(
-                            "Trail Details",
+                            "Points of Interest",
                             style: TextStyle(
                               fontSize: BODY_SIZE,
                               fontWeight: FontWeight.bold,
@@ -128,124 +242,25 @@ class _HikeInformationState extends State<HikeInformation> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                        ),
-                        Text(
-                          "Distance: ${hikeTrail.distance}",
-                          style: TextStyle(
-                            fontSize: BODY_SIZE,
-                            color: textColor,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        RichText(
-                            text: TextSpan(
-                                style: TextStyle(
-                                    fontSize: BODY_SIZE, color: textColor),
-                                children: <TextSpan>[
-                              TextSpan(text: 'Difficulty: '),
-                              TextSpan(
-                                text: '${hikeTrail.rating}',
-                                style: TextStyle(
-                                  fontSize: BODY_SIZE,
-                                  color: getDifficultyColor(),
-                                ),
-                              ),
-                            ])),
-                        Text(
-                          "Time: ${hikeTrail.time}",
-                          style: TextStyle(
-                            fontSize: BODY_SIZE,
-                            color: textColor,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            RichText(
-                                text: TextSpan(
-                                    style: TextStyle(
-                                        fontSize: BODY_SIZE, color: textColor),
-                                    children: <TextSpan>[
-                                  TextSpan(text: 'Wheelchair: '),
-                                  TextSpan(
-                                    text: '${hikeTrail.wheelchair}',
-                                    style: TextStyle(
-                                      fontSize: BODY_SIZE,
-                                      color: getAccessibilityColor(),
-                                    ),
-                                  ),
-                                ])),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: colorAccent, width: 5))),
-                          padding: EdgeInsets.all(5),
-                          child: Text(
-                            "Trail Description",
-                            style: TextStyle(
-                              fontSize: BODY_SIZE,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        Text(
-                          hikeTrail.description,
-                          style: TextStyle(
-                            fontSize: BODY_SIZE,
-                            color: textColor,
-                          ),
-                          textAlign: TextAlign.left,
                         )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(color: colorAccent, width: 5))),
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      "Points of Interest",
-                      style: TextStyle(
-                        fontSize: BODY_SIZE,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CarouselSlider(
-                        items: getAsList(),
-                        options: CarouselOptions(
-                            scrollDirection: Axis.horizontal,
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: true,
-                            height: 300,
-                            pageSnapping: true),
-                      ),
-                    ),
-                  ),
+                      : Container(),
+                  (hikeTrail.pointsOfInterest != null)
+                      ? Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CarouselSlider(
+                              items: getAsList(),
+                              options: CarouselOptions(
+                                  scrollDirection: Axis.horizontal,
+                                  enlargeCenterPage: true,
+                                  enableInfiniteScroll: true,
+                                  height: 300,
+                                  pageSnapping: true),
+                            ),
+                          ),
+                        )
+                      : Container(),
                 ],
               ),
             ),
