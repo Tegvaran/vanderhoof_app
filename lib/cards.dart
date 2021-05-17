@@ -82,6 +82,9 @@ class HikeCard extends StatelessWidget {
           if (_isExpanded) {
             changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
                 scrollController);
+            if (hikeTrail.location != null) {
+              changeCamera(hikeTrail.location);
+            }
             // check if Expanded
             // let ExpansionTile expand, then scroll Tile to top of the list
             Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -301,6 +304,9 @@ class BusinessCard extends StatelessWidget {
                 changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
                     scrollController);
                 // moveToLatLng(business.location);
+                if (business.location != null) {
+                  changeCamera(business.location);
+                }
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
@@ -537,6 +543,9 @@ class RecreationalCard extends StatelessWidget {
               if (_isExpanded) {
                 changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
                     scrollController);
+                if (rec.location != null) {
+                  changeCamera(rec.location);
+                }
                 // check if Expanded
                 // let ExpansionTile expand, then scroll Tile to top of the view
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
