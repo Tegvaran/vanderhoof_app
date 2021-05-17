@@ -42,6 +42,7 @@ class _EventPageState extends State<EventState> {
   /// firebase async method to get data
   Future _getEvents() async {
     if (eventFirstTime) {
+      // if (true) {
       print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
       await fireStore.get().then((QuerySnapshot snap) {
         events = filteredEvents = [];
@@ -188,16 +189,18 @@ class _EventPageState extends State<EventState> {
             String confirm = 'Confirm Deletion';
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
-              deleteCard(item.name, item.id, index, fireStore).then((v) {
-                // Remove the item from the data source.
-                setState(() {
-                  filteredEvents.removeAt(index);
-                });
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${item.name} deleted")));
+              setState(() {
+                deleteCard(item.name, item.id, index, fireStore).then((v) {
+                  // Remove the item from the data source.
+                  // Then show a snackbar.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("${item.name} deleted")));
 
-                Navigator.of(context).pop(true);
+                  // remove event object visually (on the app)
+                  filteredEvents.removeAt(index);
+
+                  Navigator.of(context).pop(true);
+                });
               });
             };
             if (direction == DismissDirection.startToEnd) {
