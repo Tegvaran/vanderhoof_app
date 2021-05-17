@@ -75,7 +75,7 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
     print("fireObject\n" + fireStoreObjects[index].name);
-    //add new marker with blue color
+    //add new marker with blue colors ---
     markers.add(
       Marker(
           markerId: MarkerId(fireStoreObjects[index].name),
