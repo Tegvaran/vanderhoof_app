@@ -7,7 +7,6 @@ import 'commonFunction.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
-import 'recreation.dart';
 
 bool resourceFirstTime = true;
 
@@ -42,7 +41,7 @@ class _ResourcePageState extends State<ResourceState> {
 
   /// firebase async method to get data
   Future _getResources() async {
-    if (recreationFirstTime) {
+    if (resourceFirstTime) {
       print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
