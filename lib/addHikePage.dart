@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -13,9 +14,7 @@ import 'commonFunction.dart';
 class AddHikePage extends StatefulWidget {
   final HikeTrail hike;
 
-  AddHikePage({edit = false, this.hike}) {
-    print(hike.name);
-  }
+  AddHikePage({edit = false, this.hike}) {}
 
   @override
   _AddHikePageSate createState() => _AddHikePageSate(hike: hike);
@@ -137,11 +136,11 @@ class _AddHikePageSate extends State<AddHikePage> {
                                     height: 20,
                                   ),
                                   FormBuilderDropdown(
-                                      name: "Difficulty",
+                                      name: "difficulty",
                                       hint: Text("Difficulty"),
                                       decoration: InputDecoration(
                                         labelText:
-                                            "Difficluty of the hike/trail",
+                                            "Difficulty of the hike/trail",
                                         icon:
                                             Icon(FontAwesomeIcons.exclamation),
                                         floatingLabelBehavior:
@@ -162,7 +161,7 @@ class _AddHikePageSate extends State<AddHikePage> {
                                           (hike == null) ? null : hike.rating),
                                   SizedBox(height: 20),
                                   FormBuilderDropdown(
-                                      name: "Wheelchair Accessibility",
+                                      name: "wheelchair",
                                       hint: Text(
                                           "Is the hike/trail wheelchair accessible?"),
                                       decoration: InputDecoration(
@@ -312,19 +311,62 @@ class _AddHikePageSate extends State<AddHikePage> {
       print("submitted data:  ${_formKey.currentState.value}");
       String address = _formKey.currentState.value['address'];
       toLatLng(address).then((geopoint) {
-        Map<String, dynamic> hike = {
+        Map<String, dynamic> newHike = {
           ..._formKey.currentState.value,
           'imgURL': null,
-          'LatLng': geopoint,
+          'location': geopoint,
+          'pointsOfInterest': null,
         };
-        addHike(hike);
-        print(hike);
+        if (hike != null) {
+          _editHike(newHike);
+        } else {
+          addHike(newHike);
+        }
         //=========================================
         //Navigate back to Business Page
         //=========================================
         Navigator.pop(context);
       });
     }
+  }
+
+  Future<void> addHike(Map<String, dynamic> hikeInfo) {
+// Used to add businesses
+    CollectionReference hike = FirebaseFirestore.instance.collection('trails');
+    return hike
+        .add(hikeInfo)
+        .then((value) => {
+              hike.doc(value.id).update({"id": value.id}),
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${hikeInfo['name']} updated")))
+            })
+        .catchError((error) => SnackBar(
+            content: Text("Failed to add ${hikeInfo['name']} Error: $error")));
+  }
+
+  Future<void> _editHike(Map<String, dynamic> newHike) async {
+    CollectionReference fireStore =
+        FirebaseFirestore.instance.collection('trails');
+    fireStore
+        .doc(hike.id)
+        .update({
+          'name': newHike['name'],
+          'address': newHike['address'],
+          'description': newHike['description'],
+          'difficulty': newHike['difficulty'],
+          'distance': newHike['distance'],
+          'wheelchair': newHike['wheelchair'],
+          'time': newHike['time']
+        })
+        .then((value) => {
+              fireStore.doc(newHike['id']).update({"id": newHike['id']}),
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("${newHike['name']} updated")))
+            })
+        .catchError((error) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    "Failed to update ${newHike['name']} Error: $error"))));
   }
 }
 

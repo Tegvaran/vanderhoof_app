@@ -14,6 +14,7 @@ import 'map.dart';
 import 'addHikePage.dart';
 
 bool hikeFirstTime = true;
+
 List<HikeTrail> hikes = [];
 List<HikeTrail> filteredHikes = [];
 
@@ -46,6 +47,19 @@ class _HikePageState extends State<Hike> {
       await fireStore.get().then((QuerySnapshot snap) {
         hikes = filteredHikes = [];
         snap.docs.forEach((doc) {
+          print("/////////////////////////////////////////////");
+          print(doc['name']);
+          print(doc['address']);
+          print(doc['location']);
+          print(doc['description']);
+          print(doc['id']);
+          print(doc['distance']);
+          print(doc.get('difficulty'));
+          print('Time ${doc['time']}');
+          print(doc['wheelchair']);
+          print(doc['pointsOfInterest']);
+          print(doc['imgURL']);
+
           HikeTrail h = HikeTrail(
             name: doc['name'],
             address: doc['address'],
@@ -53,14 +67,14 @@ class _HikePageState extends State<Hike> {
             description: doc['description'],
             id: doc['id'],
             distance: doc['distance'],
-            rating: doc['difficulty'],
+            rating: doc.get('difficulty'),
             time: doc['time'],
             wheelchair: doc['wheelchair'],
             pointsOfInterest: doc['pointsOfInterest'],
             imgURL: doc['imgURL'],
           );
           hikes.add(h);
-          filteredHikes.add(h);
+          print(h);
         });
       });
       hikeFirstTime = false;
@@ -144,8 +158,8 @@ class _HikePageState extends State<Hike> {
           String bodyMsg = 'Are you sure you want to delete:';
           var function = () {
             // _deleteBusiness(item.name, index);
-            deleteCardHikeRec(item.name, item.id, index, this, context,
-                filteredHikes, fireStore);
+            deleteCardHikeRec(index, this, context, filteredHikes, fireStore,
+                "trails", item.name);
             Navigator.of(context).pop(true);
           };
           if (direction == DismissDirection.startToEnd) {
