@@ -138,12 +138,14 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                                         TextButton(
                                                           child: Text('Yes'),
                                                           onPressed: () {
-                                                            _key.currentState
-                                                                .save();
-                                                            category = _key
-                                                                    .currentState
-                                                                    .value[
-                                                                'category'];
+                                                            setState(() {
+                                                              _key.currentState
+                                                                  .save();
+                                                              category = _key
+                                                                      .currentState
+                                                                      .value[
+                                                                  'category'];
+                                                            });
 
                                                             Navigator.of(
                                                                     context)
@@ -164,11 +166,22 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                             },
                                             child: Text('Category'),
                                           ),
-                                          Container(
-                                              margin: EdgeInsets.only(left: 15),
-                                              child: Text((category == null)
-                                                  ? ""
-                                                  : category.join(', '))),
+                                          Expanded(
+                                              child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 15),
+                                                  child: Text((category == null)
+                                                      ? ""
+                                                      : category.join(', ')))),
+                                          if (category != null)
+                                            IconButton(
+                                              icon: Icon(Icons.cancel),
+                                              onPressed: () {
+                                                setState(() {
+                                                  category = null;
+                                                });
+                                              },
+                                            )
                                         ],
                                       )),
                                   FormBuilderImagePicker(
@@ -337,7 +350,7 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
         //=========================================
         //Navigate back to Business Page
         //=========================================
-        Navigator.pop(context);
+        // Navigator.pop(context);
       });
     }
   }
