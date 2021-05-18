@@ -43,7 +43,7 @@ class _EventPageState extends State<EventState> {
   Future _getEvents() async {
     if (eventFirstTime) {
       // if (true) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         events = filteredEvents = [];
         snap.docs.forEach((doc) {
@@ -190,15 +190,16 @@ class _EventPageState extends State<EventState> {
             String bodyMsg = 'Are you sure you want to delete:';
             var function = () {
               setState(() {
+                // Remove the item from the data source.
                 deleteCard(item.name, item.id, index, fireStore).then((v) {
-                  // Remove the item from the data source.
+                  // remove event object visually (on the app)
+                  filteredEvents.removeAt(index);
+                  // Delete the Image from firebase storage (filename is ID, folder is 'events'
+                  deleteFileFromID(item.id, 'events');
+
                   // Then show a snackbar.
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("${item.name} deleted")));
-
-                  // remove event object visually (on the app)
-                  filteredEvents.removeAt(index);
-
                   Navigator.of(context).pop(true);
                 });
               });

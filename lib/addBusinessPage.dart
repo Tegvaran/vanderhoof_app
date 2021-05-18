@@ -138,12 +138,14 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                                         TextButton(
                                                           child: Text('Yes'),
                                                           onPressed: () {
-                                                            _key.currentState
-                                                                .save();
-                                                            category = _key
-                                                                    .currentState
-                                                                    .value[
-                                                                'category'];
+                                                            setState(() {
+                                                              _key.currentState
+                                                                  .save();
+                                                              category = _key
+                                                                      .currentState
+                                                                      .value[
+                                                                  'category'];
+                                                            });
 
                                                             Navigator.of(
                                                                     context)
@@ -164,11 +166,22 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
                                             },
                                             child: Text('Category'),
                                           ),
-                                          Container(
-                                              margin: EdgeInsets.only(left: 15),
-                                              child: Text((category == null)
-                                                  ? ""
-                                                  : category.join(', '))),
+                                          Expanded(
+                                              child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 15),
+                                                  child: Text((category == null)
+                                                      ? ""
+                                                      : category.join(', ')))),
+                                          if (category != null)
+                                            IconButton(
+                                              icon: Icon(Icons.cancel),
+                                              onPressed: () {
+                                                setState(() {
+                                                  category = null;
+                                                });
+                                              },
+                                            )
                                         ],
                                       )),
                                   FormBuilderImagePicker(
@@ -298,12 +311,11 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
-      print(_formKey.currentState.value['image']);
-      print(business.imgURL);
-      if (_formKey.currentState.value['image'] != null &&
-          _formKey.currentState.value['image'].isNotEmpty &&
-          _formKey.currentState.value['image'][0] != business.imgURL) {
-        imgFile = _formKey.currentState.value['image'][0];
+      if (_formKey.currentState.value['image'] != null) if (_formKey
+          .currentState.value['image'].isNotEmpty) {
+        if (business == null ||
+            _formKey.currentState.value['image'][0] != business.imgURL)
+          imgFile = _formKey.currentState.value['image'][0];
       } else if (_formKey.currentState.value['image'].isEmpty &&
           business.imgURL != null) {
         businessFireStore.doc(business.id).update({"imgURL": null});
@@ -339,7 +351,7 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
         //=========================================
         //Navigate back to Business Page
         //=========================================
-        Navigator.pop(context);
+        // Navigator.pop(context);
       });
     }
   }

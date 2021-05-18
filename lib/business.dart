@@ -16,7 +16,6 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
 import 'scraper.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
 // import 'main.dart';
 import 'data.dart';
 
@@ -59,28 +58,13 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    print("tst---------tst------------------tst-------tst");
     if (businessFirstTime) {
-      // if(true) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
-      // helper method - parses phone string to correct format
-      String _parsePhoneNumber(String phone) {
-        String parsedPhone = "";
-        if (phone != null && phone.trim() != "" && phone != ".") {
-          parsedPhone = "(" +
-              phone.substring(0, 3) +
-              ") " +
-              phone.substring(3, 6) +
-              "-" +
-              phone.substring(6);
-        }
-        return parsedPhone;
-      }
-
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
         snap.docs.forEach((doc) {
-          String phone = _parsePhoneNumber(doc['phone']);
+          String phone = _formatPhoneNumber(doc['phone']);
+          String website = _formatWebsiteURL(doc['website']);
           Business b = Business(
               name: doc['name'],
               address: doc['address'],
@@ -89,7 +73,7 @@ class _BusinessPageState extends State<BusinessState> {
               phoneNumber: phone,
               email: doc['email'],
               socialMedia: doc['socialMedia'],
-              website: doc['website'],
+              website: website,
               imgURL: doc['imgURL'],
               category: doc['category'],
               id: doc['id']);
@@ -100,6 +84,49 @@ class _BusinessPageState extends State<BusinessState> {
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
+  }
+
+  /// async helper method - formats phone number to "(***) ***-****"
+  String _formatPhoneNumber(String phone) {
+    if (phone != null && phone.trim() != "" && phone != ".") {
+      phone = phone.replaceAll(RegExp("[^0-9]"), '');
+      String formatted = phone;
+      formatted = "(" +
+          phone.substring(0, 3) +
+          ") " +
+          phone.substring(3, 6) +
+          "-" +
+          phone.substring(6);
+      return formatted;
+    } else {
+      // phone is empty
+      return null;
+    }
+  }
+
+  /// async helper method - formats website to remove "http(s)://www."
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of businesses
@@ -322,6 +349,8 @@ class _BusinessPageState extends State<BusinessState> {
                 setState(() {
                   filteredBusinesses.removeAt(index);
                 });
+                // Delete the Image from firebase storage (filename is ID, folder is 'businesses'
+                deleteFileFromID(item.id, 'businesses');
                 // Then show a snackbar.
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("${item.name} deleted")));
@@ -435,10 +464,10 @@ class _BusinessPageState extends State<BusinessState> {
     for (int i = 0; i < categoryOptions.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(categoryOptions[i], style: TextStyle(color: Colors.black)),
+        label: Text(categoryOptions[i], style: bodyTextStyle),
         elevation: 3,
         pressElevation: 5,
-        shadowColor: colorPrimary,
+        backgroundColor: createMaterialColor(Color(0xFFE3E3E3)),
         selectedColor: colorAccent,
         onSelected: (bool selected) {
           setState(() {

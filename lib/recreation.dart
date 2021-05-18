@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:vanderhoof_app/map.dart';
+import 'map.dart';
 import 'addRecPage.dart';
 import 'cards.dart';
 import 'commonFunction.dart';
@@ -52,19 +52,22 @@ class _RecreationPageState extends State<Recreation> {
   /// firebase async method to get data
   Future _getRecs() async {
     if (recreationFirstTime) {
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
         snap.docs.forEach((doc) {
-          // String phone = _parsePhoneNumber(doc['phone']);
+          String phone = _formatPhoneNumber(doc['phone']);
+          String website = _formatWebsiteURL(doc['website']);
           Recreational b = Recreational(
-              name: doc['name'],
-              address: doc['address'],
-              location: doc['LatLng'],
-              description: doc["description"],
-              id: doc['id'],
-              phoneNumber: doc["phone"],
-              email: doc['email'],
-              website: doc['website']);
+            name: doc['name'],
+            address: doc['address'],
+            location: doc['LatLng'],
+            description: doc["description"],
+            id: doc['id'],
+            phoneNumber: phone,
+            email: doc['email'],
+            website: website,
+          );
           recs.add(b);
         });
       });
@@ -72,6 +75,49 @@ class _RecreationPageState extends State<Recreation> {
     }
 
     return recs;
+  }
+
+  /// async helper method - formats phone number to "(***) ***-****"
+  String _formatPhoneNumber(String phone) {
+    if (phone != null && phone.trim() != "" && phone != ".") {
+      phone = phone.replaceAll(RegExp("[^0-9]"), '');
+      String formatted = phone;
+      formatted = "(" +
+          phone.substring(0, 3) +
+          ") " +
+          phone.substring(3, 6) +
+          "-" +
+          phone.substring(6);
+      return formatted;
+    } else {
+      // phone is empty
+      return null;
+    }
+  }
+
+  /// async helper method - formats website to remove "http(s)://www."
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of businesses
