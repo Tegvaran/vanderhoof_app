@@ -25,13 +25,12 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
           //position: objList[i].location,
           infoWindow: InfoWindow(
             title: objList[i].name,
-            snippet: objList[i].description,
+            snippet: objList[i].address,
           )),
     );
   }
   return outList;
 }
-
 
 HashSet<Marker> resetMarkers(
     markers, filteredFireStoreObjects, scrollController) {
@@ -61,7 +60,7 @@ HashSet<Marker> resetMarkers(
             },
             infoWindow: InfoWindow(
               title: filteredFireStoreObjects[i].name,
-              snippet: filteredFireStoreObjects[i].description,
+              snippet: filteredFireStoreObjects[i].address,
             )),
       );
     }
@@ -86,14 +85,12 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
           },
           infoWindow: InfoWindow(
             title: fireStoreObjects[index].name,
-            snippet: fireStoreObjects[index].description,
+            snippet: fireStoreObjects[index].address,
           )),
     );
   }
   return markers;
 }
-
-
 
 GoogleMapController mapController;
 void changeCamera(LatLng pos) {
@@ -167,7 +164,7 @@ class GmapState extends State<Gmap> {
                 },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
-                  snippet: listOfFireStoreObjects[i].description,
+                  snippet: listOfFireStoreObjects[i].address,
                 )),
           );
         }
