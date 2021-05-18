@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:decorated_icon/decorated_icon.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
-import 'package:vanderhoof_app/cards.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 
@@ -18,17 +21,37 @@ class HikeInformation extends StatefulWidget {
 
 class _HikeInformationState extends State<HikeInformation> {
   HikeTrail hikeTrail;
-  _HikeInformationState(this.hikeTrail);
-  static const double TITLE_SIZE = 40;
-  static const double BODY_SIZE = 20;
-  Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
 
-  static const Color textColor = Colors.black;
-  final Color greenColor = Colors.green[900];
-  final Color orangeColor = Colors.orange;
-  final Color redColor = Colors.red[800];
-  // Used in Interactive Viewer to bring the image back to its original postion.
+  // Used in Interactive Viewer to bring the image back to its original position.
   TransformationController c = TransformationController();
+
+  static const double TITLE_SIZE = 28;
+  static const double BODY_SIZE = 16;
+  static const double ICON_SIZE = 30;
+  static const double ICON_SIZE_SMALL = 18;
+  static const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
+  static const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
+  static const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(0, 5, 0, 0);
+
+  TextStyle titleTextStyle = TextStyle(
+      fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
+  TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
+  TextStyle headerTextStyle = TextStyle(
+      fontSize: BODY_SIZE + 2, color: colorText, fontWeight: FontWeight.bold);
+  TextStyle header2TextStyle = TextStyle(
+      fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
+  Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
+  BoxShadow iconShadow = BoxShadow(
+      color: Colors.grey.withOpacity(0.5),
+      blurRadius: 3,
+      spreadRadius: 3,
+      offset: Offset(0, 4));
+
+  final Color greenColor = Colors.lightGreen[700];
+  final Color orangeColor = colorAccent;
+  final Color redColor = Colors.red[600];
+
+  _HikeInformationState(this.hikeTrail);
 
   Color getDifficultyColor() {
     Color difficultyColor;
@@ -52,11 +75,18 @@ class _HikeInformationState extends State<HikeInformation> {
     return accessibilityColor;
   }
 
+  void _launchAddressURL(address) async => await canLaunch(
+          'https://www.google.com/maps/search/?api=1&query=$address')
+      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
+      : Fluttertoast.showToast(
+          msg: "Could not open directions for $address.",
+          toastLength: Toast.LENGTH_SHORT);
+
   @override
   Widget build(BuildContext context) {
     print(hikeTrail);
     return Scaffold(
-        backgroundColor: colorBackground,
+        // backgroundColor: colorBackground,
         appBar: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
@@ -67,200 +97,236 @@ class _HikeInformationState extends State<HikeInformation> {
             child: Column(
           children: [
             StickyHeader(
-              header: Column(
-                children: [
-                  Container(
-                    color: colorBackground,
-                    child: (!isFieldEmpty(hikeTrail.imgURL))
-                        ? InteractiveViewer(
-                            panEnabled: false,
-                            boundaryMargin: EdgeInsets.all(100),
-                            minScale: 0.5,
-                            maxScale: 2,
-                            transformationController: c,
-                            // Brings the image back to its original position.
-                            // reference: https://medium.com/flutterdevs/interactive-viewer-in-flutter-69d3def22a4f
-                            onInteractionEnd: (ScaleEndDetails endDetails) {
-                              c.value = Matrix4.identity();
-                            },
-                            child: Image(
-                              image: NetworkImage(hikeTrail.imgURL),
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Container(),
-                  ),
-                  Container(
-                      color: colorBackground,
-                      child: Column(
-                        children: [
-                          Text(
-                            hikeTrail.name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: TITLE_SIZE),
-                          ),
-                          cardDivider,
-                        ],
-                      )),
-                ],
+              header: Container(
+                child: (!isFieldEmpty(hikeTrail.imgURL))
+                    ? InteractiveViewer(
+                        panEnabled: false,
+                        boundaryMargin: EdgeInsets.all(100),
+                        minScale: 0.5,
+                        maxScale: 2,
+                        transformationController: c,
+                        // Brings the image back to its original position.
+                        // reference: https://medium.com/flutterdevs/interactive-viewer-in-flutter-69d3def22a4f
+                        onInteractionEnd: (ScaleEndDetails endDetails) {
+                          c.value = Matrix4.identity();
+                        },
+                        child: Image(
+                          image: NetworkImage(hikeTrail.imgURL),
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container(width: 0, height: 0),
               ),
               content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// title
+                  Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                        padding: CARD_INSET,
+                        child: Text(
+                          hikeTrail.name,
+                          textAlign: TextAlign.center,
+                          style: titleTextStyle,
+                        )),
+                  ),
+                  // cardDivider,
+
+                  /// address
+                  !isFieldEmpty(hikeTrail.address)
+                      ? Padding(
+                          padding: HEADER_INSET + EdgeInsets.only(left: 5),
+                          child: Row(children: <Widget>[
+                            IconButton(
+                              icon: DecoratedIcon(Icons.location_on,
+                                  color: colorPrimary,
+                                  size: ICON_SIZE,
+                                  shadows: [
+                                    iconShadow,
+                                  ]),
+                              onPressed: () {
+                                _launchAddressURL(hikeTrail.address);
+                              },
+                            ),
+                            Flexible(
+                                child: Text('${hikeTrail.address}',
+                                    style: bodyTextStyle)),
+                            // Text('${hikeTrail.address}', style: bodyTextStyle),
+                          ]))
+                      : Container(width: 0, height: 0),
+
+                  /// trail details
                   (hikeTrail.rating != null ||
                           hikeTrail.distance != null ||
                           hikeTrail.time != null ||
                           hikeTrail.wheelchair != null)
                       ? Container(
+                          padding: HEADER_INSET + CARD_INSET,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          bottom: BorderSide(
-                                              color: colorAccent, width: 5))),
-                                  padding: EdgeInsets.all(5),
-                                  child: Text(
-                                    "Trail Details",
-                                    style: TextStyle(
-                                      fontSize: BODY_SIZE,
-                                      fontWeight: FontWeight.bold,
-                                      color: textColor,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  )),
-                              !isFieldEmpty(hikeTrail.distance)
-                                  ? Text(
-                                      "Distance: ${hikeTrail.distance}",
-                                      style: TextStyle(
-                                        fontSize: BODY_SIZE,
-                                        color: textColor,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    )
-                                  : Container(),
-                              !isFieldEmpty(hikeTrail.rating)
-                                  ? RichText(
-                                      text: TextSpan(
-                                          style: TextStyle(
-                                              fontSize: BODY_SIZE,
-                                              color: textColor),
-                                          children: <TextSpan>[
-                                          TextSpan(text: 'Difficulty: '),
-                                          TextSpan(
-                                            text: '${hikeTrail.rating}',
-                                            style: TextStyle(
-                                              fontSize: BODY_SIZE,
-                                              color: getDifficultyColor(),
-                                            ),
-                                          ),
-                                        ]))
-                                  : Container(),
-                              !isFieldEmpty(hikeTrail.time)
-                                  ? Text(
-                                      "Time: ${hikeTrail.time}",
-                                      style: TextStyle(
-                                        fontSize: BODY_SIZE,
-                                        color: textColor,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    )
-                                  : Container(),
-                              !isFieldEmpty(hikeTrail.wheelchair)
-                                  ? RichText(
-                                      text: TextSpan(
-                                          style: TextStyle(
-                                              fontSize: BODY_SIZE,
-                                              color: textColor),
-                                          children: <TextSpan>[
-                                          TextSpan(text: 'Wheelchair: '),
-                                          TextSpan(
-                                            text: '${hikeTrail.wheelchair}',
-                                            style: TextStyle(
-                                              fontSize: BODY_SIZE,
-                                              color: getAccessibilityColor(),
-                                            ),
-                                          ),
-                                        ]))
-                                  : Container(),
-                            ],
-                          ),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                /// distance
+                                !isFieldEmpty(hikeTrail.distance)
+                                    ? Row(children: <Widget>[
+                                        IconButton(
+                                          constraints: BoxConstraints(),
+                                          icon: Icon(Icons.timeline),
+                                          onPressed: null,
+                                          iconSize: ICON_SIZE_SMALL,
+                                        ),
+                                        Flexible(
+                                            child: RichText(
+                                                text: TextSpan(
+                                                    children: <TextSpan>[
+                                              TextSpan(
+                                                  text: 'Distance: ',
+                                                  style: header2TextStyle),
+                                              TextSpan(
+                                                text: '${hikeTrail.distance}',
+                                                style: bodyTextStyle,
+                                              ),
+                                            ]))),
+                                      ])
+                                    : Container(width: 0, height: 0),
+
+                                /// difficulty
+                                !isFieldEmpty(hikeTrail.rating)
+                                    ? Row(children: <Widget>[
+                                        IconButton(
+                                          constraints: BoxConstraints(),
+                                          icon: Icon(Icons.star_half),
+                                          onPressed: null,
+                                          iconSize: ICON_SIZE_SMALL,
+                                        ),
+                                        Flexible(
+                                            child: RichText(
+                                                text: TextSpan(
+                                                    children: <TextSpan>[
+                                              TextSpan(
+                                                  text: 'Difficulty: ',
+                                                  style: header2TextStyle),
+                                              TextSpan(
+                                                text: '${hikeTrail.rating}',
+                                                style: TextStyle(
+                                                  fontSize: BODY_SIZE,
+                                                  color: getDifficultyColor(),
+                                                ),
+                                              ),
+                                            ]))),
+                                      ])
+                                    : Container(width: 0, height: 0),
+
+                                /// time
+                                !isFieldEmpty(hikeTrail.time)
+                                    ? Row(children: <Widget>[
+                                        IconButton(
+                                          constraints: BoxConstraints(),
+                                          icon: Icon(Icons.access_time),
+                                          onPressed: null,
+                                          iconSize: ICON_SIZE_SMALL,
+                                        ),
+                                        Flexible(
+                                            child: RichText(
+                                                text: TextSpan(
+                                                    children: <TextSpan>[
+                                              TextSpan(
+                                                  text: 'Time: ',
+                                                  style: header2TextStyle),
+                                              TextSpan(
+                                                text: '${hikeTrail.time}',
+                                                style: bodyTextStyle,
+                                              ),
+                                            ]))),
+                                      ])
+                                    : Container(width: 0, height: 0),
+
+                                /// wheelchair
+                                !isFieldEmpty(hikeTrail.wheelchair)
+                                    ? Row(children: <Widget>[
+                                        IconButton(
+                                          constraints: BoxConstraints(),
+                                          icon: Icon(Icons.accessible_outlined),
+                                          onPressed: null,
+                                          iconSize: ICON_SIZE_SMALL,
+                                        ),
+                                        Flexible(
+                                            child: RichText(
+                                                text: TextSpan(
+                                                    children: <TextSpan>[
+                                              TextSpan(
+                                                  text: 'Wheelchair: ',
+                                                  style: header2TextStyle),
+                                              TextSpan(
+                                                text: '${hikeTrail.wheelchair}',
+                                                style: TextStyle(
+                                                  fontSize: BODY_SIZE,
+                                                  color:
+                                                      getAccessibilityColor(),
+                                                ),
+                                              ),
+                                            ]))),
+                                      ])
+                                    : Container(width: 0, height: 0),
+                              ]),
                         )
-                      : Container(),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 30, 0, 30),
-                    child: !isFieldEmpty(hikeTrail.description)
-                        ? Column(
+                      : Container(width: 0, height: 0),
+
+                  /// trail description
+                  !isFieldEmpty(hikeTrail.description)
+                      ? Container(
+                          margin: HEADER_INSET + CARD_INSET,
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Container(
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: colorAccent, width: 5))),
-                                padding: EdgeInsets.all(5),
+                                  padding: CARD_INSET,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "About this activity",
+                                    style: headerTextStyle,
+                                  )),
+                              Padding(
+                                padding: CARD_INSET + TEXT_INSET,
                                 child: Text(
-                                  "Trail Description",
-                                  style: TextStyle(
-                                    fontSize: BODY_SIZE,
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                  ),
-                                  textAlign: TextAlign.left,
+                                  '${hikeTrail.description}',
+                                  style: bodyTextStyle,
                                 ),
                               ),
-                              Text(
-                                hikeTrail.description,
-                                style: TextStyle(
-                                  fontSize: BODY_SIZE,
-                                  color: textColor,
-                                ),
-                                textAlign: TextAlign.left,
-                              )
                             ],
-                          )
-                        : Container(),
-                  ),
+                          ))
+                      : Container(width: 0, height: 0),
+
+                  /// trail points of interest
+                  /// header
                   (hikeTrail.pointsOfInterest != null)
                       ? Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  bottom: BorderSide(
-                                      color: colorAccent, width: 5))),
-                          padding: EdgeInsets.all(5),
+                          padding: HEADER_INSET,
+                          alignment: Alignment.center,
                           child: Text(
-                            "Points of Interest",
-                            style: TextStyle(
-                              fontSize: BODY_SIZE,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        )
-                      : Container(),
+                            "Highlights",
+                            style: headerTextStyle,
+                          ))
+                      : Container(width: 0, height: 0),
+
+                  /// points of interest carousel
                   (hikeTrail.pointsOfInterest != null)
                       ? Container(
-                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CarouselSlider(
-                              items: getAsList(),
-                              options: CarouselOptions(
-                                  scrollDirection: Axis.horizontal,
-                                  enlargeCenterPage: true,
-                                  enableInfiniteScroll: true,
-                                  height: 300,
-                                  pageSnapping: true),
-                            ),
+                          height: 350,
+                          child: CarouselSlider(
+                            items: buildPointsOfInterestList(),
+                            options: CarouselOptions(
+                                scrollDirection: Axis.horizontal,
+                                enlargeCenterPage: true,
+                                enableInfiniteScroll: true,
+                                height: 300,
+                                pageSnapping: true),
                           ),
                         )
-                      : Container(),
+                      : Container(width: 0, height: 0),
                 ],
               ),
             ),
@@ -268,55 +334,43 @@ class _HikeInformationState extends State<HikeInformation> {
         )));
   }
 
-  getAsList() {
-    List<Widget> listOfPoI = [];
-    for (var i = 1; i <= hikeTrail.pointsOfInterest.length; i++) {
-      Container test = Container(
-        decoration: BoxDecoration(
-            color: Colors.grey[300],
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: Offset(3, 10)),
-            ],
-            shape: BoxShape.rectangle,
+  List<Widget> buildPointsOfInterestList() {
+    List<Widget> build = [];
+
+    for (var i = 0; i < hikeTrail.pointsOfInterest.length; i++) {
+      Widget content = Card(
+        color: colorBackground,
+        shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20))),
+        elevation: 5,
         child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+          child: Column(
+            children: [
+              Container(
+                  padding: HEADER_INSET,
                   child: Text(
-                    '$i) ${hikeTrail.pointsOfInterest[i - 1]['name']} \n',
+                    '${i + 1}) ${hikeTrail.pointsOfInterest[i]['name']} \n',
                     style: TextStyle(
-                      color: greenColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: BODY_SIZE,
-                    ),
+                        fontSize: BODY_SIZE + 4,
+                        color: colorPrimary,
+                        fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
-                  ),
-                ),
-                cardDivider,
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  )),
+              cardDivider,
+              Container(
+                  margin: CARD_INSET,
                   child: Text(
-                      '${hikeTrail.pointsOfInterest[i - 1]['description']}\n',
-                      style: TextStyle(
-                        fontSize: BODY_SIZE,
-                      ),
-                      textAlign: TextAlign.center),
-                ),
-              ],
-            ),
+                    '${hikeTrail.pointsOfInterest[i]['description']}\n',
+                    style: bodyTextStyle,
+                  )),
+            ],
           ),
         ),
       );
 
-      listOfPoI.add(test);
+      build.add(content);
     }
-    return listOfPoI;
+
+    return build;
   }
 }
