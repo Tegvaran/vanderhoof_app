@@ -5,8 +5,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:getwidget/getwidget.dart';
-import 'package:vanderhoof_app/fireStoreObjects.dart';
-import 'package:vanderhoof_app/main.dart';
+import 'fireStoreObjects.dart';
+import 'main.dart';
 
 import 'commonFunction.dart';
 
