@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:decorated_icon/decorated_icon.dart';
 import 'package:drop_cap_text/drop_cap_text.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,27 +9,37 @@ import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'hikeInformation.dart';
 import 'main.dart';
 import 'map.dart';
 
-bool isFieldEmpty(String toCheck) {
-  return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-}
+// bool isFieldEmpty(String toCheck) {
+//   return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+// }
 
 const double TITLE_SIZE = 22;
-const double BODY_SIZE = 18;
-const double ICON_SIZE = 24;
+const double BODY_SIZE = 16;
+const double ICON_SIZE = 30;
+const double ICON_SIZE_SMALL = 18;
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
 const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 5, 0, 0);
+const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
 
 TextStyle titleTextStyle = TextStyle(
     fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
 TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
 TextStyle headerTextStyle = TextStyle(
+    fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
+TextStyle header2TextStyle = TextStyle(
     fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
 Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
+BoxShadow iconShadow = BoxShadow(
+    color: Colors.grey.withOpacity(0.5),
+    blurRadius: 3,
+    spreadRadius: 3,
+    offset: Offset(0, 4));
 
 /// Represents a hike card that is displayed on the hike page.
 /// Takes the values for Hike which is a hike object, scrollController, scrollIndex.
@@ -58,10 +69,6 @@ class HikeCard extends StatelessWidget {
     return difficultyColor;
   }
 
-  bool buildInfoPageIcon(HikeTrail hike) {
-    return (hike.description != null || hike.pointsOfInterest != null);
-  }
-
   Color getAccessibilityColor() {
     Color accessibilityColor;
     if (hikeTrail.wheelchair == "Accessible") {
@@ -72,9 +79,29 @@ class HikeCard extends StatelessWidget {
     return accessibilityColor;
   }
 
+  bool buildInfoPageIcon(HikeTrail hike) {
+    return (hike.description != null || hike.pointsOfInterest != null);
+  }
+
+  String parseLongField(String toCheck) {
+    String result = toCheck.trim();
+    if (toCheck.length > 35) {
+      result = toCheck.substring(0, 35) + "...";
+    }
+    return result;
+  }
+
+  void _launchAddressURL(address) async => await canLaunch(
+          'https://www.google.com/maps/search/?api=1&query=$address')
+      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
+      : Fluttertoast.showToast(
+          msg: "Could not open directions for $address.",
+          toastLength: Toast.LENGTH_SHORT);
+
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 3,
       color: colorBackground,
       margin: CARD_INSET,
       child: ExpansionTile(
@@ -105,87 +132,125 @@ class HikeCard extends StatelessWidget {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           cardDivider,
-          // Padding(
-          //   padding: TEXT_INSET,
-          //   child: Text(
-          //     "Trail Details",
-          //     style: TextStyle(
-          //       fontSize: BODY_SIZE,
-          //       fontWeight: FontWeight.bold,
-          //       decoration: TextDecoration.underline,
-          //       color: colorText,
-          //     ),
-          //     textAlign: TextAlign.left,
-          //   ),
-          // ),
+          (!isFieldEmpty(hikeTrail.address))
+              ? Row(children: <Widget>[
+                  IconButton(
+                    icon: DecoratedIcon(Icons.location_on,
+                        color: colorPrimary,
+                        size: ICON_SIZE,
+                        shadows: [
+                          iconShadow,
+                        ]),
+                    onPressed: () {
+                      _launchAddressURL(hikeTrail.address);
+                    },
+                  ),
+                  Text('${parseLongField(hikeTrail.address)}',
+                      style: headerTextStyle),
+                ])
+              : Container(width: 0, height: 0),
           Padding(
-            padding: TEXT_INSET,
-            child: !isFieldEmpty(hikeTrail.distance)
-                ? RichText(
-                    text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'Distance: ', style: headerTextStyle),
-                    TextSpan(
-                      text: '${hikeTrail.distance}',
-                      style: bodyTextStyle,
-                    ),
-                  ]))
-                : Container(),
-          ),
-          !isFieldEmpty(hikeTrail.rating)
-              ? Padding(
-                  padding: TEXT_INSET,
-                  child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'Difficulty: ', style: headerTextStyle),
-                    TextSpan(
-                      text: '${hikeTrail.rating}',
-                      style: TextStyle(
-                        fontSize: BODY_SIZE,
-                        color: getDifficultyColor(),
-                      ),
-                    ),
-                  ])),
-                )
-              : Container(),
-          !isFieldEmpty(hikeTrail.time)
-              ? Padding(
-                  padding: TEXT_INSET,
-                  child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                    TextSpan(text: 'Time: ', style: headerTextStyle),
-                    TextSpan(
-                      text: '${hikeTrail.time}',
-                      style: bodyTextStyle,
-                    ),
-                  ])),
-                )
-              : Container(),
-          Padding(
-            padding: TEXT_INSET,
+            padding: ICON_INSET,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                !isFieldEmpty(hikeTrail.wheelchair)
-                    ? RichText(
-                        text: TextSpan(children: <TextSpan>[
-                        TextSpan(text: 'Wheelchair: ', style: headerTextStyle),
-                        TextSpan(
-                          text: '${hikeTrail.wheelchair}',
-                          style: TextStyle(
-                            fontSize: BODY_SIZE,
-                            color: getAccessibilityColor(),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                    Widget>[
+                  !isFieldEmpty(hikeTrail.distance)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.timeline),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
                           ),
-                        ),
-                      ]))
-                    : Container(),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Distance: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.distance}',
+                              style: bodyTextStyle,
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.rating)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.star_half),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Difficulty: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.rating}',
+                              style: TextStyle(
+                                fontSize: BODY_SIZE,
+                                color: getDifficultyColor(),
+                              ),
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.time)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.access_time),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(text: 'Time: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.time}',
+                              style: bodyTextStyle,
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.wheelchair)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.accessible_outlined),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Wheelchair: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.wheelchair}',
+                              style: TextStyle(
+                                fontSize: BODY_SIZE,
+                                color: getAccessibilityColor(),
+                              ),
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                ]),
                 buildInfoPageIcon(hikeTrail)
                     ? IconButton(
-                        icon: Icon(
-                          Icons.open_in_new_outlined,
-                          size: 36,
-                          color: colorPrimary,
-                        ),
+                        icon: DecoratedIcon(Icons.open_in_new_outlined,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -195,7 +260,7 @@ class HikeCard extends StatelessWidget {
                               ));
                         },
                       )
-                    : Container(),
+                    : Container(width: 0, height: 0),
               ],
             ),
           ),
@@ -217,10 +282,6 @@ class BusinessCard extends StatelessWidget {
 
   BusinessCard(this.business, this.scrollController, this.scrollIndex,
       this._markers, this.listOfFireStoreObjects);
-
-  bool isFieldEmpty(String toCheck) {
-    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-  }
 
   String parseLongField(String toCheck) {
     String result = toCheck.trim();
@@ -370,7 +431,7 @@ class BusinessCard extends StatelessWidget {
                       ? RichText(
                           text: TextSpan(children: <TextSpan>[
                           TextSpan(
-                              text: 'Categories: ', style: headerTextStyle),
+                              text: 'Categories: ', style: header2TextStyle),
                           TextSpan(
                             text: categoryText(),
                             style: bodyTextStyle,
@@ -493,11 +554,6 @@ class RecreationalCard extends StatelessWidget {
 
   RecreationalCard(this.rec, this.scrollController, this.scrollIndex,
       this._markers, this.listOfFireStoreObjects);
-
-  // Checks if a given field from the recreational object is empty or not.
-  bool isFieldEmpty(String toCheck) {
-    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-  }
 
   String parseLongField(String toCheck) {
     String result = toCheck.trim();
@@ -682,10 +738,6 @@ class EventCard extends StatelessWidget {
 
   EventCard(this.event, this.scrollController, this.scrollIndex);
 
-  bool isFieldEmpty(String toCheck) {
-    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-  }
-
   String parseLongField(String toCheck) {
     String result = toCheck.trim();
     if (toCheck.length > 35) {
@@ -843,10 +895,6 @@ class ResourceCard extends StatelessWidget {
   //
   //   precacheImage(Image.network(resource.imgURL).image, context));
   // }
-
-  bool isFieldEmpty(String toCheck) {
-    return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-  }
 
   String parseLongField(String toCheck) {
     String result = toCheck.trim();

@@ -259,6 +259,7 @@ class _HikePageState extends State<Hike> {
         body: Container(
             child: ScrollablePositionedList.builder(
                 itemScrollController: _scrollController,
+                itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _dismissibleTile(

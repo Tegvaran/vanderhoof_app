@@ -29,6 +29,11 @@ Future<GeoPoint> toLatLng(String addr) async {
   return GeoPoint(lat, lng);
 }
 
+/// returns true if a string field is empty
+bool isFieldEmpty(String toCheck) {
+  return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+}
+
 //=========================================
 //Method to add business to FireStore
 //=========================================
