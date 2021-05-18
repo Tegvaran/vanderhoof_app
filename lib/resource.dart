@@ -64,14 +64,23 @@ class _ResourcePageState extends State<ResourceState> {
     return resources;
   }
 
-  /// async helper method - formats website to prepend "http://"
+  /// async helper method - formats website to remove "http(s)://www."
   ///
   /// "http://" is required to correctly launch website URL
   String _formatWebsiteURL(String website) {
     if (website != null && website.trim() != "" && website != ".") {
-      String formatted = website;
-      if (!website.trim().startsWith('http')) {
-        formatted = "http://" + website.trim();
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
       }
       return formatted;
     } else {

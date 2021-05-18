@@ -821,11 +821,12 @@ class ResourceCard extends StatelessWidget {
 }
 
 /// Open URL in the default browser for [website]
-void _launchWebsiteURL(String website) async => await canLaunch(website)
-    ? launch(website)
-    : Fluttertoast.showToast(
-        msg: "Could not open website $website",
-        toastLength: Toast.LENGTH_SHORT);
+void _launchWebsiteURL(String website) async =>
+    await canLaunch('http://$website')
+        ? launch('http://$website')
+        : Fluttertoast.showToast(
+            msg: "Could not open website http://$website",
+            toastLength: Toast.LENGTH_SHORT);
 
 /// Open URL in Instagram for [username]
 void _launchInstaURL(String username) async =>
@@ -844,7 +845,8 @@ void _launchFacebookURL(String username) async {
   await canLaunch(url)
       ? launch(url)
       : Fluttertoast.showToast(
-          msg: "Could not open the profile.", toastLength: Toast.LENGTH_SHORT);
+          msg: "Could not open profile: $username",
+          toastLength: Toast.LENGTH_SHORT);
 }
 
 /// Open URL in Twitter for [username]
