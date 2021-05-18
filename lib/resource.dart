@@ -47,7 +47,7 @@ class _ResourcePageState extends State<ResourceState> {
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
-          String website = _parseWebsiteURL(doc['website']);
+          String website = _formatWebsiteURL(doc['website']);
           Resource resource = Resource(
             name: doc['name'],
             description: doc['description'],
@@ -67,14 +67,14 @@ class _ResourcePageState extends State<ResourceState> {
   /// async helper method - formats website to prepend "http://"
   ///
   /// "http://" is required to correctly launch website URL
-  String _parseWebsiteURL(String website) {
-    String parsedWebsite = website;
+  String _formatWebsiteURL(String website) {
+    String formatted = website;
     if (website != null && website.trim() != "" && website != ".") {
       if (!website.trim().startsWith('http')) {
-        parsedWebsite = "http://" + website.trim();
+        formatted = "http://" + website.trim();
       }
     }
-    return parsedWebsite;
+    return formatted;
   }
 
   /// this method gets firebase data and populates into list of events
