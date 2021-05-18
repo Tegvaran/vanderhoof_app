@@ -61,7 +61,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future _getBusinesses() async {
     print("tst---------tst------------------tst-------tst");
     if (businessFirstTime) {
-      // if(true) {
+      // if (true) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       // helper method - parses phone string to correct format
       String _parsePhoneNumber(String phone) {
@@ -322,6 +322,8 @@ class _BusinessPageState extends State<BusinessState> {
                 setState(() {
                   filteredBusinesses.removeAt(index);
                 });
+                // Delete the Image from firebase storage (filename is ID, folder is 'businesses'
+                deleteFileFromID(item.id, 'businesses');
                 // Then show a snackbar.
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("${item.name} deleted")));

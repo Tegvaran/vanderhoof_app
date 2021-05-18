@@ -312,9 +312,10 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
       if (_formKey.currentState.value['image'] != null) if (_formKey
-              .currentState.value['image'].isNotEmpty &&
-          _formKey.currentState.value['image'][0] != business.imgURL) {
-        imgFile = _formKey.currentState.value['image'][0];
+          .currentState.value['image'].isNotEmpty) {
+        if (business == null ||
+            _formKey.currentState.value['image'][0] != business.imgURL)
+          imgFile = _formKey.currentState.value['image'][0];
       } else if (_formKey.currentState.value['image'].isEmpty &&
           business.imgURL != null) {
         businessFireStore.doc(business.id).update({"imgURL": null});

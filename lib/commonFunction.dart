@@ -85,12 +85,11 @@ Future<void> editBusiness(Map<String, dynamic> form, Business business,
 Future<void> deleteCard(
     String cardName, String docID, int index, CollectionReference fireStore) {
   // Delete from fireStore
-  // String docID = businessName.replaceAll('/', '|');
   return fireStore
       .doc(docID)
       .delete()
       .then((value) => print("$docID Deleted"))
-      .catchError((error) => print("Failed to delete user: $error"));
+      .catchError((error) => print("Failed to delete: $error"));
 }
 
 void deleteCardHikeRec(
@@ -176,6 +175,15 @@ Future<String> downloadURL(String filename, String folderName) async {
   return await firebase_storage.FirebaseStorage.instance
       .ref('$folderName/$filename.png')
       .getDownloadURL();
+}
+
+///filename is the ID of the document
+Future<void> deleteFileFromID(String filename, String folderName) async {
+  return await firebase_storage.FirebaseStorage.instance
+      .ref()
+      .child('$folderName/$filename.png')
+      .delete()
+      .then((_) => print('Successfully deleted $filename storage item'));
 }
 
 /// uses a Color with a hex code and returns a MaterialColor object
