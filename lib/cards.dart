@@ -80,21 +80,6 @@ class HikeCard extends StatelessWidget {
     return (hike.description != null || hike.pointsOfInterest != null);
   }
 
-  String parseLongField(String toCheck) {
-    String result = toCheck.trim();
-    if (toCheck.length > 35) {
-      result = toCheck.substring(0, 35) + "...";
-    }
-    return result;
-  }
-
-  void _launchAddressURL(address) async => await canLaunch(
-          'https://www.google.com/maps/search/?api=1&query=$address')
-      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
-      : Fluttertoast.showToast(
-          msg: "Could not open directions for $address.",
-          toastLength: Toast.LENGTH_SHORT);
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -279,66 +264,6 @@ class BusinessCard extends StatelessWidget {
 
   BusinessCard(this.business, this.scrollController, this.scrollIndex,
       this._markers, this.listOfFireStoreObjects);
-
-  String parseLongField(String toCheck) {
-    String result = toCheck.trim();
-    if (toCheck.length > 35) {
-      result = toCheck.substring(0, 35) + "...";
-    }
-    return result;
-  }
-
-  void _launchWebsiteURL(String website) async => await canLaunch(website)
-      ? launch(website)
-      : Fluttertoast.showToast(
-          msg: "Could not open website $website",
-          toastLength: Toast.LENGTH_SHORT);
-
-  void _launchInstaURL(String username) async =>
-      await canLaunch("instagram.com/$username/")
-          ? launch("instagram.com/$username/")
-          : Fluttertoast.showToast(
-              msg: "Could not open profile: $username",
-              toastLength: Toast.LENGTH_SHORT);
-
-  void _launchFacebookURL(String username) async {
-    String url = username;
-    if (!username.contains('https')) {
-      url = "https://www.facebook.com/$username/";
-    }
-    await canLaunch(url)
-        ? launch(url)
-        : Fluttertoast.showToast(
-            msg: "Could not open the profile.",
-            toastLength: Toast.LENGTH_SHORT);
-  }
-
-  void _launchTwitterURL(username) async =>
-      await canLaunch("twitter.com/$username/")
-          ? launch("twitter.com/$username/")
-          : Fluttertoast.showToast(
-              msg: "Could not open profile: $username",
-              toastLength: Toast.LENGTH_SHORT);
-
-  void _launchPhoneURL(String phoneNumber) async =>
-      await canLaunch('tel:$phoneNumber')
-          ? launch('tel:$phoneNumber')
-          : Fluttertoast.showToast(
-              msg: "Could not set up a call for $phoneNumber",
-              toastLength: Toast.LENGTH_SHORT);
-
-  void _launchMailURL(String email) async => await canLaunch('mailto:$email')
-      ? launch('mailto:$email')
-      : Fluttertoast.showToast(
-          msg: "Could not open the email app for $email",
-          toastLength: Toast.LENGTH_SHORT);
-
-  void _launchAddressURL(address) async => await canLaunch(
-          'https://www.google.com/maps/search/?api=1&query=$address')
-      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
-      : Fluttertoast.showToast(
-          msg: "Could not open directions for $address.",
-          toastLength: Toast.LENGTH_SHORT);
 
   String categoryText() {
     String categories = "";
@@ -563,40 +488,6 @@ class RecreationalCard extends StatelessWidget {
   RecreationalCard(this.rec, this.scrollController, this.scrollIndex,
       this._markers, this.listOfFireStoreObjects);
 
-  String parseLongField(String toCheck) {
-    String result = toCheck.trim();
-    if (toCheck.length > 35) {
-      result = toCheck.substring(0, 35) + "...";
-    }
-    return result;
-  }
-
-  void _launchWebsiteURL(String website) async => await canLaunch(website)
-      ? launch(website)
-      : Fluttertoast.showToast(
-          msg: "Could not open website $website",
-          toastLength: Toast.LENGTH_SHORT);
-
-  void _launchPhoneURL(String phoneNumber) async =>
-      await canLaunch('tel:$phoneNumber')
-          ? launch('tel:$phoneNumber')
-          : Fluttertoast.showToast(
-              msg: "Could not set up a call for $phoneNumber",
-              toastLength: Toast.LENGTH_SHORT);
-
-  void _launchMailURL(String email) async => await canLaunch('mailto:$email')
-      ? launch('mailto:$email')
-      : Fluttertoast.showToast(
-          msg: "Could not open the email app for $email",
-          toastLength: Toast.LENGTH_SHORT);
-
-  void _launchAddressURL(address) async => await canLaunch(
-          'https://www.google.com/maps/search/?api=1&query=$address')
-      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
-      : Fluttertoast.showToast(
-          msg: "Could not open directions for $address.",
-          toastLength: Toast.LENGTH_SHORT);
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -721,14 +612,6 @@ class EventCard extends StatelessWidget {
 
   EventCard(this.event, this.scrollController, this.scrollIndex);
 
-  String parseLongField(String toCheck) {
-    String result = toCheck.trim();
-    if (toCheck.length > 35) {
-      result = toCheck.substring(0, 35) + "...";
-    }
-    return result;
-  }
-
   String formatDate(DateTime dateTime) {
     String formattedDate = DateFormat('MMM d').format(dateTime);
     return formattedDate;
@@ -775,13 +658,6 @@ class EventCard extends StatelessWidget {
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ])));
   }
-
-  void _launchAddressURL(address) async => await canLaunch(
-          'https://www.google.com/maps/search/?api=1&query=$address')
-      ? launch('https://www.google.com/maps/search/?api=1&query=$address')
-      : Fluttertoast.showToast(
-          msg: "Could not open directions for $address.",
-          toastLength: Toast.LENGTH_SHORT);
 
   @override
   Widget build(BuildContext context) {
@@ -881,20 +757,6 @@ class ResourceCard extends StatelessWidget {
   //   precacheImage(Image.network(resource.imgURL).image, context));
   // }
 
-  String parseLongField(String toCheck) {
-    String result = toCheck.trim();
-    if (toCheck.length > 35) {
-      result = toCheck.substring(0, 35) + "...";
-    }
-    return result;
-  }
-
-  void _launchWebsiteURL(String website) async => await canLaunch(website)
-      ? launch(website)
-      : Fluttertoast.showToast(
-          msg: "Could not open website $website",
-          toastLength: Toast.LENGTH_SHORT);
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -957,3 +819,61 @@ class ResourceCard extends StatelessWidget {
             ]));
   }
 }
+
+/// Open URL in the default browser for [website]
+void _launchWebsiteURL(String website) async => await canLaunch(website)
+    ? launch(website)
+    : Fluttertoast.showToast(
+        msg: "Could not open website $website",
+        toastLength: Toast.LENGTH_SHORT);
+
+/// Open URL in Instagram for [username]
+void _launchInstaURL(String username) async =>
+    await canLaunch("instagram.com/$username/")
+        ? launch("instagram.com/$username/")
+        : Fluttertoast.showToast(
+            msg: "Could not open profile: $username",
+            toastLength: Toast.LENGTH_SHORT);
+
+/// Open URL in Facebook for [username]
+void _launchFacebookURL(String username) async {
+  String url = username;
+  if (!username.contains('https')) {
+    url = "https://www.facebook.com/$username/";
+  }
+  await canLaunch(url)
+      ? launch(url)
+      : Fluttertoast.showToast(
+          msg: "Could not open the profile.", toastLength: Toast.LENGTH_SHORT);
+}
+
+/// Open URL in Twitter for [username]
+void _launchTwitterURL(username) async =>
+    await canLaunch("twitter.com/$username/")
+        ? launch("twitter.com/$username/")
+        : Fluttertoast.showToast(
+            msg: "Could not open profile: $username",
+            toastLength: Toast.LENGTH_SHORT);
+
+/// Make a phone call to [phoneNumber]
+void _launchPhoneURL(String phoneNumber) async =>
+    await canLaunch('tel:$phoneNumber')
+        ? launch('tel:$phoneNumber')
+        : Fluttertoast.showToast(
+            msg: "Could not set up a call for $phoneNumber",
+            toastLength: Toast.LENGTH_SHORT);
+
+/// Create email to [email]
+void _launchMailURL(String email) async => await canLaunch('mailto:$email')
+    ? launch('mailto:$email')
+    : Fluttertoast.showToast(
+        msg: "Could not open the email app for $email",
+        toastLength: Toast.LENGTH_SHORT);
+
+/// Open URL in GoogleMaps for [address]
+void _launchAddressURL(address) async =>
+    await canLaunch('https://www.google.com/maps/search/?api=1&query=$address')
+        ? launch('https://www.google.com/maps/search/?api=1&query=$address')
+        : Fluttertoast.showToast(
+            msg: "Could not open directions for $address.",
+            toastLength: Toast.LENGTH_SHORT);

@@ -40,7 +40,7 @@ class _HikePageState extends State<Hike> {
   /// firebase async method to get data
   Future _getHikes() async {
     if (hikeFirstTime) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       CollectionReference fireStore =
           FirebaseFirestore.instance.collection('trails');
 

@@ -43,7 +43,7 @@ class _EventPageState extends State<EventState> {
   Future _getEvents() async {
     if (eventFirstTime) {
       // if (true) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         events = filteredEvents = [];
         snap.docs.forEach((doc) {

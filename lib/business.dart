@@ -16,7 +16,7 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
 import 'scraper.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
+import 'commonFunction.dart';
 // import 'main.dart';
 import 'data.dart';
 
@@ -59,28 +59,13 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    print("tst---------tst------------------tst-------tst");
     if (businessFirstTime) {
-      // if(true) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
-      // helper method - parses phone string to correct format
-      String _parsePhoneNumber(String phone) {
-        String parsedPhone = "";
-        if (phone != null && phone.trim() != "" && phone != ".") {
-          parsedPhone = "(" +
-              phone.substring(0, 3) +
-              ") " +
-              phone.substring(3, 6) +
-              "-" +
-              phone.substring(6);
-        }
-        return parsedPhone;
-      }
-
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
         snap.docs.forEach((doc) {
           String phone = _parsePhoneNumber(doc['phone']);
+          String website = _parseWebsiteURL(doc['website']);
           Business b = Business(
               name: doc['name'],
               address: doc['address'],
@@ -89,7 +74,7 @@ class _BusinessPageState extends State<BusinessState> {
               phoneNumber: phone,
               email: doc['email'],
               socialMedia: doc['socialMedia'],
-              website: doc['website'],
+              website: website,
               imgURL: doc['imgURL'],
               category: doc['category'],
               id: doc['id']);
@@ -100,6 +85,33 @@ class _BusinessPageState extends State<BusinessState> {
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
+  }
+
+  /// async helper method - formats phone number to "(***) ***-****"
+  String _parsePhoneNumber(String phone) {
+    String parsedPhone = "";
+    if (phone != null && phone.trim() != "" && phone != ".") {
+      parsedPhone = "(" +
+          phone.substring(0, 3) +
+          ") " +
+          phone.substring(3, 6) +
+          "-" +
+          phone.substring(6);
+    }
+    return parsedPhone;
+  }
+
+  /// async helper method - formats website to prepend "http://"
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _parseWebsiteURL(String website) {
+    String parsedWebsite = website;
+    if (website != null && website.trim() != "" && website != ".") {
+      if (!website.trim().startsWith('http')) {
+        parsedWebsite = "http://" + website.trim();
+      }
+    }
+    return parsedWebsite;
   }
 
   /// this method gets firebase data and populates into list of businesses

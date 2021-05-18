@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:url_launcher/url_launcher.dart';
 import 'fireStoreObjects.dart';
 
 // import 'cards.dart';
@@ -35,6 +37,15 @@ bool isFieldEmpty(String toCheck) {
       toCheck.trim() == "" ||
       toCheck == "." ||
       toCheck == "null");
+}
+
+/// parses a long string & appends "..."
+String parseLongField(String toCheck) {
+  String result = toCheck.trim();
+  if (toCheck.length > 35) {
+    result = toCheck.substring(0, 35) + "...";
+  }
+  return result;
 }
 
 //=========================================
