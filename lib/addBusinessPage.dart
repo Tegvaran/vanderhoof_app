@@ -298,8 +298,6 @@ class _AddBusinessPageState extends State<AddBusinessPage> {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
-      print(_formKey.currentState.value['image']);
-      print(business.imgURL);
       if (_formKey.currentState.value['image'] != null &&
           _formKey.currentState.value['image'].isNotEmpty &&
           _formKey.currentState.value['image'][0] != business.imgURL) {
