@@ -31,7 +31,10 @@ Future<GeoPoint> toLatLng(String addr) async {
 
 /// returns true if a string field is empty
 bool isFieldEmpty(String toCheck) {
-  return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
+  return (toCheck == null ||
+      toCheck.trim() == "" ||
+      toCheck == "." ||
+      toCheck == "null");
 }
 
 //=========================================

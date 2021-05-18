@@ -15,16 +15,13 @@ import 'hikeInformation.dart';
 import 'main.dart';
 import 'map.dart';
 
-// bool isFieldEmpty(String toCheck) {
-//   return (toCheck == null || toCheck.trim() == "" || toCheck == ".");
-// }
-
 const double TITLE_SIZE = 22;
 const double BODY_SIZE = 16;
 const double ICON_SIZE = 30;
 const double ICON_SIZE_SMALL = 18;
+const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
-const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 5, 0, 0);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 16, 16, 0);
 const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
 
 TextStyle titleTextStyle = TextStyle(
@@ -357,6 +354,7 @@ class BusinessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+        elevation: 3,
         color: colorBackground,
         margin: CARD_INSET,
         child: ExpansionTile(
@@ -390,13 +388,13 @@ class BusinessCard extends StatelessWidget {
 
               //// layout option 1: description wrapped around img (top-right corner)
               Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  padding: TEXT_INSET,
                   child: DropCapText(
                       (!isFieldEmpty(business.description))
                           ? business.description
                           : "",
                       style: bodyTextStyle,
-                      dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                      // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                       dropCapPosition: DropCapPosition.end,
                       dropCap: (!isFieldEmpty(business.imgURL))
                           ? DropCap(
@@ -415,16 +413,17 @@ class BusinessCard extends StatelessWidget {
               //             Image.network(business.imgURL, fit: BoxFit.contain),
               //       )
               //     : Container(width: 0, height: 0),
-              // Padding(
+              // !(isFieldEmpty(business.description))
+              //     ? Padding(
               //   padding: TEXT_INSET,
               //   child: Text(
               //     "${business.description}",
               //     style: bodyTextStyle,
-              //     textAlign: TextAlign.left,
               //   ),
-              // ),
+              // )
+              //     : Container(width: 0, height: 0),
               Padding(
-                  padding: EdgeInsets.fromLTRB(12, 5, 0, 5),
+                  padding: TEXT_INSET,
                   // Checks if the category's length is empty or not
                   child: (business.category != null &&
                           business.category.length != 0
@@ -438,103 +437,112 @@ class BusinessCard extends StatelessWidget {
                           ),
                         ]))
                       : Container(width: 0, height: 0))),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(business.address))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.location_on),
-                          onPressed: () {
-                            _launchAddressURL(business.address);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(business.address)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(business.phoneNumber))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.phone),
-                          onPressed: () {
-                            _launchPhoneURL(business.phoneNumber);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(business.phoneNumber)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(business.email))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.email),
-                          onPressed: () {
-                            _launchMailURL(business.email);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(business.email)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(business.website))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: FaIcon(FontAwesomeIcons.globe),
-                          onPressed: () {
-                            _launchWebsiteURL(business.website);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(business.website)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
+              (!isFieldEmpty(business.address))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.location_on,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchAddressURL(business.address);
+                        },
+                      ),
+                      Text('${parseLongField(business.address)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(business.phoneNumber))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.phone,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchPhoneURL(business.phoneNumber);
+                        },
+                      ),
+                      Text('${parseLongField(business.phoneNumber)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(business.email))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.email,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchMailURL(business.email);
+                        },
+                      ),
+                      Text('${parseLongField(business.email)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(business.website))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.language,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchWebsiteURL(business.website);
+                        },
+                      ),
+                      Text('${parseLongField(business.website)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
               Row(children: <Widget>[
                 (!isFieldEmpty(business.socialMedia['facebook']))
                     ? IconButton(
-                        icon: FaIcon(FontAwesomeIcons.facebook),
+                        icon: DecoratedIcon(FontAwesomeIcons.facebook,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
                         onPressed: () {
                           _launchFacebookURL(business.socialMedia["facebook"]);
                         },
-                        iconSize: ICON_SIZE,
-                        color: colorPrimary,
                       )
                     : Container(width: 0, height: 0),
                 (!isFieldEmpty(business.socialMedia['instagram']))
                     ? IconButton(
-                        icon: FaIcon(FontAwesomeIcons.instagram),
+                        icon: DecoratedIcon(FontAwesomeIcons.instagram,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
                         onPressed: () {
                           _launchInstaURL(business.socialMedia["instagram"]);
                         },
-                        iconSize: ICON_SIZE,
-                        color: colorPrimary,
                       )
                     : Container(width: 0, height: 0),
                 (!isFieldEmpty(business.socialMedia['twitter']))
                     ? IconButton(
-                        icon: FaIcon(FontAwesomeIcons.twitter),
+                        icon: DecoratedIcon(FontAwesomeIcons.twitter,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
                         onPressed: () {
                           _launchTwitterURL(business.socialMedia["twitter"]);
                         },
-                        iconSize: ICON_SIZE,
-                        color: colorPrimary,
                       )
                     : Container(width: 0, height: 0),
               ])
@@ -592,6 +600,7 @@ class RecreationalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+        elevation: 3,
         color: colorBackground,
         margin: CARD_INSET,
         child: ExpansionTile(
@@ -621,109 +630,83 @@ class RecreationalCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-
-              //// layout option 1: description wrapped around img (top-right corner)
-              // Padding(
-              //     padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              //     child: DropCapText(
-              //         (!isFieldEmpty(rec.description))
-              //             ? rec.description
-              //             : "",
-              //         style: bodyTextStyle,
-              //         dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-              //         dropCapPosition: DropCapPosition.end,
-              //         dropCap: (!isFieldEmpty(business.imgURL))
-              //             ? DropCap(
-              //             width: 120,
-              //             height: 120,
-              //             child: Image.network(business.imgURL,
-              //                 fit: BoxFit.contain))
-              //             : DropCap(width: 0, height: 0, child: null))),
-              //// layout option 2: img above and description below
-              // (business.imgURL != "" && business.imgURL != null)
-              //     ? Container(
-              //         height: 120,
-              //         alignment: Alignment.center,
-              //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.contain),
-              //       )
-              //     : Container(width: 0, height: 0),
-              // Padding(
-              //   padding: TEXT_INSET,
-              //   child: Text(
-              //     "${business.description}",
-              //     style: bodyTextStyle,
-              //     textAlign: TextAlign.left,
-              //   ),
-              // ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(rec.address))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.location_on),
-                          onPressed: () {
-                            _launchAddressURL(rec.address);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(rec.address)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(rec.phoneNumber))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.phone),
-                          onPressed: () {
-                            _launchPhoneURL(rec.phoneNumber);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(rec.phoneNumber)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(rec.email))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.email),
-                          onPressed: () {
-                            _launchMailURL(rec.email);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(rec.email)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(rec.website))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: FaIcon(FontAwesomeIcons.globe),
-                          onPressed: () {
-                            _launchWebsiteURL(rec.website);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(rec.website)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
+              !(isFieldEmpty(rec.description))
+                  ? Padding(
+                      padding: TEXT_INSET,
+                      child: Text(
+                        "${rec.description}",
+                        style: bodyTextStyle,
+                      ),
+                    )
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(rec.address))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.location_on,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchAddressURL(rec.address);
+                        },
+                      ),
+                      Text('${parseLongField(rec.address)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(rec.phoneNumber))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.phone,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchPhoneURL(rec.phoneNumber);
+                        },
+                      ),
+                      Text('${parseLongField(rec.phoneNumber)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(rec.email))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.email,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchMailURL(rec.email);
+                        },
+                      ),
+                      Text('${parseLongField(rec.email)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(rec.website))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.language,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchWebsiteURL(rec.website);
+                        },
+                      ),
+                      Text('${parseLongField(rec.website)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
             ]));
   }
 }
@@ -803,6 +786,7 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+        elevation: 3,
         color: colorBackground,
         margin: CARD_INSET,
         child: ExpansionTile(
@@ -832,14 +816,15 @@ class EventCard extends StatelessWidget {
                       child: Image.network(event.imgURL, fit: BoxFit.contain),
                     )
                   : Container(width: 0, height: 0),
-              Padding(
-                padding: TEXT_INSET,
-                child: Text(
-                  "${event.description}",
-                  style: bodyTextStyle,
-                  textAlign: TextAlign.left,
-                ),
-              ),
+              !(isFieldEmpty(event.description))
+                  ? Padding(
+                      padding: TEXT_INSET,
+                      child: Text(
+                        "${event.description}",
+                        style: bodyTextStyle,
+                      ),
+                    )
+                  : Container(width: 0, height: 0),
               Padding(
                   padding: EdgeInsets.zero,
                   child: Row(children: <Widget>[
@@ -856,23 +841,23 @@ class EventCard extends StatelessWidget {
                             '${formatDateTime(event.datetimeStart)} - ${formatTime(event.datetimeEnd)}',
                             style: headerTextStyle)),
                   ])),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(event.address))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.location_on),
-                          onPressed: () {
-                            _launchAddressURL(event.address);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(event.address)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
+              (!isFieldEmpty(event.address))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.location_on,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchAddressURL(event.address);
+                        },
+                      ),
+                      Text('${parseLongField(event.address)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
             ]));
   }
 }
@@ -904,16 +889,16 @@ class ResourceCard extends StatelessWidget {
     return result;
   }
 
-  void _launchWebsiteURL(String website) async =>
-      await canLaunch('http:$website')
-          ? launch('http:$website')
-          : Fluttertoast.showToast(
-              msg: "Could not open website $website",
-              toastLength: Toast.LENGTH_SHORT);
+  void _launchWebsiteURL(String website) async => await canLaunch(website)
+      ? launch(website)
+      : Fluttertoast.showToast(
+          msg: "Could not open website $website",
+          toastLength: Toast.LENGTH_SHORT);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+        elevation: 3,
         color: colorBackground,
         margin: CARD_INSET,
         child: ExpansionTile(
@@ -943,31 +928,32 @@ class ResourceCard extends StatelessWidget {
                           Image.network(resource.imgURL, fit: BoxFit.contain),
                     )
                   : Container(width: 0, height: 0),
-              Padding(
-                padding: TEXT_INSET,
-                child: Text(
-                  "${resource.description}",
-                  style: bodyTextStyle,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: (!isFieldEmpty(resource.website))
-                    ? Row(children: <Widget>[
-                        IconButton(
-                          icon: FaIcon(FontAwesomeIcons.globe),
-                          onPressed: () {
-                            _launchWebsiteURL(resource.website);
-                          },
-                          iconSize: ICON_SIZE,
-                          color: colorPrimary,
-                        ),
-                        Text('${parseLongField(resource.website)}',
-                            style: headerTextStyle),
-                      ])
-                    : Container(width: 0, height: 0),
-              ),
+              !(isFieldEmpty(resource.description))
+                  ? Padding(
+                      padding: TEXT_INSET,
+                      child: Text(
+                        "${resource.description}",
+                        style: bodyTextStyle,
+                      ),
+                    )
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(resource.website))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.language,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchWebsiteURL(resource.website);
+                        },
+                      ),
+                      Text('${parseLongField(resource.website)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
             ]));
   }
 }
