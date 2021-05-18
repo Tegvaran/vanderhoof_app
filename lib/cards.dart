@@ -123,6 +123,7 @@ class HikeCard extends StatelessWidget {
                         shadows: [
                           iconShadow,
                         ]),
+                    tooltip: hikeTrail.address,
                     onPressed: () {
                       _launchAddressURL(hikeTrail.address);
                     },
@@ -371,6 +372,7 @@ class BusinessCard extends StatelessWidget {
                             shadows: [
                               iconShadow,
                             ]),
+                        tooltip: business.address,
                         onPressed: () {
                           _launchAddressURL(business.address);
                         },
@@ -539,6 +541,7 @@ class RecreationalCard extends StatelessWidget {
                             shadows: [
                               iconShadow,
                             ]),
+                        tooltip: rec.address,
                         onPressed: () {
                           _launchAddressURL(rec.address);
                         },
@@ -726,6 +729,7 @@ class EventCard extends StatelessWidget {
                             shadows: [
                               iconShadow,
                             ]),
+                        tooltip: event.address,
                         onPressed: () {
                           _launchAddressURL(event.address);
                         },
@@ -828,33 +832,33 @@ void _launchWebsiteURL(String website) async =>
             msg: "Could not open website http://$website",
             toastLength: Toast.LENGTH_SHORT);
 
-/// Open URL in Instagram for [username]
+/// Open URL in Instagram for [username] profile
 void _launchInstaURL(String username) async =>
-    await canLaunch("instagram.com/$username/")
-        ? launch("instagram.com/$username/")
+    await canLaunch("https://instagram.com/$username/")
+        ? launch("https://instagram.com/$username/")
         : Fluttertoast.showToast(
-            msg: "Could not open profile: $username",
+            msg: "Could not open Instagram profile: $username",
             toastLength: Toast.LENGTH_SHORT);
 
-/// Open URL in Facebook for [username]
+/// Open URL in Facebook for [username] profile
 void _launchFacebookURL(String username) async {
   String url = username;
-  if (!username.contains('https')) {
+  if (!username.contains('.com/')) {
     url = "https://www.facebook.com/$username/";
   }
   await canLaunch(url)
       ? launch(url)
       : Fluttertoast.showToast(
-          msg: "Could not open profile: $username",
+          msg: "Could not open Facebook profile: $username",
           toastLength: Toast.LENGTH_SHORT);
 }
 
-/// Open URL in Twitter for [username]
+/// Open URL in Twitter for [username] profile
 void _launchTwitterURL(username) async =>
-    await canLaunch("twitter.com/$username/")
-        ? launch("twitter.com/$username/")
+    await canLaunch("https://twitter.com/$username/")
+        ? launch("https://twitter.com/$username/")
         : Fluttertoast.showToast(
-            msg: "Could not open profile: $username",
+            msg: "Could not open Twitter profile: $username",
             toastLength: Toast.LENGTH_SHORT);
 
 /// Make a phone call to [phoneNumber]
