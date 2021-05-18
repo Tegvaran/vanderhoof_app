@@ -68,13 +68,16 @@ class _ResourcePageState extends State<ResourceState> {
   ///
   /// "http://" is required to correctly launch website URL
   String _formatWebsiteURL(String website) {
-    String formatted = website;
     if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website;
       if (!website.trim().startsWith('http')) {
         formatted = "http://" + website.trim();
       }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
     }
-    return formatted;
   }
 
   /// this method gets firebase data and populates into list of events

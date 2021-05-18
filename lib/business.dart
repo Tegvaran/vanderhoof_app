@@ -84,35 +84,42 @@ class _BusinessPageState extends State<BusinessState> {
       businessFirstTime = false;
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
+    print('HEREHEREHEREHERE BUSINESSES LENGTH: ${businesses.length}');
     return businesses;
   }
 
   /// async helper method - formats phone number to "(***) ***-****"
   String _formatPhoneNumber(String phone) {
-    phone = phone.replaceAll(RegExp("[^0-9]"), '');
-    String formatted = phone;
     if (phone != null && phone.trim() != "" && phone != ".") {
+      phone = phone.replaceAll(RegExp("[^0-9]"), '');
+      String formatted = phone;
       formatted = "(" +
           phone.substring(0, 3) +
           ") " +
           phone.substring(3, 6) +
           "-" +
           phone.substring(6);
+      return formatted;
+    } else {
+      // phone is empty
+      return null;
     }
-    return formatted;
   }
 
   /// async helper method - formats website to prepend "http://"
   ///
   /// "http://" is required to correctly launch website URL
   String _formatWebsiteURL(String website) {
-    String formatted = website;
     if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website;
       if (!website.trim().startsWith('http')) {
         formatted = "http://" + website.trim();
       }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
     }
-    return formatted;
   }
 
   /// this method gets firebase data and populates into list of businesses
