@@ -435,10 +435,10 @@ class _BusinessPageState extends State<BusinessState> {
     for (int i = 0; i < categoryOptions.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(categoryOptions[i], style: TextStyle(color: Colors.black)),
+        label: Text(categoryOptions[i], style: bodyTextStyle),
         elevation: 3,
         pressElevation: 5,
-        shadowColor: colorPrimary,
+        backgroundColor: createMaterialColor(Color(0xFFE3E3E3)),
         selectedColor: colorAccent,
         onSelected: (bool selected) {
           setState(() {
