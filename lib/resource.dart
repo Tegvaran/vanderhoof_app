@@ -43,14 +43,15 @@ class _ResourcePageState extends State<ResourceState> {
   /// firebase async method to get data
   Future _getResources() async {
     if (recreationFirstTime) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
+          String website = _formatWebsiteURL(doc['website']);
           Resource resource = Resource(
             name: doc['name'],
             description: doc['description'],
-            website: doc['website'],
+            website: website,
             id: doc['id'],
             imgURL: doc['imgURL'],
           );
@@ -61,6 +62,22 @@ class _ResourcePageState extends State<ResourceState> {
     }
 
     return resources;
+  }
+
+  /// async helper method - formats website to prepend "http://"
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website;
+      if (!website.trim().startsWith('http')) {
+        formatted = "http://" + website.trim();
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of events
