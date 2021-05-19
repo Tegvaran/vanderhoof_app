@@ -77,7 +77,7 @@ class _HikePageState extends State<Hike> {
         });
       });
       print(
-          "Finished Firestore Read of Hikes. Stopped async method to reduce reads.");
+          "_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
       hasReadDataFirstTime = true;
     }
     return hikes;

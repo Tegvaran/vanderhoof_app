@@ -59,7 +59,7 @@ class _ResourcePageState extends State<ResourceState> {
         });
       });
       print(
-          "Finished Firestore Read of Resources. Stopped async method to reduce reads.");
+          "_getResources(): FINISHED READ. Stopped async method to reduce reads.");
       hasReadDataFirstTime = true;
     }
 

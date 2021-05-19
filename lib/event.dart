@@ -62,7 +62,7 @@ class _EventPageState extends State<EventState> {
         });
       });
       print(
-          "Finished Firestore Read of Events. Stopped async method to reduce reads.");
+          "_getEvents(): FINISHED READ. Stopped async method to reduce reads.");
       hasReadDataFirstTime = true;
     }
 

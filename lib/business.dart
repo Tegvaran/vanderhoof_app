@@ -81,7 +81,7 @@ class _BusinessPageState extends State<BusinessState> {
         });
       });
       print(
-          "Finished Firestore Read of Businesses. Stopped async method to reduce reads.");
+          "_getBusinesses(): FINISHED READ. Stopped async method to reduce reads.");
       hasReadDataFirstTime = true;
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));

@@ -71,8 +71,7 @@ class _RecreationPageState extends State<Recreation> {
           recs.add(b);
         });
       });
-      print(
-          "Finished Firestore Read of Recreations. Stopped async method to reduce reads.");
+      print("_getRecs(): FINISHED READ. Stopped async method to reduce reads.");
       hasReadDataFirstTime = true;
     }
 
