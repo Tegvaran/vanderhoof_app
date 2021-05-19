@@ -981,12 +981,17 @@ void _launchWebsiteURL(String website) async =>
             toastLength: Toast.LENGTH_SHORT);
 
 /// Open URL in Instagram for [username] profile
-void _launchInstaURL(String username) async =>
-    await canLaunch("https://instagram.com/$username/")
-        ? launch("https://instagram.com/$username/")
-        : Fluttertoast.showToast(
-            msg: "Could not open Instagram profile: $username",
-            toastLength: Toast.LENGTH_SHORT);
+void _launchInstaURL(String username) async {
+  String url = username;
+  if (!username.contains('.com/')) {
+    url = "https://www.instagram.com/$username/";
+  }
+  await canLaunch(url)
+      ? launch(url)
+      : Fluttertoast.showToast(
+          msg: "Could not open Instagram profile: $username",
+          toastLength: Toast.LENGTH_SHORT);
+}
 
 /// Open URL in Facebook for [username] profile
 void _launchFacebookURL(String username) async {
@@ -1002,12 +1007,17 @@ void _launchFacebookURL(String username) async {
 }
 
 /// Open URL in Twitter for [username] profile
-void _launchTwitterURL(username) async =>
-    await canLaunch("https://twitter.com/$username/")
-        ? launch("https://twitter.com/$username/")
-        : Fluttertoast.showToast(
-            msg: "Could not open Twitter profile: $username",
-            toastLength: Toast.LENGTH_SHORT);
+void _launchTwitterURL(username) async {
+  String url = username;
+  if (!username.contains('.com/')) {
+    url = "https://www.twitter.com/$username/";
+  }
+  await canLaunch(url)
+      ? launch(url)
+      : Fluttertoast.showToast(
+          msg: "Could not open Twitter profile: $username",
+          toastLength: Toast.LENGTH_SHORT);
+}
 
 /// Make a phone call to [phoneNumber]
 void _launchPhoneURL(String phoneNumber) async =>
