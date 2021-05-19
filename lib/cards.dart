@@ -84,7 +84,7 @@ class _BusinessCard extends State<BusinessCard> {
 
     if (!isFieldEmpty(business.imgURL)) {
       print("didChangeDependencies(): preloaded img '${business.imgURL}'");
-      precacheImage(Image.network(business.imgURL).image, context);
+      precacheImage(NetworkImage(business.imgURL), context);
     }
   }
 
@@ -147,8 +147,26 @@ class _BusinessCard extends State<BusinessCard> {
                           ? DropCap(
                               width: 120,
                               height: 120,
-                              child: Image.network(business.imgURL,
-                                  fit: BoxFit.contain))
+                              child: Image.network(
+                                business.imgURL,
+                                fit: BoxFit.contain,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ))
                           : DropCap(width: 0, height: 0, child: null))),
 
               /// layout option 2: img above and description below
@@ -507,8 +525,22 @@ class _ResourceCard extends State<ResourceCard> {
                   ? Container(
                       width: double.infinity,
                       alignment: Alignment.center,
-                      child:
-                          Image.network(resource.imgURL, fit: BoxFit.contain),
+                      child: Image.network(
+                        resource.imgURL,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
                     )
                   : Container(width: 0, height: 0),
               !(isFieldEmpty(resource.description))
@@ -571,7 +603,7 @@ class _EventCard extends State<EventCard> {
 
     if (!isFieldEmpty(event.imgURL)) {
       print("didChangeDependencies(): preloaded img '${event.imgURL}'");
-      precacheImage(Image.network(event.imgURL).image, context);
+      precacheImage(NetworkImage(event.imgURL), context);
     }
   }
 
@@ -598,8 +630,6 @@ class _EventCard extends State<EventCard> {
     return Container(
         width: 100,
         padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        // decoration: BoxDecoration(
-        //     border: Border(right: BorderSide(width: 3.0, color: colorAccent))),
         child: TextButton(
             onPressed: null,
             child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -650,7 +680,22 @@ class _EventCard extends State<EventCard> {
                   ? Container(
                       width: double.infinity,
                       alignment: Alignment.center,
-                      child: Image.network(event.imgURL, fit: BoxFit.contain),
+                      child: Image.network(
+                        event.imgURL,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
                     )
                   : Container(width: 0, height: 0),
               !(isFieldEmpty(event.description))
