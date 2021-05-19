@@ -433,8 +433,12 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index,
-                  _markers, filteredBusinesses),
+              BusinessCard(
+                  business: filteredBusinesses[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredBusinesses),
               index);
         },
       )),

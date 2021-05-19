@@ -283,7 +283,10 @@ class _ResourcePageState extends State<ResourceState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              ResourceCard(filteredResources[index], _scrollController, index),
+              ResourceCard(
+                  resource: filteredResources[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index),
               index);
         },
       )),

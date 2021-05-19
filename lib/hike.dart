@@ -263,8 +263,12 @@ class _HikePageState extends State<Hike> {
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _dismissibleTile(
-                      HikeCard(filteredHikes[index], _scrollController, index,
-                          _markers, filteredHikes),
+                      HikeCard(
+                          hikeTrail: filteredHikes[index],
+                          scrollController: _scrollController,
+                          scrollIndex: index,
+                          mapMarkers: _markers,
+                          listOfFireStoreObjects: filteredHikes),
                       index);
                 })),
         floatingActionButton: _buildScrollToTopButton());

@@ -273,7 +273,10 @@ class _EventPageState extends State<EventState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              EventCard(filteredEvents[index], _scrollController, index),
+              EventCard(
+                  event: filteredEvents[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index),
               index);
         },
       )),
