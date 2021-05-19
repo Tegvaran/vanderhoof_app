@@ -26,6 +26,8 @@ List<Business> businesses = [];
 // Businesses after filtering search - this is whats shown in ListView
 List<Business> filteredBusinesses = [];
 
+List<Widget> chips2;
+
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
 
@@ -34,8 +36,6 @@ class BusinessState extends StatefulWidget {
   @override
   _BusinessPageState createState() => new _BusinessPageState();
 }
-
-List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
   bool isSearching = false;
