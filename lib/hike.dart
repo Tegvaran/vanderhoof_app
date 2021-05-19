@@ -13,7 +13,7 @@ import 'main.dart';
 import 'map.dart';
 import 'addHikePage.dart';
 
-bool hikeFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 List<HikeTrail> hikes = [];
 List<HikeTrail> filteredHikes = [];
@@ -39,7 +39,7 @@ class _HikePageState extends State<Hike> {
 
   /// firebase async method to get data
   Future _getHikes() async {
-    if (hikeFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       CollectionReference fireStore =
           FirebaseFirestore.instance.collection('trails');
@@ -47,18 +47,18 @@ class _HikePageState extends State<Hike> {
       await fireStore.get().then((QuerySnapshot snap) {
         hikes = filteredHikes = [];
         snap.docs.forEach((doc) {
-          print("/////////////////////////////////////////////");
-          print(doc['name']);
-          print(doc['address']);
-          print(doc['location']);
-          print(doc['description']);
-          print(doc['id']);
-          print(doc['distance']);
-          print(doc.get('difficulty'));
-          print('Time ${doc['time']}');
-          print(doc['wheelchair']);
-          print(doc['pointsOfInterest']);
-          print(doc['imgURL']);
+          // print("/////////////////////////////////////////////");
+          // print(doc['name']);
+          // print(doc['address']);
+          // print(doc['location']);
+          // print(doc['description']);
+          // print(doc['id']);
+          // print(doc['distance']);
+          // print(doc.get('difficulty'));
+          // print('Time ${doc['time']}');
+          // print(doc['wheelchair']);
+          // print(doc['pointsOfInterest']);
+          // print(doc['imgURL']);
 
           HikeTrail h = HikeTrail(
             name: doc['name'],
@@ -74,10 +74,11 @@ class _HikePageState extends State<Hike> {
             imgURL: doc['imgURL'],
           );
           hikes.add(h);
-          print(h);
         });
       });
-      hikeFirstTime = false;
+      print(
+          "_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
     return hikes;
   }
@@ -263,8 +264,12 @@ class _HikePageState extends State<Hike> {
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return _dismissibleTile(
-                      HikeCard(filteredHikes[index], _scrollController, index,
-                          _markers, filteredHikes),
+                      HikeCard(
+                          hikeTrail: filteredHikes[index],
+                          scrollController: _scrollController,
+                          scrollIndex: index,
+                          mapMarkers: _markers,
+                          listOfFireStoreObjects: filteredHikes),
                       index);
                 })),
         floatingActionButton: _buildScrollToTopButton());

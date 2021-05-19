@@ -19,12 +19,14 @@ import 'scraper.dart';
 // import 'main.dart';
 import 'data.dart';
 
-bool businessFirstTime = true;
+bool hasReadDataFirstTime = false;
 // Businesses populated from firebase
 List<Business> businesses = [];
 
 // Businesses after filtering search - this is whats shown in ListView
 List<Business> filteredBusinesses = [];
+
+List<Widget> chips2;
 
 class BusinessState extends StatefulWidget {
   BusinessState({Key key}) : super(key: key);
@@ -34,8 +36,6 @@ class BusinessState extends StatefulWidget {
   @override
   _BusinessPageState createState() => new _BusinessPageState();
 }
-
-List<Widget> chips2;
 
 class _BusinessPageState extends State<BusinessState> {
   bool isSearching = false;
@@ -58,7 +58,7 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    if (businessFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
@@ -80,7 +80,9 @@ class _BusinessPageState extends State<BusinessState> {
           businesses.add(b);
         });
       });
-      businessFirstTime = false;
+      print(
+          "_getBusinesses(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
@@ -433,8 +435,12 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              BusinessCard(filteredBusinesses[index], _scrollController, index,
-                  _markers, filteredBusinesses),
+              BusinessCard(
+                  business: filteredBusinesses[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredBusinesses),
               index);
         },
       )),

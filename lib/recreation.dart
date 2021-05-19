@@ -16,7 +16,7 @@ import 'addEventPage.dart';
 import 'main.dart';
 import 'map.dart';
 
-bool recreationFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 // Businesses populated from firebase
 List<Recreational> recs = [];
@@ -51,7 +51,7 @@ class _RecreationPageState extends State<Recreation> {
 
   /// firebase async method to get data
   Future _getRecs() async {
-    if (recreationFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
@@ -71,7 +71,8 @@ class _RecreationPageState extends State<Recreation> {
           recs.add(b);
         });
       });
-      recreationFirstTime = false;
+      print("_getRecs(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     return recs;
@@ -377,8 +378,12 @@ class _RecreationPageState extends State<Recreation> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              RecreationalCard(filteredRecs[index], _scrollController, index,
-                  _markers, filteredRecs),
+              RecreationalCard(
+                  recreational: filteredRecs[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredRecs),
               index);
         },
       )),

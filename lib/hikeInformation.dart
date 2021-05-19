@@ -22,6 +22,9 @@ class HikeInformation extends StatefulWidget {
 class _HikeInformationState extends State<HikeInformation> {
   HikeTrail hikeTrail;
 
+  // class constructor
+  _HikeInformationState(this.hikeTrail);
+
   // Used in Interactive Viewer to bring the image back to its original position.
   TransformationController c = TransformationController();
 
@@ -51,7 +54,16 @@ class _HikeInformationState extends State<HikeInformation> {
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[600];
 
-  _HikeInformationState(this.hikeTrail);
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(hikeTrail.imgURL)) {
+      print("didChangeDependencies(): preloaded img '${hikeTrail.imgURL}'");
+      precacheImage(NetworkImage(hikeTrail.imgURL), context);
+    }
+  }
 
   Color getDifficultyColor() {
     Color difficultyColor;
@@ -84,7 +96,6 @@ class _HikeInformationState extends State<HikeInformation> {
 
   @override
   Widget build(BuildContext context) {
-    print(hikeTrail);
     return Scaffold(
         // backgroundColor: colorBackground,
         appBar: AppBar(

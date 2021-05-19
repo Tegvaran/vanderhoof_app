@@ -9,7 +9,7 @@ import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 
-bool eventFirstTime = true;
+bool hasReadDataFirstTime = false;
 // Events populated from firebase
 List<Event> events = [];
 
@@ -41,7 +41,7 @@ class _EventPageState extends State<EventState> {
 
   /// firebase async method to get data
   Future _getEvents() async {
-    if (eventFirstTime) {
+    if (!hasReadDataFirstTime) {
       // if (true) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
@@ -58,11 +58,12 @@ class _EventPageState extends State<EventState> {
             isMultiday: doc['isMultiday'],
             imgURL: doc['imgURL'],
           );
-          // print('event.dar: ${e.name}');
           events.add(e);
         });
       });
-      eventFirstTime = false;
+      print(
+          "_getEvents(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     // sort all events by starting date
@@ -71,7 +72,6 @@ class _EventPageState extends State<EventState> {
       var bdate = b.datetimeStart;
       return adate.compareTo(bdate);
     });
-    print('sorted: ' + events.toString());
 
     return events;
   }
@@ -273,7 +273,10 @@ class _EventPageState extends State<EventState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              EventCard(filteredEvents[index], _scrollController, index),
+              EventCard(
+                  event: filteredEvents[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index),
               index);
         },
       )),
