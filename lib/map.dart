@@ -131,7 +131,7 @@ class GmapState extends State<Gmap> {
   GmapState(this.listOfFireStoreObjects, this._markers, this.scrollController);
 
   static final double zoomVal = 16;
-  static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679)
+  static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679);
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
 
