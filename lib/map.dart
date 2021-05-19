@@ -119,19 +119,44 @@ class Gmap extends StatefulWidget {
       GmapState(listOfFireStoreObjects, _markers, scrollController);
 }
 
-double zoomVal = 13;
+double zoomVal = 16;
 
 class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
   List<FireStoreObject> listOfFireStoreObjects;
-  Location _location = Location();
+  LocationData currentLocation;
   GoogleMapController _mapController;
   ItemScrollController scrollController;
   GmapState(this.listOfFireStoreObjects, this._markers, this.scrollController);
 
-  static final CameraPosition _kGooglePlex =
-      CameraPosition(target: LatLng(54.0117956, -124.0177679), zoom: 13);
+  static final double zoomVal = 16;
+  static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679)
+  static CameraPosition _initialCameraPosition =
+      CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
+
+  _getLocation() async {
+    var location = new Location();
+    try {
+      currentLocation = await location.getLocation();
+
+      print("locationLatitude: ${currentLocation.latitude}");
+      print("locationLongitude: ${currentLocation.longitude}");
+      setState(() {
+        _initialCameraPosition = CameraPosition(
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
+            zoom: zoomVal);
+      }); //rebuild the widget after getting the current location of the user
+    } on Exception {
+      currentLocation = null;
+    }
+  }
+
+  @override
+  void initState() {
+    _getLocation();
+    super.initState();
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
@@ -175,7 +200,7 @@ class GmapState extends State<Gmap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      initialCameraPosition: _kGooglePlex,
+      initialCameraPosition: _initialCameraPosition,
       mapType: mapType,
       markers: _markers,
       onMapCreated: _onMapCreated,
