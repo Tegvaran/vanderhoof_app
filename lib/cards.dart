@@ -77,6 +77,17 @@ class _BusinessCard extends State<BusinessCard> {
       this.mapMarkers,
       this.listOfFireStoreObjects});
 
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(business.imgURL)) {
+      print("didChangeDependencies: preloaded image - '${business.imgURL}' ");
+      precacheImage(Image.network(business.imgURL).image, context);
+    }
+  }
+
   String categoryText() {
     String categories = "";
     for (var i = 0; i < business.category.length; i++) {
@@ -458,14 +469,16 @@ class _ResourceCard extends State<ResourceCard> {
 
   _ResourceCard({this.resource, this.scrollController, this.scrollIndex});
 
-  // TODO - change class to StatefulWidget and precache images
-  // ref: https://alex.domenici.net/archive/preload-images-in-a-stateful-widget-on-flutter
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //
-  //   precacheImage(Image.network(resource.imgURL).image, context));
-  // }
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(resource.imgURL)) {
+      print("didChangeDependencies: preloaded image - '${resource.imgURL}' ");
+      precacheImage(Image.network(resource.imgURL).image, context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -492,7 +505,7 @@ class _ResourceCard extends State<ResourceCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-              (resource.imgURL != "" && resource.imgURL != null)
+              !(isFieldEmpty(resource.imgURL))
                   ? Container(
                       width: double.infinity,
                       alignment: Alignment.center,
@@ -552,6 +565,17 @@ class _EventCard extends State<EventCard> {
   int scrollIndex;
 
   _EventCard({this.event, this.scrollController, this.scrollIndex});
+
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(event.imgURL)) {
+      print("didChangeDependencies: preloaded image - '${event.imgURL}' ");
+      precacheImage(Image.network(event.imgURL).image, context);
+    }
+  }
 
   String formatDate(DateTime dateTime) {
     String formattedDate = DateFormat('MMM d').format(dateTime);
@@ -626,7 +650,7 @@ class _EventCard extends State<EventCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-              (event.imgURL != "" && event.imgURL != null)
+              !(isFieldEmpty(event.imgURL))
                   ? Container(
                       width: double.infinity,
                       alignment: Alignment.center,

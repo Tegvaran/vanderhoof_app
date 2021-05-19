@@ -54,6 +54,17 @@ class _HikeInformationState extends State<HikeInformation> {
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[600];
 
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(hikeTrail.imgURL)) {
+      print("didChangeDependencies: preloaded image - '${hikeTrail.imgURL}' ");
+      precacheImage(NetworkImage(hikeTrail.imgURL), context);
+    }
+  }
+
   Color getDifficultyColor() {
     Color difficultyColor;
     if (hikeTrail.rating == "Easy") {
