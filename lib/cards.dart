@@ -133,7 +133,7 @@ class _BusinessCard extends State<BusinessCard> {
             children: <Widget>[
               cardDivider,
 
-              //// layout option 1: description wrapped around img (top-right corner)
+              /// layout option 1: description wrapped around img (top-right corner)
               Padding(
                   padding: TEXT_INSET,
                   child: DropCapText(
@@ -151,7 +151,7 @@ class _BusinessCard extends State<BusinessCard> {
                                   fit: BoxFit.contain))
                           : DropCap(width: 0, height: 0, child: null))),
 
-              //// layout option 2: img above and description below
+              /// layout option 2: img above and description below
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
               //         height: 120,
@@ -489,14 +489,12 @@ class _ResourceCard extends State<ResourceCard> {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll resources list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
                 });
               }
@@ -633,14 +631,12 @@ class _EventCard extends State<EventCard> {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll events list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
                 });
               }
@@ -782,13 +778,14 @@ class _HikeCard extends State<HikeCard> {
       child: ExpansionTile(
         onExpansionChanged: (_isExpanded) {
           if (_isExpanded) {
+            // highlight map marker by changing its color
             changeMarkerColor(scrollIndex, mapMarkers, listOfFireStoreObjects,
                 scrollController);
+            // highlight map marker by moving camera to hike location
             if (hikeTrail.location != null) {
               changeCamera(hikeTrail.location);
             }
-            // check if Expanded
-            // let ExpansionTile expand, then scroll Tile to top of the list
+            // scroll hikes list to expanded tile
             Future.delayed(Duration(milliseconds: 250)).then((value) {
               scrollController.scrollTo(
                 index: scrollIndex,
@@ -994,9 +991,10 @@ class _RecreationalCard extends State<RecreationalCard> {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                // highlight map marker by moving camera to location & changing its color
+                // highlight map marker by changing its color
                 changeMarkerColor(scrollIndex, mapMarkers,
                     listOfFireStoreObjects, scrollController);
+                // highlight map marker by moving camera to rec location
                 if (recreational.location != null) {
                   changeCamera(recreational.location);
                 }
