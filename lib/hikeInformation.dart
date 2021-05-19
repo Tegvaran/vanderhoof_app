@@ -60,7 +60,7 @@ class _HikeInformationState extends State<HikeInformation> {
     super.didChangeDependencies();
 
     if (!isFieldEmpty(hikeTrail.imgURL)) {
-      print("didChangeDependencies: preloaded image - '${hikeTrail.imgURL}' ");
+      print("didChangeDependencies(): preloaded img '${hikeTrail.imgURL}'");
       precacheImage(NetworkImage(hikeTrail.imgURL), context);
     }
   }
@@ -96,7 +96,6 @@ class _HikeInformationState extends State<HikeInformation> {
 
   @override
   Widget build(BuildContext context) {
-    print(hikeTrail);
     return Scaffold(
         // backgroundColor: colorBackground,
         appBar: AppBar(

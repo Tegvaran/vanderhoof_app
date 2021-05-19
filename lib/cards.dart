@@ -83,7 +83,7 @@ class _BusinessCard extends State<BusinessCard> {
     super.didChangeDependencies();
 
     if (!isFieldEmpty(business.imgURL)) {
-      print("didChangeDependencies: preloaded image - '${business.imgURL}' ");
+      print("didChangeDependencies(): preloaded img '${business.imgURL}'");
       precacheImage(Image.network(business.imgURL).image, context);
     }
   }
@@ -475,7 +475,7 @@ class _ResourceCard extends State<ResourceCard> {
     super.didChangeDependencies();
 
     if (!isFieldEmpty(resource.imgURL)) {
-      print("didChangeDependencies: preloaded image - '${resource.imgURL}' ");
+      print("didChangeDependencies(): preloaded img '${resource.imgURL}'");
       precacheImage(Image.network(resource.imgURL).image, context);
     }
   }
@@ -572,7 +572,7 @@ class _EventCard extends State<EventCard> {
     super.didChangeDependencies();
 
     if (!isFieldEmpty(event.imgURL)) {
-      print("didChangeDependencies: preloaded image - '${event.imgURL}' ");
+      print("didChangeDependencies(): preloaded img '${event.imgURL}'");
       precacheImage(Image.network(event.imgURL).image, context);
     }
   }
