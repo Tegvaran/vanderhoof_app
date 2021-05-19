@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
+import 'addHikePage.dart';
+import 'addRecPage.dart';
 import 'addBusinessPage.dart';
 import 'addEventPage.dart';
 import 'cards.dart';
@@ -15,7 +16,6 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
 import 'scraper.dart';
-import 'package:vanderhoof_app/commonFunction.dart';
 // import 'main.dart';
 import 'data.dart';
 
@@ -44,7 +44,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('businesses');
+      FirebaseFirestore.instance.collection('teg_businesses');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
@@ -58,27 +58,13 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    print("tst---------tst------------------tst-------tst");
     if (businessFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
-      // helper method - parses phone string to correct format
-      String _parsePhoneNumber(String phone) {
-        String parsedPhone = "";
-        if (phone != null && phone.trim() != "" && phone != ".") {
-          parsedPhone = "(" +
-              phone.substring(0, 3) +
-              ") " +
-              phone.substring(3, 6) +
-              "-" +
-              phone.substring(6);
-        }
-        return parsedPhone;
-      }
-
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
         snap.docs.forEach((doc) {
-          String phone = _parsePhoneNumber(doc['phone']);
+          String phone = _formatPhoneNumber(doc['phone']);
+          String website = _formatWebsiteURL(doc['website']);
           Business b = Business(
               name: doc['name'],
               address: doc['address'],
@@ -87,7 +73,7 @@ class _BusinessPageState extends State<BusinessState> {
               phoneNumber: phone,
               email: doc['email'],
               socialMedia: doc['socialMedia'],
-              website: doc['website'],
+              website: website,
               imgURL: doc['imgURL'],
               category: doc['category'],
               id: doc['id']);
@@ -98,6 +84,49 @@ class _BusinessPageState extends State<BusinessState> {
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;
+  }
+
+  /// async helper method - formats phone number to "(***) ***-****"
+  String _formatPhoneNumber(String phone) {
+    if (phone != null && phone.trim() != "" && phone != ".") {
+      phone = phone.replaceAll(RegExp("[^0-9]"), '');
+      String formatted = phone;
+      formatted = "(" +
+          phone.substring(0, 3) +
+          ") " +
+          phone.substring(3, 6) +
+          "-" +
+          phone.substring(6);
+      return formatted;
+    } else {
+      // phone is empty
+      return null;
+    }
+  }
+
+  /// async helper method - formats website to remove "http(s)://www."
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of businesses
@@ -164,6 +193,30 @@ class _BusinessPageState extends State<BusinessState> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddEventPage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Hike/Trail"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddHikePage(),
+                ));
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text("Add a Rec"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddRecPage(),
                 ));
           },
         ),
@@ -259,46 +312,84 @@ class _BusinessPageState extends State<BusinessState> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, String docID, int index) {
-      {
-        // Remove the item from the data source.
-        setState(() {
-          filteredBusinesses.removeAt(index);
-        });
-        // Delete from fireStore
-        // String docID = businessName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$docID Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
-        // Then show a snackbar.
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$businessName deleted")));
-      }
-    }
+    // void _deleteBusiness(String businessName, String docID, int index) {
+    //   {
+    //     // Remove the item from the data source.
+    //     setState(() {
+    //       filteredBusinesses.removeAt(index);
+    //     });
+    //     // Delete from fireStore
+    //     // String docID = businessName.replaceAll('/', '|');
+    //     fireStore
+    //         .doc(docID)
+    //         .delete()
+    //         .then((value) => print("$docID Deleted"))
+    //         .catchError((error) => print("Failed to delete user: $error"));
+    //
+    //     // Then show a snackbar.
+    //     ScaffoldMessenger.of(context)
+    //         .showSnackBar(SnackBar(content: Text("$businessName deleted")));
+    //   }
+    // }
 
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredBusinesses[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              deleteCard(item.name, item.id, index, fireStore).then((v) {
+                // Remove the item from the data source.
+                setState(() {
+                  filteredBusinesses.removeAt(index);
+                });
+                // Delete the Image from firebase storage (filename is ID, folder is 'businesses'
+                deleteFileFromID(item.id, 'businesses');
+                // Then show a snackbar.
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("${item.name} deleted")));
+
+                Navigator.of(context).pop(true);
+              });
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                Navigator.pop(context);
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddBusinessPage(business: item),
+                        ))
+                    //     .then((v) => setState(() {
+                    //       // _getEvents();
+                    //     }
+                    //     )
+                    // )
+                    ;
+                //
+                //
+              };
+            }
+            print(item.name);
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -310,8 +401,9 @@ class _BusinessPageState extends State<BusinessState> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, item.id, index);
-                          Navigator.of(context).pop(true);
+                          function();
+                          // _deleteBusiness(item.name, item.id, index);
+                          // Navigator.of(context).pop(true);
                         },
                       ),
                       TextButton(
@@ -324,7 +416,8 @@ class _BusinessPageState extends State<BusinessState> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 
@@ -356,10 +449,9 @@ class _BusinessPageState extends State<BusinessState> {
     void _filterSearchItemsByCategory(value) {
       setState(() {
         filteredBusinesses = businesses.where((businessCard) {
-          if (businessCard.category != null) {
-            return businessCard.category
-                .toLowerCase()
-                .contains(value.toLowerCase());
+          if (businessCard.category != null &&
+              businessCard.category.length != 0) {
+            return (businessCard.category).contains(value);
           } else {
             return false;
           }
@@ -372,10 +464,10 @@ class _BusinessPageState extends State<BusinessState> {
     for (int i = 0; i < categoryOptions.length; i++) {
       ChoiceChip choiceChip = ChoiceChip(
         selected: _selectedIndex == i,
-        label: Text(categoryOptions[i], style: TextStyle(color: Colors.black)),
+        label: Text(categoryOptions[i], style: bodyTextStyle),
         elevation: 3,
         pressElevation: 5,
-        shadowColor: colorPrimary,
+        backgroundColor: createMaterialColor(Color(0xFFE3E3E3)),
         selectedColor: colorAccent,
         onSelected: (bool selected) {
           setState(() {

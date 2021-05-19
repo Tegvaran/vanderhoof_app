@@ -8,16 +8,22 @@ import 'commonFunction.dart';
 import 'data.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'dart:io';
+import 'fireStoreObjects.dart';
 
 class AddBusinessPage extends StatefulWidget {
+  final Business business;
+  AddBusinessPage({this.business});
   @override
-  _AddBusinessPageSate createState() => _AddBusinessPageSate();
+  _AddBusinessPageState createState() =>
+      _AddBusinessPageState(business: business);
 }
 
-class _AddBusinessPageSate extends State<AddBusinessPage> {
+class _AddBusinessPageState extends State<AddBusinessPage> {
   //* Form key
   final _formKey = GlobalKey<FormBuilderState>();
   List<dynamic> category;
+  Business business;
+  _AddBusinessPageState({this.business});
 
   @override
   Widget build(BuildContext context) {
@@ -46,36 +52,47 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                 children: [
                                   GFTypography(
                                     type: GFTypographyType.typo1,
-                                    text: 'Business information',
+                                    text: (business != null)
+                                        ? 'Edit Business information'
+                                        : 'Business Information',
                                   ),
                                   SizedBox(height: 20),
                                   _getTextField(
                                       "name",
                                       "Name",
                                       "Vanderhoof Chamber of Commerce",
-                                      Icon(Icons.account_balance)),
+                                      Icon(Icons.account_balance),
+                                      initialValue: business?.name,
+                                      formValidator:
+                                          FormBuilderValidators.required(
+                                              context)),
                                   _getTextField(
                                       "address",
                                       "Address",
                                       "188 E Stewart Street, Unit 11, PO Box 126, Vanderhoof, BC,",
-                                      Icon(Icons.add_location_alt_outlined)),
+                                      Icon(Icons.add_location_alt_outlined),
+                                      initialValue: business?.address),
                                   _getTextField("phone", "Phone",
                                       "604-123-1234", Icon(Icons.phone),
+                                      initialValue: business?.phoneNumber,
                                       phone: true),
                                   _getTextField("website", "Website",
                                       "www.example.com", Icon(Icons.web),
+                                      initialValue: business?.website,
                                       url: true),
                                   _getTextField(
                                       "email",
                                       "Email",
                                       "example@gmail.com",
                                       Icon(Icons.email_outlined),
+                                      initialValue: business?.email,
                                       email: true),
                                   _getTextField(
                                       "description",
                                       "Description",
                                       "description of business",
-                                      Icon(Icons.description_outlined)),
+                                      Icon(Icons.description_outlined),
+                                      initialValue: business?.description),
                                   Container(
                                       margin: EdgeInsets.only(top: 15),
                                       child: Row(
@@ -93,14 +110,14 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                                     return AlertDialog(
                                                       insetPadding:
                                                           EdgeInsets.all(10),
-                                                      title: Text(
-                                                          'Confirm Deletion'),
+                                                      title:
+                                                          Text('Add category'),
                                                       content:
                                                           SingleChildScrollView(
                                                         child: ListBody(
                                                           children: <Widget>[
                                                             Text(
-                                                                'Are you sure you want to delete:'),
+                                                                'Choose one more more categories:'),
                                                             // _buildChips(this),
                                                             Center(
                                                               child:
@@ -121,12 +138,14 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                                         TextButton(
                                                           child: Text('Yes'),
                                                           onPressed: () {
-                                                            _key.currentState
-                                                                .save();
-                                                            category = _key
-                                                                    .currentState
-                                                                    .value[
-                                                                'category'];
+                                                            setState(() {
+                                                              _key.currentState
+                                                                  .save();
+                                                              category = _key
+                                                                      .currentState
+                                                                      .value[
+                                                                  'category'];
+                                                            });
 
                                                             Navigator.of(
                                                                     context)
@@ -147,18 +166,30 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
                                             },
                                             child: Text('Category'),
                                           ),
-                                          Container(
-                                              margin: EdgeInsets.only(left: 15),
-                                              child: Text((category == null)
-                                                  ? ""
-                                                  : category.join(', '))),
+                                          Expanded(
+                                              child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 15),
+                                                  child: Text((category == null)
+                                                      ? ""
+                                                      : category.join(', ')))),
+                                          if (category != null)
+                                            IconButton(
+                                              icon: Icon(Icons.cancel),
+                                              onPressed: () {
+                                                setState(() {
+                                                  category = null;
+                                                });
+                                              },
+                                            )
                                         ],
                                       )),
                                   FormBuilderImagePicker(
                                     name: 'image',
-                                    // placeholderImage: (event != null)
-                                    //     ? NetworkImage(event.imgURL)
-                                    //     : null,
+                                    initialValue: (business != null &&
+                                            business.imgURL != null)
+                                        ? [business.imgURL]
+                                        : null,
                                     decoration: const InputDecoration(
                                       labelText: 'Pick Photo',
                                     ),
@@ -216,27 +247,28 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
 
   Widget _getTextField(
       String name, String labelText, String hintText, Icon icon,
-      {email = false, url = false, phone = false}) {
-    var formValidator;
+      {initialValue,
+      email = false,
+      url = false,
+      phone = false,
+      formValidator}) {
     TextInputType inputType = TextInputType.text;
     if (email == true) {
       inputType = TextInputType.emailAddress;
-      formValidator = FormBuilderValidators.compose([
-        FormBuilderValidators.required(context),
-        FormBuilderValidators.email(context)
-      ]);
+      formValidator =
+          FormBuilderValidators.compose([FormBuilderValidators.email(context)]);
     } else if (url == true) {
       inputType = TextInputType.url;
-      formValidator = FormBuilderValidators.compose([
-        FormBuilderValidators.required(context),
-        FormBuilderValidators.url(context)
-      ]);
+      formValidator =
+          FormBuilderValidators.compose([FormBuilderValidators.url(context)]);
     } else if (phone == true) {
       inputType = TextInputType.phone;
       formValidator = FormBuilderValidators.compose([
-        FormBuilderValidators.required(context),
         (value) {
-          value = value.replaceAll('-', '');
+          if (value == null || value == "") {
+            return null;
+          }
+          value = value.replaceAll(RegExp(r'[-() ]'), '');
           if (!RegExp(r'^[0-9]+$').hasMatch(value) || value.length != 10) {
             return "This field must be a phone number";
           } else {
@@ -244,8 +276,6 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
           }
         }
       ]);
-    } else {
-      formValidator = FormBuilderValidators.required(context);
     }
     return Container(
       margin: EdgeInsets.only(top: 15),
@@ -253,6 +283,7 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
         name: name,
         validator: formValidator,
         keyboardType: inputType,
+        initialValue: initialValue,
         // onTap: () => {},
         decoration: InputDecoration(
           labelText: labelText,
@@ -280,23 +311,42 @@ class _AddBusinessPageSate extends State<AddBusinessPage> {
       _formKey.currentState.save();
       print("submitted data:  ${_formKey.currentState.value}");
       File imgFile;
-      // // String imgURL;
-      if (_formKey.currentState.value['image'] != null &&
-          _formKey.currentState.value['image'].isNotEmpty) {
-        imgFile = _formKey.currentState.value['image'][0];
+      if (_formKey.currentState.value['image'] != null) if (_formKey
+          .currentState.value['image'].isNotEmpty) {
+        if (business == null ||
+            _formKey.currentState.value['image'][0] != business.imgURL)
+          imgFile = _formKey.currentState.value['image'][0];
+      } else if (_formKey.currentState.value['image'].isEmpty &&
+          business.imgURL != null) {
+        businessFireStore.doc(business.id).update({"imgURL": null});
       }
-      String address = _formKey.currentState.value['address'];
-      toLatLng(address).then((geopoint) {
-        Map<String, dynamic> business = {
+      // if (business != null && category == null) {
+      //   category = business.category;
+      // }
+      toLatLng(_formKey.currentState.value['address']).then((geopoint) {
+        Map<String, dynamic> businessInfo = {
           ..._formKey.currentState.value,
           'imgURL': null,
           'LatLng': geopoint,
           'socialMedia': {'facebook': ".", 'instagram': ".", 'twitter': "."},
           'category': category
         };
-        business.remove('image');
-        addBusiness(business, imageFile: imgFile);
-        // print(business);
+        businessInfo.remove('image');
+        businessInfo['phone'] =
+            businessInfo['phone']?.replaceAll(RegExp(r'[-() ]'), '');
+        // forEach below is to replace empty String with null
+        businessInfo.forEach((key, value) {
+          if (value != null && value == '') businessInfo[key] = null;
+        });
+
+        // business would be null is it's addBusiness, else it's editBusiness
+        if (business == null) {
+          print("adding business");
+          addBusiness(businessInfo, imageFile: imgFile);
+        } else {
+          print("editing business");
+          editBusiness(businessInfo, business, imageFile: imgFile);
+        }
 
         //=========================================
         //Navigate back to Business Page

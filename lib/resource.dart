@@ -43,15 +43,18 @@ class _ResourcePageState extends State<ResourceState> {
   /// firebase async method to get data
   Future _getResources() async {
     if (recreationFirstTime) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
+          String website = _formatWebsiteURL(doc['website']);
           Resource resource = Resource(
-              name: doc['name'],
-              description: doc['description'],
-              website: doc['website'],
-              id: doc['id']);
+            name: doc['name'],
+            description: doc['description'],
+            website: website,
+            id: doc['id'],
+            imgURL: doc['imgURL'],
+          );
           resources.add(resource);
         });
       });
@@ -59,6 +62,31 @@ class _ResourcePageState extends State<ResourceState> {
     }
 
     return resources;
+  }
+
+  /// async helper method - formats website to remove "http(s)://www."
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of events

@@ -6,12 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-
-import 'addBusinessPage.dart';
-import 'addEventPage.dart';
+import 'map.dart';
+import 'addRecPage.dart';
 import 'cards.dart';
 import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
+import 'addBusinessPage.dart';
+import 'addEventPage.dart';
 import 'main.dart';
 import 'map.dart';
 
@@ -51,18 +52,22 @@ class _RecreationPageState extends State<Recreation> {
   /// firebase async method to get data
   Future _getRecs() async {
     if (recreationFirstTime) {
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
         snap.docs.forEach((doc) {
-          // String phone = _parsePhoneNumber(doc['phone']);
+          String phone = _formatPhoneNumber(doc['phone']);
+          String website = _formatWebsiteURL(doc['website']);
           Recreational b = Recreational(
-              name: doc['name'],
-              address: doc['address'],
-              location: doc['LatLng'],
-              description: doc["description"],
-              phoneNumber: doc["phone"],
-              email: doc['email'],
-              website: doc['website']);
+            name: doc['name'],
+            address: doc['address'],
+            location: doc['LatLng'],
+            description: doc["description"],
+            id: doc['id'],
+            phoneNumber: phone,
+            email: doc['email'],
+            website: website,
+          );
           recs.add(b);
         });
       });
@@ -70,6 +75,49 @@ class _RecreationPageState extends State<Recreation> {
     }
 
     return recs;
+  }
+
+  /// async helper method - formats phone number to "(***) ***-****"
+  String _formatPhoneNumber(String phone) {
+    if (phone != null && phone.trim() != "" && phone != ".") {
+      phone = phone.replaceAll(RegExp("[^0-9]"), '');
+      String formatted = phone;
+      formatted = "(" +
+          phone.substring(0, 3) +
+          ") " +
+          phone.substring(3, 6) +
+          "-" +
+          phone.substring(6);
+      return formatted;
+    } else {
+      // phone is empty
+      return null;
+    }
+  }
+
+  /// async helper method - formats website to remove "http(s)://www."
+  ///
+  /// "http://" is required to correctly launch website URL
+  String _formatWebsiteURL(String website) {
+    if (website != null && website.trim() != "" && website != ".") {
+      String formatted = website.trim();
+      if (formatted.startsWith('http')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('s://')) {
+        formatted = formatted.substring(4);
+      }
+      if (formatted.startsWith('://')) {
+        formatted = formatted.substring(3);
+      }
+      if (formatted.startsWith('www.')) {
+        formatted = formatted.substring(4);
+      }
+      return formatted;
+    } else {
+      // website is empty
+      return null;
+    }
   }
 
   /// this method gets firebase data and populates into list of businesses
@@ -218,46 +266,76 @@ class _RecreationPageState extends State<Recreation> {
     // Assistance Methods + DismissibleTile Widget
     //=================================================
 
-    void _deleteBusiness(String businessName, int index) {
+    void _deleteRec(String recName, int index) {
       {
         // Remove the item from the data source.
         setState(() {
           filteredRecs.removeAt(index);
         });
-        // Delete from fireStore
-        String docID = businessName.replaceAll('/', '|');
-        fireStore
-            .doc(docID)
-            .delete()
-            .then((value) => print("$businessName Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-
+        FirebaseFirestore.instance
+            .collection("recreation")
+            .where("name", isEqualTo: recName)
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            FirebaseFirestore.instance
+                .collection("recreation")
+                .doc(element.id)
+                .delete()
+                .then((value) => print("$recName Deleted"))
+                .catchError((error) => print("Failed to delete user: $error"));
+          });
+        });
         // Then show a snackbar.
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$businessName deleted")));
+            .showSnackBar(SnackBar(content: Text("$recName deleted")));
       }
     }
 
     Widget _dismissibleTile(Widget child, int index) {
       final item = filteredRecs[index];
       return Dismissible(
-          direction: DismissDirection.endToStart,
+          // direction: DismissDirection.endToStart,
           // Each Dismissible must contain a Key. Keys allow Flutter to
           // uniquely identify widgets.
           key: Key(item.name),
           // Provide a function that tells the app
           // what to do after an item has been swiped away.
           confirmDismiss: (direction) async {
+            String confirm = 'Confirm Deletion';
+            String bodyMsg = 'Are you sure you want to delete:';
+            var function = () {
+              // _deleteBusiness(item.name, index);
+              deleteCardHikeRec(index, this, context, filteredRecs, fireStore,
+                  "recreation", item.name);
+              Navigator.of(context).pop(true);
+            };
+            if (direction == DismissDirection.startToEnd) {
+              confirm = 'Confirm to go to edit page';
+              bodyMsg = "Would you like to edit this item?";
+              function = () {
+                // Navigator.of(context).pop(false);
+                print(item);
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddRecPage(rec: item),
+                    ));
+                //
+                //
+              };
+            }
             return await showDialog(
                 context: context,
                 barrierDismissible: false, // user must tap button!
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Deletion'),
+                    title: Text(confirm),
                     content: SingleChildScrollView(
                       child: ListBody(
                         children: <Widget>[
-                          Text('Are you sure you want to delete:'),
+                          Text(bodyMsg),
                           Center(
                               child: Text(item.name,
                                   style:
@@ -269,8 +347,7 @@ class _RecreationPageState extends State<Recreation> {
                       TextButton(
                         child: Text('Yes'),
                         onPressed: () {
-                          _deleteBusiness(item.name, index);
-                          Navigator.of(context).pop(true);
+                          function();
                         },
                       ),
                       TextButton(
@@ -283,7 +360,8 @@ class _RecreationPageState extends State<Recreation> {
                   );
                 });
           },
-          background: Container(color: Colors.red),
+          background: slideRightEditBackground(),
+          secondaryBackground: slideLeftDeleteBackground(),
           child: child);
     }
 

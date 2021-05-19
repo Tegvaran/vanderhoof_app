@@ -25,7 +25,7 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
           //position: objList[i].location,
           infoWindow: InfoWindow(
             title: objList[i].name,
-            snippet: objList[i].description,
+            snippet: objList[i].address,
           )),
     );
   }
@@ -41,14 +41,26 @@ HashSet<Marker> resetMarkers(
     if (filteredFireStoreObjects[i].location != null) {
       markers.add(
         Marker(
-            markerId: MarkerId(i.toString()),
+            markerId: MarkerId(filteredFireStoreObjects[i].name),
             position: filteredFireStoreObjects[i].location,
             onTap: () {
               scrollToIndex(scrollController, i);
+              // resetMarkers(
+              //    markers, filteredFireStoreObjects, scrollController);
+              // print("marker length before " + markers.length.toString());
+              // markers.forEach((element) {
+              //   if (element.markerId.toString().compareTo(filteredFireStoreObjects[i].name) == 0) {
+              //     print("in the remove--------------------");
+              //     markers.remove(element);
+              //     print('in reset' + element.markerId.toString());
+              //   }
+              // });
+              // print("marker length after " + markers.length.toString());
+              // changeMarkerColor(i, markers, filteredFireStoreObjects, scrollController);
             },
             infoWindow: InfoWindow(
               title: filteredFireStoreObjects[i].name,
-              snippet: filteredFireStoreObjects[i].description,
+              snippet: filteredFireStoreObjects[i].address,
             )),
       );
     }
@@ -58,11 +70,11 @@ HashSet<Marker> resetMarkers(
 
 void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   //remove marker at expansion card index
-  // markers.remove(markers.elementAt(index));
+  //markers.remove(markers.elementAt(index));
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
     print("fireObject\n" + fireStoreObjects[index].name);
-    //add new marker with blue color
+    //add new marker with blue colors ---
     markers.add(
       Marker(
           markerId: MarkerId(fireStoreObjects[index].name),
@@ -73,11 +85,16 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
           },
           infoWindow: InfoWindow(
             title: fireStoreObjects[index].name,
-            snippet: fireStoreObjects[index].description,
+            snippet: fireStoreObjects[index].address,
           )),
     );
   }
   return markers;
+}
+
+GoogleMapController mapController;
+void changeCamera(LatLng pos) {
+  mapController.moveCamera(CameraUpdate.newLatLng(pos));
 }
 
 Future<LatLng> toLatLng(String addr) async {
@@ -118,6 +135,7 @@ class GmapState extends State<Gmap> {
 
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    mapController = _mapController;
 
     //run marker adapter
     setState(() {
@@ -127,15 +145,26 @@ class GmapState extends State<Gmap> {
         if (listOfFireStoreObjects[i].location != null) {
           _markers.add(
             Marker(
-                markerId: MarkerId(i.toString()),
+                markerId: MarkerId(listOfFireStoreObjects[i].name),
                 position: listOfFireStoreObjects[i].location,
                 onTap: () {
-                  // listOfFireStoreObjects[i].
                   scrollToIndex(scrollController, i);
+                  // resetMarkers(
+                  //     _markers, listOfFireStoreObjects, scrollController);
+                  // HashSet<Marker> temp = _markers;
+                  // temp.forEach((element) {
+                  //   print("marker length before " + _markers.length.toString());
+                  //   if (element.markerId.toString().compareTo(listOfFireStoreObjects[i].name) == 0) {
+                  //     _markers.remove(element);
+                  //     print('in reset' + element.markerId.toString());
+                  //   }
+                  // });
+                  // print("marker length after " + _markers.length.toString());
+                  // changeMarkerColor(i, _markers, listOfFireStoreObjects, scrollController);
                 },
                 infoWindow: InfoWindow(
                   title: listOfFireStoreObjects[i].name,
-                  snippet: listOfFireStoreObjects[i].description,
+                  snippet: listOfFireStoreObjects[i].address,
                 )),
           );
         }
@@ -150,7 +179,12 @@ class GmapState extends State<Gmap> {
       mapType: mapType,
       markers: _markers,
       onMapCreated: _onMapCreated,
+      onTap: (latLng) {
+        print(latLng);
+        resetMarkers(_markers, listOfFireStoreObjects, scrollController);
+      },
       myLocationEnabled: true,
+      myLocationButtonEnabled: true,
     );
   }
 }
