@@ -432,47 +432,195 @@ class BusinessCard extends StatelessWidget {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
-              Row(children: <Widget>[
-                (!isFieldEmpty(business.socialMedia['facebook']))
-                    ? IconButton(
-                        icon: DecoratedIcon(FontAwesomeIcons.facebook,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchFacebookURL(business.socialMedia["facebook"]);
-                        },
-                      )
-                    : Container(width: 0, height: 0),
-                (!isFieldEmpty(business.socialMedia['instagram']))
-                    ? IconButton(
-                        icon: DecoratedIcon(FontAwesomeIcons.instagram,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchInstaURL(business.socialMedia["instagram"]);
-                        },
-                      )
-                    : Container(width: 0, height: 0),
-                (!isFieldEmpty(business.socialMedia['twitter']))
-                    ? IconButton(
-                        icon: DecoratedIcon(FontAwesomeIcons.twitter,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchTwitterURL(business.socialMedia["twitter"]);
-                        },
-                      )
-                    : Container(width: 0, height: 0),
-              ])
+
+              /// socialMedia layout 1: all icons in their own row, with labels
+              // (!isFieldEmpty(business.socialMedia['facebook']))
+              //     ? Row(children: <Widget>[
+              //         IconButton(
+              //           icon: DecoratedIcon(FontAwesomeIcons.facebook,
+              //               color: colorPrimary,
+              //               size: ICON_SIZE,
+              //               shadows: [
+              //                 iconShadow,
+              //               ]),
+              //           onPressed: () {
+              //             _launchFacebookURL(business.socialMedia["facebook"]);
+              //           },
+              //         ),
+              //         Text(
+              //             '${parseLongField(business.socialMedia["facebook"])}',
+              //             style: headerTextStyle),
+              //       ])
+              //     : Container(width: 0, height: 0),
+              // (!isFieldEmpty(business.socialMedia['instagram']))
+              //     ? Row(children: <Widget>[
+              //         IconButton(
+              //           icon: DecoratedIcon(FontAwesomeIcons.instagram,
+              //               color: colorPrimary,
+              //               size: ICON_SIZE,
+              //               shadows: [
+              //                 iconShadow,
+              //               ]),
+              //           onPressed: () {
+              //             _launchInstaURL(business.socialMedia["instagram"]);
+              //           },
+              //         ),
+              //         Text(
+              //             '${parseLongField(business.socialMedia["instagram"])}',
+              //             style: headerTextStyle),
+              //       ])
+              //     : Container(width: 0, height: 0),
+              // (!isFieldEmpty(business.socialMedia['twitter']))
+              //     ? Row(children: <Widget>[
+              //         IconButton(
+              //           icon: DecoratedIcon(FontAwesomeIcons.twitter,
+              //               color: colorPrimary,
+              //               size: ICON_SIZE,
+              //               shadows: [
+              //                 iconShadow,
+              //               ]),
+              //           onPressed: () {
+              //             _launchTwitterURL(business.socialMedia["twitter"]);
+              //           },
+              //         ),
+              //         Text('${parseLongField(business.socialMedia["twitter"])}',
+              //             style: headerTextStyle),
+              //       ])
+              //     : Container(width: 0, height: 0),
+              /// socialMedia layout 2: contained in 1 row, icon shows up when available
+              // Row(mainAxisAlignment: MainAxisAlignment.start, children: <
+              //     Widget>[
+              //   (!isFieldEmpty(business.socialMedia['facebook']))
+              //       ? Padding(
+              //           padding: const EdgeInsets.only(right: 70),
+              //           child: IconButton(
+              //             icon: DecoratedIcon(FontAwesomeIcons.facebook,
+              //                 color: colorPrimary,
+              //                 size: ICON_SIZE,
+              //                 shadows: [
+              //                   iconShadow,
+              //                 ]),
+              //             onPressed: () {
+              //               _launchFacebookURL(
+              //                   business.socialMedia["facebook"]);
+              //             },
+              //           ),
+              //         )
+              //       : Container(width: 0, height: 0),
+              //   (!isFieldEmpty(business.socialMedia['instagram']))
+              //       ? Padding(
+              //           padding: const EdgeInsets.only(right: 70),
+              //           child: IconButton(
+              //             icon: DecoratedIcon(FontAwesomeIcons.instagram,
+              //                 color: colorPrimary,
+              //                 size: ICON_SIZE,
+              //                 shadows: [
+              //                   iconShadow,
+              //                 ]),
+              //             onPressed: () {
+              //               _launchInstaURL(business.socialMedia["instagram"]);
+              //             },
+              //           ),
+              //         )
+              //       : Container(width: 0, height: 0),
+              //   (!isFieldEmpty(business.socialMedia['twitter']))
+              //       ? Padding(
+              //           padding: EdgeInsets.zero,
+              //           child: IconButton(
+              //             icon: DecoratedIcon(FontAwesomeIcons.twitter,
+              //                 color: colorPrimary,
+              //                 size: ICON_SIZE,
+              //                 shadows: [
+              //                   iconShadow,
+              //                 ]),
+              //             onPressed: () {
+              //               _launchTwitterURL(business.socialMedia["twitter"]);
+              //             },
+              //           ),
+              //         )
+              //       : Container(width: 0, height: 0),
+              // ]),
+
+              /// socialMedia layout 3: always shows up in 1 row, icon colour is grey when empty
+              (!isFieldEmpty(business.socialMedia['facebook']) ||
+                      !isFieldEmpty(business.socialMedia['instagram']) ||
+                      !isFieldEmpty(business.socialMedia['twitter']))
+                  ? Row(mainAxisAlignment: MainAxisAlignment.start, children: <
+                      Widget>[
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child:
+                              (!isFieldEmpty(business.socialMedia['facebook']))
+                                  ? IconButton(
+                                      icon: DecoratedIcon(
+                                          FontAwesomeIcons.facebook,
+                                          color: colorPrimary,
+                                          size: ICON_SIZE,
+                                          shadows: [
+                                            iconShadow,
+                                          ]),
+                                      onPressed: () {
+                                        _launchFacebookURL(
+                                            business.socialMedia["facebook"]);
+                                      })
+                                  : IconButton(
+                                      icon: DecoratedIcon(
+                                        FontAwesomeIcons.facebook,
+                                        size: ICON_SIZE,
+                                        color: Colors.grey[500],
+                                      ),
+                                      onPressed: null,
+                                    )),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child:
+                              (!isFieldEmpty(business.socialMedia['instagram']))
+                                  ? IconButton(
+                                      icon: DecoratedIcon(
+                                          FontAwesomeIcons.instagram,
+                                          color: colorPrimary,
+                                          size: ICON_SIZE,
+                                          shadows: [
+                                            iconShadow,
+                                          ]),
+                                      onPressed: () {
+                                        _launchInstaURL(
+                                            business.socialMedia["instagram"]);
+                                      })
+                                  : IconButton(
+                                      icon: DecoratedIcon(
+                                        FontAwesomeIcons.instagram,
+                                        size: ICON_SIZE,
+                                        color: Colors.grey[500],
+                                      ),
+                                      onPressed: null,
+                                    )),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 35),
+                          child:
+                              (!isFieldEmpty(business.socialMedia['twitter']))
+                                  ? IconButton(
+                                      icon: DecoratedIcon(
+                                          FontAwesomeIcons.twitter,
+                                          color: colorPrimary,
+                                          size: ICON_SIZE,
+                                          shadows: [
+                                            iconShadow,
+                                          ]),
+                                      onPressed: () {
+                                        _launchTwitterURL(
+                                            business.socialMedia["twitter"]);
+                                      })
+                                  : IconButton(
+                                      icon: DecoratedIcon(
+                                        FontAwesomeIcons.twitter,
+                                        size: ICON_SIZE,
+                                        color: Colors.grey[500],
+                                      ),
+                                      onPressed: null,
+                                    )),
+                    ])
+                  : Container(width: 0, height: 0),
             ]));
   }
 }
