@@ -19,7 +19,7 @@ import 'scraper.dart';
 // import 'main.dart';
 import 'data.dart';
 
-bool businessFirstTime = true;
+bool hasReadDataFirstTime = false;
 // Businesses populated from firebase
 List<Business> businesses = [];
 
@@ -58,7 +58,7 @@ class _BusinessPageState extends State<BusinessState> {
 
   /// firebase async method to get data
   Future _getBusinesses() async {
-    if (businessFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
@@ -80,7 +80,9 @@ class _BusinessPageState extends State<BusinessState> {
           businesses.add(b);
         });
       });
-      businessFirstTime = false;
+      print(
+          "Finished Firestore Read of Businesses. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
     businesses.sort((a, b) => (a.name).compareTo(b.name));
     return businesses;

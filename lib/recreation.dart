@@ -16,7 +16,7 @@ import 'addEventPage.dart';
 import 'main.dart';
 import 'map.dart';
 
-bool recreationFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 // Businesses populated from firebase
 List<Recreational> recs = [];
@@ -51,7 +51,7 @@ class _RecreationPageState extends State<Recreation> {
 
   /// firebase async method to get data
   Future _getRecs() async {
-    if (recreationFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
@@ -71,7 +71,9 @@ class _RecreationPageState extends State<Recreation> {
           recs.add(b);
         });
       });
-      recreationFirstTime = false;
+      print(
+          "Finished Firestore Read of Recreations. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     return recs;
