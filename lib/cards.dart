@@ -134,58 +134,49 @@ class _BusinessCard extends State<BusinessCard> {
 
               /// layout option 1: description wrapped around img (top-right corner)
               Padding(
-                  padding: TEXT_INSET,
-                  child: DropCapText(
-                      (!isFieldEmpty(business.description))
-                          ? business.description
-                          : "",
-                      style: bodyTextStyle,
-                      // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                      dropCapPosition: DropCapPosition.end,
-                      dropCap: (!isFieldEmpty(business.imgURL))
-                          ? DropCap(
-                              width: 120,
-                              height: 120,
-                              child: Image.network(
-                                business.imgURL,
-                                fit: BoxFit.contain,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              ))
-                          : DropCap(width: 0, height: 0, child: null))),
+                padding: TEXT_INSET,
+                child: (!isFieldEmpty(business.description))
+                    ? DropCapText(business.description,
+                        style: bodyTextStyle,
+                        // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        dropCapPosition: DropCapPosition.end,
+                        dropCap: (!isFieldEmpty(business.imgURL))
+                            ? DropCap(
+                                width: 120,
+                                height: 120,
+                                child: Image.network(
+                                  business.imgURL,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return _buildLoadingProgressIndicator(
+                                        loadingProgress);
+                                  },
+                                ))
+                            : DropCap(width: 0, height: 0, child: null))
+                    : (!isFieldEmpty(business.imgURL))
+                        ? Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                                width: 120,
+                                height: 120,
+                                child: Image.network(
+                                  business.imgURL,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return _buildLoadingProgressIndicator(
+                                        loadingProgress);
+                                  },
+                                )))
+                        : Container(width: 0, height: 0),
+              ),
 
-              /// layout option 2: img above and description below
-              // (business.imgURL != "" && business.imgURL != null)
-              //     ? Container(
-              //         height: 120,
-              //         alignment: Alignment.center,
-              //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.contain),
-              //       )
-              //     : Container(width: 0, height: 0),
-              // !(isFieldEmpty(business.description))
-              //     ? Padding(
-              //   padding: TEXT_INSET,
-              //   child: Text(
-              //     "${business.description}",
-              //     style: bodyTextStyle,
-              //   ),
-              // )
-              //     : Container(width: 0, height: 0),
+              /// business category
               Padding(
                   padding: TEXT_INSET,
                   // Checks if the category's length is empty or not
@@ -201,6 +192,8 @@ class _BusinessCard extends State<BusinessCard> {
                           ),
                         ]))
                       : Container(width: 0, height: 0))),
+
+              /// business address
               (!isFieldEmpty(business.address))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -219,6 +212,8 @@ class _BusinessCard extends State<BusinessCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// business phone number
               (!isFieldEmpty(business.phoneNumber))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -236,6 +231,8 @@ class _BusinessCard extends State<BusinessCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// business email
               (!isFieldEmpty(business.email))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -253,6 +250,8 @@ class _BusinessCard extends State<BusinessCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// business website
               (!isFieldEmpty(business.website))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -271,7 +270,8 @@ class _BusinessCard extends State<BusinessCard> {
                     ])
                   : Container(width: 0, height: 0),
 
-              /// socialMedia layout 1: all icons in their own row, with labels
+              /// business socialMedia buttons layout 1:
+              /// all icons in their own row, with labels
               // (!isFieldEmpty(business.socialMedia['facebook']))
               //     ? Row(children: <Widget>[
               //         IconButton(
@@ -325,7 +325,8 @@ class _BusinessCard extends State<BusinessCard> {
               //             style: headerTextStyle),
               //       ])
               //     : Container(width: 0, height: 0),
-              /// socialMedia layout 2: contained in 1 row, icon shows up when available
+              /// business socialMedia buttons layout 2:
+              /// contained in 1 row, icon shows up when available
               // Row(mainAxisAlignment: MainAxisAlignment.start, children: <
               //     Widget>[
               //   (!isFieldEmpty(business.socialMedia['facebook']))
@@ -378,8 +379,8 @@ class _BusinessCard extends State<BusinessCard> {
               //         )
               //       : Container(width: 0, height: 0),
               // ]),
-
-              /// socialMedia layout 3: always shows up in 1 row, icon colour is grey when empty
+              /// business socialMedia buttons layout 3:
+              /// always shows up in 1 row, icon colour is grey when empty
               (!isFieldEmpty(business.socialMedia['facebook']) ||
                       !isFieldEmpty(business.socialMedia['instagram']) ||
                       !isFieldEmpty(business.socialMedia['twitter']))
@@ -529,14 +530,8 @@ class _ResourceCard extends State<ResourceCard> {
                         loadingBuilder: (BuildContext context, Widget child,
                             ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes
-                                  : null,
-                            ),
-                          );
+                          return _buildLoadingProgressIndicator(
+                              loadingProgress);
                         },
                       ),
                     )
@@ -683,14 +678,8 @@ class _EventCard extends State<EventCard> {
                         loadingBuilder: (BuildContext context, Widget child,
                             ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes
-                                  : null,
-                            ),
-                          );
+                          return _buildLoadingProgressIndicator(
+                              loadingProgress);
                         },
                       ),
                     )
@@ -1142,6 +1131,17 @@ class _RecreationalCard extends State<RecreationalCard> {
 //==================================
 // Helper Methods
 //==================================
+
+Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
+  return Center(
+    child: CircularProgressIndicator(
+      value: loadingProgress.expectedTotalBytes != null
+          ? loadingProgress.cumulativeBytesLoaded /
+              loadingProgress.expectedTotalBytes
+          : null,
+    ),
+  );
+}
 
 /// Open URL in the default browser for [website]
 void _launchWebsiteURL(String website) async =>
