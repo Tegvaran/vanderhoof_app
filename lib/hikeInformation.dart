@@ -60,7 +60,6 @@ class _HikeInformationState extends State<HikeInformation> {
     super.didChangeDependencies();
 
     if (!isFieldEmpty(hikeTrail.imgURL)) {
-      print("didChangeDependencies(): preloaded img '${hikeTrail.imgURL}'");
       precacheImage(NetworkImage(hikeTrail.imgURL), context);
     }
   }

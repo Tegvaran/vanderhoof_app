@@ -198,8 +198,7 @@ class GmapState extends State<Gmap> {
       mapType: mapType,
       markers: _markers,
       onMapCreated: _onMapCreated,
-      onTap: (latLng) {
-        print(latLng);
+      onTap: (value) {
         resetMarkers(_markers, listOfFireStoreObjects, scrollController);
       },
       myLocationEnabled: true,
