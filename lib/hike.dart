@@ -259,6 +259,8 @@ class _HikePageState extends State<Hike> {
     return new Scaffold(
         body: Container(
             child: ScrollablePositionedList.builder(
+                padding: const EdgeInsets.only(
+                    bottom: kFloatingActionButtonMargin + 48),
                 itemScrollController: _scrollController,
                 itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,

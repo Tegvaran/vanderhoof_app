@@ -430,6 +430,8 @@ class _BusinessPageState extends State<BusinessState> {
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredBusinesses.length,

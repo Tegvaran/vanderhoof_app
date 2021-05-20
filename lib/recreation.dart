@@ -367,11 +367,13 @@ class _RecreationPageState extends State<Recreation> {
     }
 
     //=================================================
-    // Build Widget for BusinessesList
+    // Build Widget for RecreationsList
     //=================================================
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredRecs.length,
