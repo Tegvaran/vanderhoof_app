@@ -1,13 +1,17 @@
 import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
+
+bool _isMapVisible = true;
 
 void scrollToIndex(ItemScrollController scrollController, int index) {
   scrollController.scrollTo(
@@ -48,6 +52,7 @@ HashSet<Marker> resetMarkers(
               scrollToIndex(scrollController, i);
               changeMarkerColor(
                   i, markers, filteredFireStoreObjects, scrollController);
+              _isMapVisible = true;
             },
             infoWindow: InfoWindow(
               title: filteredFireStoreObjects[i].name,
@@ -154,6 +159,7 @@ class GmapState extends State<Gmap> {
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
     mapController = _mapController;
+    _isMapVisible = true;
 
     //run marker adapter
     setState(() {
@@ -168,6 +174,7 @@ class GmapState extends State<Gmap> {
                 scrollToIndex(scrollController, i);
                 changeMarkerColor(
                     i, _markers, listOfFireStoreObjects, scrollController);
+                _isMapVisible = true;
 
                 // resetMarkers(
                 //     _markers, listOfFireStoreObjects, scrollController);
@@ -191,18 +198,65 @@ class GmapState extends State<Gmap> {
     });
   }
 
+  Widget _buildMapVisibilityButton() {
+    return Container(
+      height: 38,
+      width: 114,
+      child: _isMapVisible
+          ? FloatingActionButton(
+              child: TextButton.icon(
+                label: Text("Hide Map"),
+                icon: Icon(Icons.visibility_outlined),
+                style: TextButton.styleFrom(
+                  primary: Color(0xFF565656),
+                  backgroundColor: Color(0xFFFFFFFF),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isMapVisible = false;
+                  });
+                },
+              ),
+              backgroundColor: createMaterialColor(Color(0xFFFFFFFF)),
+              mini: true,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(3))),
+              onPressed: () {
+                setState(() {
+                  _isMapVisible = false;
+                });
+              },
+            )
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: _initialCameraPosition,
-      mapType: mapType,
-      markers: _markers,
-      onMapCreated: _onMapCreated,
-      onTap: (value) {
-        resetMarkers(_markers, listOfFireStoreObjects, scrollController);
-      },
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
+    return AnimatedContainer(
+      width: double.infinity,
+      height: _isMapVisible ? 217.0 : 62.0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.fastOutSlowIn,
+      child: Scaffold(
+        body: GoogleMap(
+          initialCameraPosition: _initialCameraPosition,
+          mapType: mapType,
+          markers: _markers,
+          onMapCreated: _onMapCreated,
+          onTap: (value) {
+            resetMarkers(_markers, listOfFireStoreObjects, scrollController);
+            setState(() {
+              _isMapVisible = true;
+            });
+          },
+          zoomControlsEnabled: false,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: _isMapVisible ? true : false,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+        floatingActionButton: _buildMapVisibilityButton(),
+      ),
     );
   }
 }

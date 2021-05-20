@@ -418,10 +418,8 @@ class _RecreationPageState extends State<Recreation> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child: Gmap(filteredRecs, _markers, _scrollController),
-                    ),
+                    Container(
+                        child: Gmap(filteredRecs, _markers, _scrollController)),
                     Expanded(
                         flex: 16,
                         child: filteredRecs.length != 0

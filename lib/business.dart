@@ -49,6 +49,7 @@ class _BusinessPageState extends State<BusinessState> {
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isScrollButtonVisible = false;
+  bool _isMapVisible = true;
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
@@ -528,12 +529,14 @@ class _BusinessPageState extends State<BusinessState> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child:
-                          Gmap(filteredBusinesses, _markers, _scrollController),
+                    Container(
+                        child: Gmap(
+                            filteredBusinesses, _markers, _scrollController)),
+                    Container(
+                      width: double.infinity,
+                      height: 50.0,
+                      child: _buildChips(),
                     ),
-                    Expanded(flex: 2, child: _buildChips()),
                     Expanded(
                         flex: 14,
                         child: filteredBusinesses.length != 0
