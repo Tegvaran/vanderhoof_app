@@ -9,7 +9,7 @@ import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'recreation.dart';
 
-bool resourceFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 // Events populated from firebase
 List<Resource> resources = [];
@@ -42,7 +42,7 @@ class _ResourcePageState extends State<ResourceState> {
 
   /// firebase async method to get data
   Future _getResources() async {
-    if (recreationFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
@@ -58,7 +58,9 @@ class _ResourcePageState extends State<ResourceState> {
           resources.add(resource);
         });
       });
-      resourceFirstTime = false;
+      print(
+          "_getResources(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     return resources;
@@ -283,7 +285,10 @@ class _ResourcePageState extends State<ResourceState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              ResourceCard(filteredResources[index], _scrollController, index),
+              ResourceCard(
+                  resource: filteredResources[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index),
               index);
         },
       )),

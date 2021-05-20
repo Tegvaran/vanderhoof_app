@@ -38,233 +38,54 @@ BoxShadow iconShadow = BoxShadow(
     spreadRadius: 3,
     offset: Offset(0, 4));
 
-/// Represents a hike card that is displayed on the hike page.
-/// Takes the values for Hike which is a hike object, scrollController, scrollIndex.
-class HikeCard extends StatelessWidget {
-  final HikeTrail hikeTrail;
-  final ItemScrollController scrollController;
-  final int scrollIndex;
-  Set<Marker> _markers;
-  List<FireStoreObject> listOfFireStoreObjects;
-
-  final Color greenColor = Colors.lightGreen[700];
-  final Color orangeColor = colorAccent;
-  final Color redColor = Colors.red[600];
-
-  HikeCard(this.hikeTrail, this.scrollController, this.scrollIndex,
-      this._markers, this.listOfFireStoreObjects);
-
-  Color getDifficultyColor() {
-    Color difficultyColor;
-    if (hikeTrail.rating == "Easy") {
-      difficultyColor = greenColor;
-    } else if (hikeTrail.rating == "Medium") {
-      difficultyColor = orangeColor;
-    } else {
-      difficultyColor = redColor;
-    }
-    return difficultyColor;
-  }
-
-  Color getAccessibilityColor() {
-    Color accessibilityColor;
-    if (hikeTrail.wheelchair == "Accessible") {
-      accessibilityColor = greenColor;
-    } else {
-      accessibilityColor = redColor;
-    }
-    return accessibilityColor;
-  }
-
-  bool buildInfoPageIcon(HikeTrail hike) {
-    return (hike.description != null || hike.pointsOfInterest != null);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      color: colorBackground,
-      margin: CARD_INSET,
-      child: ExpansionTile(
-        onExpansionChanged: (_isExpanded) {
-          if (_isExpanded) {
-            changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
-                scrollController);
-            if (hikeTrail.location != null) {
-              changeCamera(hikeTrail.location);
-            }
-            // check if Expanded
-            // let ExpansionTile expand, then scroll Tile to top of the list
-            Future.delayed(Duration(milliseconds: 250)).then((value) {
-              scrollController.scrollTo(
-                index: scrollIndex,
-                duration: Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-              );
-            });
-          } else {
-            resetMarkers(_markers, listOfFireStoreObjects, scrollController);
-          }
-        },
-        title: Text(
-          hikeTrail.name,
-          style: titleTextStyle,
-        ),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          cardDivider,
-          (!isFieldEmpty(hikeTrail.address))
-              ? Row(children: <Widget>[
-                  IconButton(
-                    icon: DecoratedIcon(Icons.location_on,
-                        color: colorPrimary,
-                        size: ICON_SIZE,
-                        shadows: [
-                          iconShadow,
-                        ]),
-                    tooltip: hikeTrail.address,
-                    onPressed: () {
-                      _launchAddressURL(hikeTrail.address);
-                    },
-                  ),
-                  Text('${parseLongField(hikeTrail.address)}',
-                      style: headerTextStyle),
-                ])
-              : Container(width: 0, height: 0),
-          Padding(
-            padding: ICON_INSET,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-                    Widget>[
-                  !isFieldEmpty(hikeTrail.distance)
-                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          IconButton(
-                            constraints: BoxConstraints(),
-                            icon: Icon(Icons.timeline),
-                            onPressed: null,
-                            iconSize: ICON_SIZE_SMALL,
-                          ),
-                          Flexible(
-                              child: RichText(
-                                  text: TextSpan(children: <TextSpan>[
-                            TextSpan(
-                                text: 'Distance: ', style: header2TextStyle),
-                            TextSpan(
-                              text: '${hikeTrail.distance}',
-                              style: bodyTextStyle,
-                            ),
-                          ]))),
-                        ])
-                      : Container(width: 0, height: 0),
-                  !isFieldEmpty(hikeTrail.rating)
-                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          IconButton(
-                            constraints: BoxConstraints(),
-                            icon: Icon(Icons.star_half),
-                            onPressed: null,
-                            iconSize: ICON_SIZE_SMALL,
-                          ),
-                          Flexible(
-                              child: RichText(
-                                  text: TextSpan(children: <TextSpan>[
-                            TextSpan(
-                                text: 'Difficulty: ', style: header2TextStyle),
-                            TextSpan(
-                              text: '${hikeTrail.rating}',
-                              style: TextStyle(
-                                fontSize: BODY_SIZE,
-                                color: getDifficultyColor(),
-                              ),
-                            ),
-                          ]))),
-                        ])
-                      : Container(width: 0, height: 0),
-                  !isFieldEmpty(hikeTrail.time)
-                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          IconButton(
-                            constraints: BoxConstraints(),
-                            icon: Icon(Icons.access_time),
-                            onPressed: null,
-                            iconSize: ICON_SIZE_SMALL,
-                          ),
-                          Flexible(
-                              child: RichText(
-                                  text: TextSpan(children: <TextSpan>[
-                            TextSpan(text: 'Time: ', style: header2TextStyle),
-                            TextSpan(
-                              text: '${hikeTrail.time}',
-                              style: bodyTextStyle,
-                            ),
-                          ]))),
-                        ])
-                      : Container(width: 0, height: 0),
-                  !isFieldEmpty(hikeTrail.wheelchair)
-                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                          IconButton(
-                            constraints: BoxConstraints(),
-                            icon: Icon(Icons.accessible_outlined),
-                            onPressed: null,
-                            iconSize: ICON_SIZE_SMALL,
-                          ),
-                          Flexible(
-                              child: RichText(
-                                  text: TextSpan(children: <TextSpan>[
-                            TextSpan(
-                                text: 'Wheelchair: ', style: header2TextStyle),
-                            TextSpan(
-                              text: '${hikeTrail.wheelchair}',
-                              style: TextStyle(
-                                fontSize: BODY_SIZE,
-                                color: getAccessibilityColor(),
-                              ),
-                            ),
-                          ]))),
-                        ])
-                      : Container(width: 0, height: 0),
-                ]),
-                buildInfoPageIcon(hikeTrail)
-                    ? IconButton(
-                        icon: DecoratedIcon(Icons.open_in_new_outlined,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    HikeInformation(hikeTrail: hikeTrail),
-                              ));
-                        },
-                      )
-                    : Container(width: 0, height: 0),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Represents a Business card that is displayed on the businesses page.
 /// Takes the values for Business which is a business object, scrollController, scrollIndex.
-class BusinessCard extends StatelessWidget {
+class BusinessCard extends StatefulWidget {
   final Business business;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  final double scrollAlignment = 0;
-  Set<Marker> _markers;
+  final Set<Marker> mapMarkers;
+  final List<FireStoreObject> listOfFireStoreObjects;
+
+  BusinessCard(
+      {this.business,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
+
+  @override
+  _BusinessCard createState() => _BusinessCard(
+      business: business,
+      scrollController: scrollController,
+      scrollIndex: scrollIndex,
+      mapMarkers: mapMarkers,
+      listOfFireStoreObjects: listOfFireStoreObjects);
+}
+
+class _BusinessCard extends State<BusinessCard> {
+  Business business;
+  ItemScrollController scrollController;
+  int scrollIndex;
+  Set<Marker> mapMarkers;
   List<FireStoreObject> listOfFireStoreObjects;
 
-  BusinessCard(this.business, this.scrollController, this.scrollIndex,
-      this._markers, this.listOfFireStoreObjects);
+  _BusinessCard(
+      {this.business,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
+
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(business.imgURL)) {
+      precacheImage(NetworkImage(business.imgURL), context);
+    }
+  }
 
   String categoryText() {
     String categories = "";
@@ -286,25 +107,24 @@ class BusinessCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
-                    scrollController);
-                // moveToLatLng(business.location);
+                // highlight map marker by changing its color
+                changeMarkerColor(scrollIndex, mapMarkers,
+                    listOfFireStoreObjects, scrollController);
+                // highlight map marker by moving camera to its location
                 if (business.location != null) {
                   changeCamera(business.location);
                 }
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll businesses list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
                 });
               } else {
                 resetMarkers(
-                    _markers, listOfFireStoreObjects, scrollController);
+                    mapMarkers, listOfFireStoreObjects, scrollController);
               }
             },
             title: Text(business.name, style: titleTextStyle),
@@ -312,7 +132,7 @@ class BusinessCard extends StatelessWidget {
             children: <Widget>[
               cardDivider,
 
-              //// layout option 1: description wrapped around img (top-right corner)
+              /// layout option 1: description wrapped around img (top-right corner)
               Padding(
                   padding: TEXT_INSET,
                   child: DropCapText(
@@ -326,11 +146,29 @@ class BusinessCard extends StatelessWidget {
                           ? DropCap(
                               width: 120,
                               height: 120,
-                              child: Image.network(business.imgURL,
-                                  fit: BoxFit.contain))
+                              child: Image.network(
+                                business.imgURL,
+                                fit: BoxFit.contain,
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress
+                                                  .expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              ))
                           : DropCap(width: 0, height: 0, child: null))),
 
-              //// layout option 2: img above and description below
+              /// layout option 2: img above and description below
               // (business.imgURL != "" && business.imgURL != null)
               //     ? Container(
               //         height: 120,
@@ -625,18 +463,38 @@ class BusinessCard extends StatelessWidget {
   }
 }
 
-/// Represents a recreational card that is displayed on the rec page.
-/// Takes the values for Rec which is a recreational object, scrollController, scrollIndex.
-class RecreationalCard extends StatelessWidget {
-  final Recreational rec;
+/// Represents a resource card that is displayed on the resource page.
+/// Takes the values for Resource which is a resource object, scrollController, scrollIndex.
+class ResourceCard extends StatefulWidget {
+  final Resource resource;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  final double scrollAlignment = 0;
-  Set<Marker> _markers;
-  List<FireStoreObject> listOfFireStoreObjects;
 
-  RecreationalCard(this.rec, this.scrollController, this.scrollIndex,
-      this._markers, this.listOfFireStoreObjects);
+  ResourceCard({this.resource, this.scrollController, this.scrollIndex});
+
+  @override
+  _ResourceCard createState() => _ResourceCard(
+      resource: resource,
+      scrollController: scrollController,
+      scrollIndex: scrollIndex);
+}
+
+class _ResourceCard extends State<ResourceCard> {
+  Resource resource;
+  ItemScrollController scrollController;
+  int scrollIndex;
+
+  _ResourceCard({this.resource, this.scrollController, this.scrollIndex});
+
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(resource.imgURL)) {
+      precacheImage(Image.network(resource.imgURL).image, context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -647,92 +505,52 @@ class RecreationalCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                changeMarkerColor(scrollIndex, _markers, listOfFireStoreObjects,
-                    scrollController);
-                if (rec.location != null) {
-                  changeCamera(rec.location);
-                }
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll resources list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
                   );
-                  // alignment: scrollAlignment,
                 });
-              } else {
-                resetMarkers(
-                    _markers, listOfFireStoreObjects, scrollController);
               }
             },
-            title: Text(rec.name, style: titleTextStyle),
+            title: Text(resource.name, style: titleTextStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-              !(isFieldEmpty(rec.description))
+              !(isFieldEmpty(resource.imgURL))
+                  ? Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: Image.network(
+                        resource.imgURL,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                  : Container(width: 0, height: 0),
+              !(isFieldEmpty(resource.description))
                   ? Padding(
                       padding: TEXT_INSET,
                       child: Text(
-                        "${rec.description}",
+                        "${resource.description}",
                         style: bodyTextStyle,
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(rec.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: rec.address,
-                        onPressed: () {
-                          _launchAddressURL(rec.address);
-                        },
-                      ),
-                      Text('${parseLongField(rec.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(rec.phoneNumber))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.phone,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchPhoneURL(rec.phoneNumber);
-                        },
-                      ),
-                      Text('${parseLongField(rec.phoneNumber)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(rec.email))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.email,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchMailURL(rec.email);
-                        },
-                      ),
-                      Text('${parseLongField(rec.email)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(rec.website))
+              (!isFieldEmpty(resource.website))
                   ? Row(children: <Widget>[
                       IconButton(
                         icon: DecoratedIcon(Icons.language,
@@ -742,10 +560,10 @@ class RecreationalCard extends StatelessWidget {
                               iconShadow,
                             ]),
                         onPressed: () {
-                          _launchWebsiteURL(rec.website);
+                          _launchWebsiteURL(resource.website);
                         },
                       ),
-                      Text('${parseLongField(rec.website)}',
+                      Text('${parseLongField(resource.website)}',
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
@@ -755,13 +573,36 @@ class RecreationalCard extends StatelessWidget {
 
 /// Represents a event card that is displayed on the event page.
 /// Takes the values for Event which is a event object, scrollController, scrollIndex.
-class EventCard extends StatelessWidget {
+class EventCard extends StatefulWidget {
   final Event event;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  final double scrollAlignment = 0;
 
-  EventCard(this.event, this.scrollController, this.scrollIndex);
+  EventCard({this.event, this.scrollController, this.scrollIndex});
+
+  @override
+  _EventCard createState() => _EventCard(
+      event: event,
+      scrollController: scrollController,
+      scrollIndex: scrollIndex);
+}
+
+class _EventCard extends State<EventCard> {
+  Event event;
+  ItemScrollController scrollController;
+  int scrollIndex;
+
+  _EventCard({this.event, this.scrollController, this.scrollIndex});
+
+  // preload images
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!isFieldEmpty(event.imgURL)) {
+      precacheImage(NetworkImage(event.imgURL), context);
+    }
+  }
 
   String formatDate(DateTime dateTime) {
     String formattedDate = DateFormat('MMM d').format(dateTime);
@@ -786,8 +627,6 @@ class EventCard extends StatelessWidget {
     return Container(
         width: 100,
         padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-        // decoration: BoxDecoration(
-        //     border: Border(right: BorderSide(width: 3.0, color: colorAccent))),
         child: TextButton(
             onPressed: null,
             child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -819,14 +658,12 @@ class EventCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // scroll events list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
                 });
               }
@@ -836,11 +673,26 @@ class EventCard extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-              (event.imgURL != "" && event.imgURL != null)
+              !(isFieldEmpty(event.imgURL))
                   ? Container(
                       width: double.infinity,
                       alignment: Alignment.center,
-                      child: Image.network(event.imgURL, fit: BoxFit.contain),
+                      child: Image.network(
+                        event.imgURL,
+                        fit: BoxFit.contain,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
                     )
                   : Container(width: 0, height: 0),
               !(isFieldEmpty(event.description))
@@ -890,24 +742,287 @@ class EventCard extends StatelessWidget {
   }
 }
 
-/// Represents a event card that is displayed on the event page.
-/// Takes the values for Event which is a event object, scrollController, scrollIndex.
-class ResourceCard extends StatelessWidget {
-  final Resource resource;
+/// Represents a hike card that is displayed on the hike page.
+/// Takes the values for Hike which is a hike object, scrollController, scrollIndex.
+class HikeCard extends StatefulWidget {
+  final HikeTrail hikeTrail;
   final ItemScrollController scrollController;
   final int scrollIndex;
-  final double scrollAlignment = 0;
+  final Set<Marker> mapMarkers;
+  final List<FireStoreObject> listOfFireStoreObjects;
 
-  ResourceCard(this.resource, this.scrollController, this.scrollIndex);
+  HikeCard(
+      {this.hikeTrail,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
 
-  // TODO - change class to StatefulWidget and precache images
-  // ref: https://alex.domenici.net/archive/preload-images-in-a-stateful-widget-on-flutter
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //
-  //   precacheImage(Image.network(resource.imgURL).image, context));
-  // }
+  @override
+  _HikeCard createState() => _HikeCard(
+      hikeTrail: hikeTrail,
+      scrollController: scrollController,
+      scrollIndex: scrollIndex,
+      mapMarkers: mapMarkers,
+      listOfFireStoreObjects: listOfFireStoreObjects);
+}
+
+class _HikeCard extends State<HikeCard> {
+  HikeTrail hikeTrail;
+  ItemScrollController scrollController;
+  int scrollIndex;
+  Set<Marker> mapMarkers;
+  List<FireStoreObject> listOfFireStoreObjects;
+
+  _HikeCard(
+      {this.hikeTrail,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
+
+  final Color greenColor = Colors.lightGreen[700];
+  final Color orangeColor = colorAccent;
+  final Color redColor = Colors.red[600];
+
+  Color getDifficultyColor() {
+    Color difficultyColor;
+    if (hikeTrail.rating == "Easy") {
+      difficultyColor = greenColor;
+    } else if (hikeTrail.rating == "Medium") {
+      difficultyColor = orangeColor;
+    } else {
+      difficultyColor = redColor;
+    }
+    return difficultyColor;
+  }
+
+  Color getAccessibilityColor() {
+    Color accessibilityColor;
+    if (hikeTrail.wheelchair == "Accessible") {
+      accessibilityColor = greenColor;
+    } else {
+      accessibilityColor = redColor;
+    }
+    return accessibilityColor;
+  }
+
+  bool buildInfoPageIcon(HikeTrail hike) {
+    return (hike.description != null || hike.pointsOfInterest != null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      color: colorBackground,
+      margin: CARD_INSET,
+      child: ExpansionTile(
+        onExpansionChanged: (_isExpanded) {
+          if (_isExpanded) {
+            // highlight map marker by changing its color
+            changeMarkerColor(scrollIndex, mapMarkers, listOfFireStoreObjects,
+                scrollController);
+            // highlight map marker by moving camera to hike location
+            if (hikeTrail.location != null) {
+              changeCamera(hikeTrail.location);
+            }
+            // scroll hikes list to expanded tile
+            Future.delayed(Duration(milliseconds: 250)).then((value) {
+              scrollController.scrollTo(
+                index: scrollIndex,
+                duration: Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+              );
+            });
+          } else {
+            resetMarkers(mapMarkers, listOfFireStoreObjects, scrollController);
+          }
+        },
+        title: Text(
+          hikeTrail.name,
+          style: titleTextStyle,
+        ),
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          cardDivider,
+          (!isFieldEmpty(hikeTrail.address))
+              ? Row(children: <Widget>[
+                  IconButton(
+                    icon: DecoratedIcon(Icons.location_on,
+                        color: colorPrimary,
+                        size: ICON_SIZE,
+                        shadows: [
+                          iconShadow,
+                        ]),
+                    tooltip: hikeTrail.address,
+                    onPressed: () {
+                      _launchAddressURL(hikeTrail.address);
+                    },
+                  ),
+                  Text('${parseLongField(hikeTrail.address)}',
+                      style: headerTextStyle),
+                ])
+              : Container(width: 0, height: 0),
+          Padding(
+            padding: ICON_INSET,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                    Widget>[
+                  !isFieldEmpty(hikeTrail.distance)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.timeline),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Distance: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.distance}',
+                              style: bodyTextStyle,
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.rating)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.star_half),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Difficulty: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.rating}',
+                              style: TextStyle(
+                                fontSize: BODY_SIZE,
+                                color: getDifficultyColor(),
+                              ),
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.time)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.access_time),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(text: 'Time: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.time}',
+                              style: bodyTextStyle,
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                  !isFieldEmpty(hikeTrail.wheelchair)
+                      ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                          IconButton(
+                            constraints: BoxConstraints(),
+                            icon: Icon(Icons.accessible_outlined),
+                            onPressed: null,
+                            iconSize: ICON_SIZE_SMALL,
+                          ),
+                          Flexible(
+                              child: RichText(
+                                  text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Wheelchair: ', style: header2TextStyle),
+                            TextSpan(
+                              text: '${hikeTrail.wheelchair}',
+                              style: TextStyle(
+                                fontSize: BODY_SIZE,
+                                color: getAccessibilityColor(),
+                              ),
+                            ),
+                          ]))),
+                        ])
+                      : Container(width: 0, height: 0),
+                ]),
+                buildInfoPageIcon(hikeTrail)
+                    ? IconButton(
+                        icon: DecoratedIcon(Icons.open_in_new_outlined,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HikeInformation(hikeTrail: hikeTrail),
+                              ));
+                        },
+                      )
+                    : Container(width: 0, height: 0),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Represents a recreational card that is displayed on the rec page.
+/// Takes the values for Rec which is a recreational object, scrollController, scrollIndex.
+class RecreationalCard extends StatefulWidget {
+  final Recreational recreational;
+  final ItemScrollController scrollController;
+  final int scrollIndex;
+  final Set<Marker> mapMarkers;
+  final List<FireStoreObject> listOfFireStoreObjects;
+
+  RecreationalCard(
+      {this.recreational,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
+
+  @override
+  _RecreationalCard createState() => _RecreationalCard(
+      recreational: recreational,
+      scrollController: scrollController,
+      scrollIndex: scrollIndex,
+      mapMarkers: mapMarkers,
+      listOfFireStoreObjects: listOfFireStoreObjects);
+}
+
+class _RecreationalCard extends State<RecreationalCard> {
+  Recreational recreational;
+  ItemScrollController scrollController;
+  int scrollIndex;
+  Set<Marker> mapMarkers;
+  List<FireStoreObject> listOfFireStoreObjects;
+
+  _RecreationalCard(
+      {this.recreational,
+      this.scrollController,
+      this.scrollIndex,
+      this.mapMarkers,
+      this.listOfFireStoreObjects});
 
   @override
   Widget build(BuildContext context) {
@@ -918,40 +1033,92 @@ class ResourceCard extends StatelessWidget {
         child: ExpansionTile(
             onExpansionChanged: (_isExpanded) {
               if (_isExpanded) {
-                // check if Expanded
-                // let ExpansionTile expand, then scroll Tile to top of the view
+                // highlight map marker by changing its color
+                changeMarkerColor(scrollIndex, mapMarkers,
+                    listOfFireStoreObjects, scrollController);
+                // highlight map marker by moving camera to rec location
+                if (recreational.location != null) {
+                  changeCamera(recreational.location);
+                }
+                // scroll recreational list to expanded tile
                 Future.delayed(Duration(milliseconds: 250)).then((value) {
                   scrollController.scrollTo(
                     index: scrollIndex,
                     duration: Duration(milliseconds: 250),
                     curve: Curves.easeInOut,
-                    // alignment: scrollAlignment,
                   );
                 });
+              } else {
+                resetMarkers(
+                    mapMarkers, listOfFireStoreObjects, scrollController);
               }
             },
-            title: Text(resource.name, style: titleTextStyle),
+            title: Text(recreational.name, style: titleTextStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
-              (resource.imgURL != "" && resource.imgURL != null)
-                  ? Container(
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child:
-                          Image.network(resource.imgURL, fit: BoxFit.contain),
-                    )
-                  : Container(width: 0, height: 0),
-              !(isFieldEmpty(resource.description))
+              !(isFieldEmpty(recreational.description))
                   ? Padding(
                       padding: TEXT_INSET,
                       child: Text(
-                        "${resource.description}",
+                        "${recreational.description}",
                         style: bodyTextStyle,
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(resource.website))
+              (!isFieldEmpty(recreational.address))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.location_on,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        tooltip: recreational.address,
+                        onPressed: () {
+                          _launchAddressURL(recreational.address);
+                        },
+                      ),
+                      Text('${parseLongField(recreational.address)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(recreational.phoneNumber))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.phone,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchPhoneURL(recreational.phoneNumber);
+                        },
+                      ),
+                      Text('${parseLongField(recreational.phoneNumber)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(recreational.email))
+                  ? Row(children: <Widget>[
+                      IconButton(
+                        icon: DecoratedIcon(Icons.email,
+                            color: colorPrimary,
+                            size: ICON_SIZE,
+                            shadows: [
+                              iconShadow,
+                            ]),
+                        onPressed: () {
+                          _launchMailURL(recreational.email);
+                        },
+                      ),
+                      Text('${parseLongField(recreational.email)}',
+                          style: headerTextStyle),
+                    ])
+                  : Container(width: 0, height: 0),
+              (!isFieldEmpty(recreational.website))
                   ? Row(children: <Widget>[
                       IconButton(
                         icon: DecoratedIcon(Icons.language,
@@ -961,16 +1128,20 @@ class ResourceCard extends StatelessWidget {
                               iconShadow,
                             ]),
                         onPressed: () {
-                          _launchWebsiteURL(resource.website);
+                          _launchWebsiteURL(recreational.website);
                         },
                       ),
-                      Text('${parseLongField(resource.website)}',
+                      Text('${parseLongField(recreational.website)}',
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
             ]));
   }
 }
+
+//==================================
+// Helper Methods
+//==================================
 
 /// Open URL in the default browser for [website]
 void _launchWebsiteURL(String website) async =>
