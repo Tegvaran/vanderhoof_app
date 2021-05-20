@@ -7,8 +7,9 @@ import 'commonFunction.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
+import 'recreation.dart';
 
-bool resourceFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 // Events populated from firebase
 List<Resource> resources = [];
@@ -41,8 +42,8 @@ class _ResourcePageState extends State<ResourceState> {
 
   /// firebase async method to get data
   Future _getResources() async {
-    if (resourceFirstTime) {
-      print("*/*/*/*/*/*/*/*/**/*/*/*/*/*/*/*/*/*/*/*/*/*/**/*/*");
+    if (!hasReadDataFirstTime) {
+      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
@@ -57,7 +58,9 @@ class _ResourcePageState extends State<ResourceState> {
           resources.add(resource);
         });
       });
-      resourceFirstTime = false;
+      print(
+          "_getResources(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     return resources;
@@ -276,13 +279,18 @@ class _ResourcePageState extends State<ResourceState> {
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredResources.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              ResourceCard(filteredResources[index], _scrollController, index),
+              ResourceCard(
+                  resource: filteredResources[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index),
               index);
         },
       )),

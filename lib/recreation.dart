@@ -16,7 +16,7 @@ import 'addEventPage.dart';
 import 'main.dart';
 import 'map.dart';
 
-bool recreationFirstTime = true;
+bool hasReadDataFirstTime = false;
 
 // Businesses populated from firebase
 List<Recreational> recs = [];
@@ -51,7 +51,7 @@ class _RecreationPageState extends State<Recreation> {
 
   /// firebase async method to get data
   Future _getRecs() async {
-    if (recreationFirstTime) {
+    if (!hasReadDataFirstTime) {
       print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
@@ -71,7 +71,8 @@ class _RecreationPageState extends State<Recreation> {
           recs.add(b);
         });
       });
-      recreationFirstTime = false;
+      print("_getRecs(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
     }
 
     return recs;
@@ -366,19 +367,25 @@ class _RecreationPageState extends State<Recreation> {
     }
 
     //=================================================
-    // Build Widget for BusinessesList
+    // Build Widget for RecreationsList
     //=================================================
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredRecs.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
           return _dismissibleTile(
-              RecreationalCard(filteredRecs[index], _scrollController, index,
-                  _markers, filteredRecs),
+              RecreationalCard(
+                  recreational: filteredRecs[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredRecs),
               index);
         },
       )),
@@ -413,10 +420,8 @@ class _RecreationPageState extends State<Recreation> {
                   children: [
                     // insert widgets here wrapped in `Expanded` as a child
                     // note: play around with flex int value to adjust vertical spaces between widgets
-                    Expanded(
-                      flex: 9,
-                      child: Gmap(filteredRecs, _markers, _scrollController),
-                    ),
+                    Container(
+                        child: Gmap(filteredRecs, _markers, _scrollController)),
                     Expanded(
                         flex: 16,
                         child: filteredRecs.length != 0

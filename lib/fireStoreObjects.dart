@@ -52,6 +52,17 @@ class Business extends FireStoreObject {
   }) : super(name, address, location, description, id);
 }
 
+/// Represents a business resource.
+class Resource extends FireStoreObject {
+  final String name;
+  final String description;
+  final String website;
+  final String imgURL;
+
+  Resource({this.name, this.description, this.website, id, this.imgURL})
+      : super('', '', null, '', id);
+}
+
 /// Represents an event.
 class Event extends FireStoreObject {
   final DateTime datetimeEnd;
@@ -112,15 +123,4 @@ class Recreational extends FireStoreObject {
       this.email,
       this.website})
       : super(name, address, location, description, id);
-}
-
-/// Represents a business resource.
-class Resource extends FireStoreObject {
-  final String name;
-  final String description;
-  final String website;
-  final String imgURL;
-
-  Resource({this.name, this.description, this.website, id, this.imgURL})
-      : super('', '', null, '', id);
 }

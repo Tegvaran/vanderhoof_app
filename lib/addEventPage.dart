@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:getwidget/getwidget.dart';
@@ -428,7 +429,7 @@ class _AddEventPageState extends State<AddEventPage> {
     //=========================================
     //Method to add Event to FireStore
     //=========================================
-    Future<void> _addEvent(Map<String, dynamic> event) {
+    Future<void> _addEvent(Map<String, dynamic> event) async {
       File imgFile;
       // below is helper method to add repeating(recurring events)
       void _addRepeatingEvent(var event, {File imageFile}) {
@@ -463,7 +464,14 @@ class _AddEventPageState extends State<AddEventPage> {
       }
 
       if (eventInfo['image'] != null && eventInfo['image'].isNotEmpty) {
-        imgFile = eventInfo['image'][0];
+        /// NEW LINES FROM USER APP - JASON
+        /// Compresses image file
+        /// can delete comments after testing & migrating to admin app
+        File compressedFile = await FlutterNativeImage.compressImage(
+          eventInfo['image'][0],
+          quality: 5,
+        );
+        imgFile = compressedFile;
       } else {
         eventInfo['imgURL'] = null;
       }
