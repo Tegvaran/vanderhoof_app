@@ -7,6 +7,7 @@ import 'package:location/location.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'fireStoreObjects.dart';
+import 'main.dart';
 
 void scrollToIndex(ItemScrollController scrollController, int index) {
   scrollController.scrollTo(
@@ -45,18 +46,8 @@ HashSet<Marker> resetMarkers(
             position: filteredFireStoreObjects[i].location,
             onTap: () {
               scrollToIndex(scrollController, i);
-              // resetMarkers(
-              //    markers, filteredFireStoreObjects, scrollController);
-              // print("marker length before " + markers.length.toString());
-              // markers.forEach((element) {
-              //   if (element.markerId.toString().compareTo(filteredFireStoreObjects[i].name) == 0) {
-              //     print("in the remove--------------------");
-              //     markers.remove(element);
-              //     print('in reset' + element.markerId.toString());
-              //   }
-              // });
-              // print("marker length after " + markers.length.toString());
-              // changeMarkerColor(i, markers, filteredFireStoreObjects, scrollController);
+              changeMarkerColor(
+                  i, markers, filteredFireStoreObjects, scrollController);
             },
             infoWindow: InfoWindow(
               title: filteredFireStoreObjects[i].name,
@@ -71,6 +62,10 @@ HashSet<Marker> resetMarkers(
 void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   //remove marker at expansion card index
   //markers.remove(markers.elementAt(index));
+
+  BitmapDescriptor selectedIconParams = BitmapDescriptor.defaultMarkerWithHue(
+      HSVColor.fromColor(colorPrimary).hue);
+
   print("index " + index.toString());
   if (fireStoreObjects[index].location != null) {
     print("fireObject\n" + fireStoreObjects[index].name);
@@ -79,7 +74,7 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
       Marker(
           markerId: MarkerId(fireStoreObjects[index].name),
           position: fireStoreObjects[index].location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          icon: selectedIconParams,
           onTap: () {
             scrollToIndex(scrollController, index);
           },
@@ -119,8 +114,6 @@ class Gmap extends StatefulWidget {
       GmapState(listOfFireStoreObjects, _markers, scrollController);
 }
 
-double zoomVal = 16;
-
 class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
@@ -130,7 +123,7 @@ class GmapState extends State<Gmap> {
   ItemScrollController scrollController;
   GmapState(this.listOfFireStoreObjects, this._markers, this.scrollController);
 
-  static final double zoomVal = 16;
+  static final double zoomVal = 17;
   static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679);
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
@@ -168,30 +161,31 @@ class GmapState extends State<Gmap> {
         // Checks if the location of the object is null,
         // if it is not then it is added to the marker list.
         if (listOfFireStoreObjects[i].location != null) {
-          _markers.add(
-            Marker(
-                markerId: MarkerId(listOfFireStoreObjects[i].name),
-                position: listOfFireStoreObjects[i].location,
-                onTap: () {
-                  scrollToIndex(scrollController, i);
-                  // resetMarkers(
-                  //     _markers, listOfFireStoreObjects, scrollController);
-                  // HashSet<Marker> temp = _markers;
-                  // temp.forEach((element) {
-                  //   print("marker length before " + _markers.length.toString());
-                  //   if (element.markerId.toString().compareTo(listOfFireStoreObjects[i].name) == 0) {
-                  //     _markers.remove(element);
-                  //     print('in reset' + element.markerId.toString());
-                  //   }
-                  // });
-                  // print("marker length after " + _markers.length.toString());
-                  // changeMarkerColor(i, _markers, listOfFireStoreObjects, scrollController);
-                },
-                infoWindow: InfoWindow(
-                  title: listOfFireStoreObjects[i].name,
-                  snippet: listOfFireStoreObjects[i].address,
-                )),
-          );
+          Marker marker = Marker(
+              markerId: MarkerId(listOfFireStoreObjects[i].name),
+              position: listOfFireStoreObjects[i].location,
+              onTap: () {
+                scrollToIndex(scrollController, i);
+                changeMarkerColor(
+                    i, _markers, listOfFireStoreObjects, scrollController);
+
+                // resetMarkers(
+                //     _markers, listOfFireStoreObjects, scrollController);
+                // HashSet<Marker> temp = _markers;
+                // temp.forEach((element) {
+                //   print("marker length before " + _markers.length.toString());
+                //   if (element.markerId.toString().compareTo(listOfFireStoreObjects[i].name) == 0) {
+                //     _markers.remove(element);
+                //     print('in reset' + element.markerId.toString());
+                //   }
+                // });
+                // print("marker length after " + _markers.length.toString());
+              },
+              infoWindow: InfoWindow(
+                title: listOfFireStoreObjects[i].name,
+                snippet: listOfFireStoreObjects[i].address,
+              ));
+          _markers.add(marker);
         }
       }
     });
