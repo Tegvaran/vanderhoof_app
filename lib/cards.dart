@@ -132,7 +132,7 @@ class _BusinessCard extends State<BusinessCard> {
             children: <Widget>[
               cardDivider,
 
-              /// layout option 1: description wrapped around img (top-right corner)
+              /// business description + image
               Padding(
                 padding: TEXT_INSET,
                 child: (!isFieldEmpty(business.description))
@@ -389,6 +389,8 @@ class _BusinessCard extends State<BusinessCard> {
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 35),
                           child:
+
+                              /// facebook
                               (!isFieldEmpty(business.socialMedia['facebook']))
                                   ? IconButton(
                                       icon: DecoratedIcon(
@@ -413,6 +415,8 @@ class _BusinessCard extends State<BusinessCard> {
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 35),
                           child:
+
+                              /// instagram
                               (!isFieldEmpty(business.socialMedia['instagram']))
                                   ? IconButton(
                                       icon: DecoratedIcon(
@@ -437,6 +441,8 @@ class _BusinessCard extends State<BusinessCard> {
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 35),
                           child:
+
+                              /// twitter
                               (!isFieldEmpty(business.socialMedia['twitter']))
                                   ? IconButton(
                                       icon: DecoratedIcon(
@@ -520,6 +526,8 @@ class _ResourceCard extends State<ResourceCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// resource image
               !(isFieldEmpty(resource.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -536,6 +544,8 @@ class _ResourceCard extends State<ResourceCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// resource description
               !(isFieldEmpty(resource.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -545,6 +555,8 @@ class _ResourceCard extends State<ResourceCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// resource website
               (!isFieldEmpty(resource.website))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -668,6 +680,8 @@ class _EventCard extends State<EventCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// event image
               !(isFieldEmpty(event.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -684,6 +698,8 @@ class _EventCard extends State<EventCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event description
               !(isFieldEmpty(event.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -693,6 +709,8 @@ class _EventCard extends State<EventCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event dateTime
               Padding(
                   padding: EdgeInsets.zero,
                   child: Row(children: <Widget>[
@@ -709,6 +727,8 @@ class _EventCard extends State<EventCard> {
                             '${formatDateTime(event.datetimeStart)} - ${formatTime(event.datetimeEnd)}',
                             style: headerTextStyle)),
                   ])),
+
+              /// event address
               (!isFieldEmpty(event.address))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -835,6 +855,8 @@ class _HikeCard extends State<HikeCard> {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           cardDivider,
+
+          /// hike address
           (!isFieldEmpty(hikeTrail.address))
               ? Row(children: <Widget>[
                   IconButton(
@@ -853,6 +875,8 @@ class _HikeCard extends State<HikeCard> {
                       style: headerTextStyle),
                 ])
               : Container(width: 0, height: 0),
+
+          /// hike details
           Padding(
             padding: ICON_INSET,
             child: Row(
@@ -861,6 +885,7 @@ class _HikeCard extends State<HikeCard> {
               children: <Widget>[
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
                     Widget>[
+                  /// hike distance
                   !isFieldEmpty(hikeTrail.distance)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -881,6 +906,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike difficulty
                   !isFieldEmpty(hikeTrail.rating)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -904,6 +931,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike time
                   !isFieldEmpty(hikeTrail.time)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -923,6 +952,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike wheelchair accessibility
                   !isFieldEmpty(hikeTrail.wheelchair)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -947,6 +978,8 @@ class _HikeCard extends State<HikeCard> {
                         ])
                       : Container(width: 0, height: 0),
                 ]),
+
+                /// hikeInformation page button
                 buildInfoPageIcon(hikeTrail)
                     ? IconButton(
                         icon: DecoratedIcon(Icons.open_in_new_outlined,
@@ -1046,6 +1079,8 @@ class _RecreationalCard extends State<RecreationalCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// recreation description
               !(isFieldEmpty(recreational.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -1055,6 +1090,8 @@ class _RecreationalCard extends State<RecreationalCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// recreation address
               (!isFieldEmpty(recreational.address))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -1073,6 +1110,8 @@ class _RecreationalCard extends State<RecreationalCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// recreation phone number
               (!isFieldEmpty(recreational.phoneNumber))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -1090,6 +1129,8 @@ class _RecreationalCard extends State<RecreationalCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// recreation email
               (!isFieldEmpty(recreational.email))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -1107,6 +1148,8 @@ class _RecreationalCard extends State<RecreationalCard> {
                           style: headerTextStyle),
                     ])
                   : Container(width: 0, height: 0),
+
+              /// recreation website
               (!isFieldEmpty(recreational.website))
                   ? Row(children: <Widget>[
                       IconButton(
@@ -1132,6 +1175,7 @@ class _RecreationalCard extends State<RecreationalCard> {
 // Helper Methods
 //==================================
 
+/// builds a Loading Indicator widget while images are loading
 Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
   return Center(
     child: CircularProgressIndicator(
