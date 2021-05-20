@@ -94,7 +94,7 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
 
 GoogleMapController mapController;
 void changeCamera(LatLng pos) {
-  mapController.moveCamera(CameraUpdate.newLatLng(pos));
+  mapController.animateCamera(CameraUpdate.newLatLng(pos));
 }
 
 Future<LatLng> toLatLng(String addr) async {
