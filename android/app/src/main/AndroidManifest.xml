@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vanderhoof_app">
+    package="com.vanderhoof_chamber.vanderhoof_app">
    <application
         android:label="vanderhoof_app"
         android:icon="@mipmap/ic_launcher">
