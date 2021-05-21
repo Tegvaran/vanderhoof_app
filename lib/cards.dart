@@ -21,8 +21,9 @@ const double ICON_SIZE = 30;
 const double ICON_SIZE_SMALL = 18;
 const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
-const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 16, 16, 0);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
 const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
+const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 0, 21, 0);
 
 TextStyle titleTextStyle = TextStyle(
     fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
@@ -92,6 +93,9 @@ class _BusinessCard extends State<BusinessCard> {
   int scrollIndex;
   Set<Marker> mapMarkers;
   List<FireStoreObject> listOfFireStoreObjects;
+  String firstHalf;
+  String secondHalf;
+  bool flag = true;
 
   _BusinessCard(
       {this.business,
@@ -107,6 +111,21 @@ class _BusinessCard extends State<BusinessCard> {
 
     if (!isFieldEmpty(business.imgURL)) {
       precacheImage(NetworkImage(business.imgURL), context);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    secondHalf = "";
+    if (business.description != null) {
+      if (business.description.length > 150) {
+        firstHalf = business.description.substring(0, 150);
+        secondHalf =
+            business.description.substring(150, business.description.length);
+      } else {
+        firstHalf = business.description;
+      }
     }
   }
 
@@ -187,7 +206,13 @@ class _BusinessCard extends State<BusinessCard> {
               Padding(
                 padding: TEXT_INSET,
                 child: (!isFieldEmpty(business.description))
-                    ? DropCapText(business.description,
+                    ? DropCapText(
+                        (secondHalf.isEmpty)
+                            ? firstHalf
+                            : flag
+                                ? (firstHalf + "...")
+                                : (firstHalf + secondHalf),
+                        // business.description,
                         style: bodyTextStyle,
                         // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
                         dropCapPosition: DropCapPosition.end,
@@ -226,6 +251,31 @@ class _BusinessCard extends State<BusinessCard> {
                                 )))
                         : Container(width: 0, height: 0),
               ),
+
+              if (business.description != null && secondHalf.isNotEmpty)
+                Padding(
+                  padding: SHOW_MORE_INSET,
+                  child: Column(
+                    children: <Widget>[
+                      InkWell(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              flag ? "show more" : "show less",
+                              style: new TextStyle(color: Colors.blue),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          setState(() {
+                            flag = !flag;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
 
               /// business category
               Padding(
