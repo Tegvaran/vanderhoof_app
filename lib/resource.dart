@@ -47,7 +47,7 @@ class _ResourcePageState extends State<ResourceState> {
       await fireStore.get().then((QuerySnapshot snap) {
         resources = filteredResources = [];
         snap.docs.forEach((doc) {
-          String website = _formatWebsiteURL(doc['website']);
+          String website = formatWebsiteURL(doc['website']);
           Resource resource = Resource(
             name: doc['name'],
             description: doc['description'],
@@ -64,31 +64,6 @@ class _ResourcePageState extends State<ResourceState> {
     }
 
     return resources;
-  }
-
-  /// async helper method - formats website to remove "http(s)://www."
-  ///
-  /// "http://" is required to correctly launch website URL
-  String _formatWebsiteURL(String website) {
-    if (website != null && website.trim() != "" && website != ".") {
-      String formatted = website.trim();
-      if (formatted.startsWith('http')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('s://')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('://')) {
-        formatted = formatted.substring(3);
-      }
-      if (formatted.startsWith('www.')) {
-        formatted = formatted.substring(4);
-      }
-      return formatted;
-    } else {
-      // website is empty
-      return null;
-    }
   }
 
   /// this method gets firebase data and populates into list of events
@@ -154,7 +129,7 @@ class _ResourcePageState extends State<ResourceState> {
   /// Widget build for Events ListView
   Widget _buildResourcesList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -168,24 +143,6 @@ class _ResourcePageState extends State<ResourceState> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Assistance Methods + DismissibleTile Widget
@@ -279,6 +236,8 @@ class _ResourcePageState extends State<ResourceState> {
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredResources.length,
@@ -292,7 +251,8 @@ class _ResourcePageState extends State<ResourceState> {
               index);
         },
       )),
-      floatingActionButton: _buildScrollToTopButton(),
+      floatingActionButton:
+          buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 

@@ -464,9 +464,6 @@ class _AddEventPageState extends State<AddEventPage> {
       }
 
       if (eventInfo['image'] != null && eventInfo['image'].isNotEmpty) {
-        /// NEW LINES FROM USER APP - JASON
-        /// Compresses image file
-        /// can delete comments after testing & migrating to admin app
         File compressedFile = await FlutterNativeImage.compressImage(
           eventInfo['image'][0],
           quality: 5,

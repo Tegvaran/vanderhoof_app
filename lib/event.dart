@@ -139,7 +139,7 @@ class _EventPageState extends State<EventState> {
   /// Widget build for Events ListView
   Widget _buildEventsList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -153,24 +153,6 @@ class _EventPageState extends State<EventState> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Assistance Methods + DismissibleTile Widget
@@ -267,6 +249,8 @@ class _EventPageState extends State<EventState> {
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredEvents.length,
@@ -280,7 +264,8 @@ class _EventPageState extends State<EventState> {
               index);
         },
       )),
-      floatingActionButton: _buildScrollToTopButton(),
+      floatingActionButton:
+          buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 

@@ -36,23 +36,18 @@ class _HikeInformationState extends State<HikeInformation> {
   static const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
   static const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(0, 5, 0, 0);
 
-  TextStyle titleTextStyle = TextStyle(
+  static final TextStyle titleTextStyle = TextStyle(
       fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
-  TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
-  TextStyle headerTextStyle = TextStyle(
+  static final TextStyle bodyTextStyle =
+      TextStyle(fontSize: BODY_SIZE, color: colorText);
+  static final TextStyle headerTextStyle = TextStyle(
       fontSize: BODY_SIZE + 2, color: colorText, fontWeight: FontWeight.bold);
-  TextStyle header2TextStyle = TextStyle(
+  static final TextStyle header2TextStyle = TextStyle(
       fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
-  Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
-  BoxShadow iconShadow = BoxShadow(
-      color: Colors.grey.withOpacity(0.5),
-      blurRadius: 3,
-      spreadRadius: 3,
-      offset: Offset(0, 4));
 
-  final Color greenColor = Colors.lightGreen[700];
-  final Color orangeColor = colorAccent;
-  final Color redColor = Colors.red[600];
+  static final Color colorTextGreen = Colors.lightGreen[700];
+  static final Color colorTextOrange = colorAccent;
+  static final Color colorTextRed = Colors.red[600];
 
   // preload images
   @override
@@ -67,11 +62,11 @@ class _HikeInformationState extends State<HikeInformation> {
   Color getDifficultyColor() {
     Color difficultyColor;
     if (hikeTrail.rating == "Easy") {
-      difficultyColor = greenColor;
+      difficultyColor = colorTextGreen;
     } else if (hikeTrail.rating == "Medium") {
-      difficultyColor = orangeColor;
+      difficultyColor = colorTextOrange;
     } else {
-      difficultyColor = redColor;
+      difficultyColor = colorTextRed;
     }
     return difficultyColor;
   }
@@ -79,9 +74,9 @@ class _HikeInformationState extends State<HikeInformation> {
   Color getAccessibilityColor() {
     Color accessibilityColor;
     if (hikeTrail.wheelchair == "Accessible") {
-      accessibilityColor = greenColor;
+      accessibilityColor = colorTextGreen;
     } else {
-      accessibilityColor = redColor;
+      accessibilityColor = colorTextRed;
     }
     return accessibilityColor;
   }

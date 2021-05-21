@@ -56,8 +56,8 @@ class _RecreationPageState extends State<Recreation> {
       await fireStore.get().then((QuerySnapshot snap) {
         recs = filteredRecs = [];
         snap.docs.forEach((doc) {
-          String phone = _formatPhoneNumber(doc['phone']);
-          String website = _formatWebsiteURL(doc['website']);
+          String phone = formatPhoneNumber(doc['phone']);
+          String website = formatWebsiteURL(doc['website']);
           Recreational b = Recreational(
             name: doc['name'],
             address: doc['address'],
@@ -78,48 +78,6 @@ class _RecreationPageState extends State<Recreation> {
     return recs;
   }
 
-  /// async helper method - formats phone number to "(***) ***-****"
-  String _formatPhoneNumber(String phone) {
-    if (phone != null && phone.trim() != "" && phone != ".") {
-      phone = phone.replaceAll(RegExp("[^0-9]"), '');
-      String formatted = phone;
-      formatted = "(" +
-          phone.substring(0, 3) +
-          ") " +
-          phone.substring(3, 6) +
-          "-" +
-          phone.substring(6);
-      return formatted;
-    } else {
-      // phone is empty
-      return null;
-    }
-  }
-
-  /// async helper method - formats website to remove "http(s)://www."
-  ///
-  /// "http://" is required to correctly launch website URL
-  String _formatWebsiteURL(String website) {
-    if (website != null && website.trim() != "" && website != ".") {
-      String formatted = website.trim();
-      if (formatted.startsWith('http')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('s://')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('://')) {
-        formatted = formatted.substring(3);
-      }
-      if (formatted.startsWith('www.')) {
-        formatted = formatted.substring(4);
-      }
-      return formatted;
-    } else {
-      // website is empty
-      return null;
-    }
-  }
 
   /// this method gets firebase data and populates into list of businesses
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
@@ -230,7 +188,7 @@ class _RecreationPageState extends State<Recreation> {
   /// Widget build for Rec ListView
   Widget _buildRecsList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -244,24 +202,6 @@ class _RecreationPageState extends State<Recreation> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Assistance Methods + DismissibleTile Widget
@@ -367,11 +307,13 @@ class _RecreationPageState extends State<Recreation> {
     }
 
     //=================================================
-    // Build Widget for BusinessesList
+    // Build Widget for RecreationsList
     //=================================================
     return new Scaffold(
       body: Container(
           child: ScrollablePositionedList.builder(
+        padding:
+            const EdgeInsets.only(bottom: kFloatingActionButtonMargin + 48),
         itemScrollController: _scrollController,
         itemPositionsListener: _itemPositionsListener,
         itemCount: filteredRecs.length,
@@ -387,7 +329,7 @@ class _RecreationPageState extends State<Recreation> {
               index);
         },
       )),
-      floatingActionButton: _buildScrollToTopButton(),
+      floatingActionButton: buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 

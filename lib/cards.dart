@@ -19,10 +19,12 @@ const double TITLE_SIZE = 22;
 const double BODY_SIZE = 16;
 const double ICON_SIZE = 30;
 const double ICON_SIZE_SMALL = 18;
+const int SHOW_MORE_TEXT_COUNT = 150;
 const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
-const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(16, 16, 16, 0);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
 const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
+const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
 
 TextStyle titleTextStyle = TextStyle(
     fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
@@ -31,12 +33,29 @@ TextStyle headerTextStyle = TextStyle(
     fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
 TextStyle header2TextStyle = TextStyle(
     fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
-Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
-BoxShadow iconShadow = BoxShadow(
-    color: Colors.grey.withOpacity(0.5),
-    blurRadius: 3,
-    spreadRadius: 3,
-    offset: Offset(0, 4));
+
+/// This function creates a tappable widget that has a icon followed by text.
+Widget tappableIconWithText(String field, icon, onPressed, padding) {
+  return (!isFieldEmpty(field))
+      ? Padding(
+          padding: padding,
+          child: InkWell(
+            onTap: () {
+              onPressed(field);
+            },
+            child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              DecoratedIcon(icon,
+                  color: colorPrimary,
+                  size: ICON_SIZE,
+                  shadows: [
+                    iconShadow,
+                  ]),
+              Text('  ${parseLongField(field)}  ', style: headerTextStyle),
+            ]),
+          ),
+        )
+      : Container(width: 0, height: 0);
+}
 
 /// Represents a Business card that is displayed on the businesses page.
 /// Takes the values for Business which is a business object, scrollController, scrollIndex.
@@ -69,6 +88,9 @@ class _BusinessCard extends State<BusinessCard> {
   int scrollIndex;
   Set<Marker> mapMarkers;
   List<FireStoreObject> listOfFireStoreObjects;
+  String firstHalf;
+  String secondHalf;
+  bool flag = true;
 
   _BusinessCard(
       {this.business,
@@ -87,6 +109,21 @@ class _BusinessCard extends State<BusinessCard> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    secondHalf = "";
+    if (business.description != null) {
+      if (business.description.length > SHOW_MORE_TEXT_COUNT) {
+        firstHalf = business.description.substring(0, SHOW_MORE_TEXT_COUNT);
+        secondHalf = business.description
+            .substring(SHOW_MORE_TEXT_COUNT, business.description.length);
+      } else {
+        firstHalf = business.description;
+      }
+    }
+  }
+
   String categoryText() {
     String categories = "";
     for (var i = 0; i < business.category.length; i++) {
@@ -96,6 +133,34 @@ class _BusinessCard extends State<BusinessCard> {
         categories = categories + business.category[i];
     }
     return categories;
+  }
+
+  /// Creates a social media button.
+  ///
+  /// This button is greyed(not tapable)  out if the social media field is
+  /// empty and blue(tapable) if it is not.
+  Widget socialMediaButton(String field, icon, onPressed) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 35),
+        child: (!isFieldEmpty(field))
+            ? IconButton(
+                icon: DecoratedIcon(icon,
+                    color: colorPrimary,
+                    size: ICON_SIZE,
+                    shadows: [
+                      iconShadow,
+                    ]),
+                onPressed: () {
+                  onPressed(field);
+                })
+            : IconButton(
+                icon: DecoratedIcon(
+                  icon,
+                  size: ICON_SIZE,
+                  color: Colors.grey[500],
+                ),
+                onPressed: null,
+              ));
   }
 
   @override
@@ -132,60 +197,82 @@ class _BusinessCard extends State<BusinessCard> {
             children: <Widget>[
               cardDivider,
 
-              /// layout option 1: description wrapped around img (top-right corner)
+              /// business description + image
               Padding(
-                  padding: TEXT_INSET,
-                  child: DropCapText(
-                      (!isFieldEmpty(business.description))
-                          ? business.description
-                          : "",
-                      style: bodyTextStyle,
-                      // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
-                      dropCapPosition: DropCapPosition.end,
-                      dropCap: (!isFieldEmpty(business.imgURL))
-                          ? DropCap(
-                              width: 120,
-                              height: 120,
-                              child: Image.network(
-                                business.imgURL,
-                                fit: BoxFit.contain,
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress
-                                                  .expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              ))
-                          : DropCap(width: 0, height: 0, child: null))),
+                padding: TEXT_INSET,
+                child: (!isFieldEmpty(business.description))
+                    ? DropCapText(
+                        (secondHalf.isEmpty)
+                            ? firstHalf
+                            : flag
+                                ? (firstHalf + "...")
+                                : (firstHalf + secondHalf),
+                        // business.description,
+                        style: bodyTextStyle,
+                        // dropCapPadding: EdgeInsets.fromLTRB(4, 0, 4, 0),
+                        dropCapPosition: DropCapPosition.end,
+                        dropCap: (!isFieldEmpty(business.imgURL))
+                            ? DropCap(
+                                width: 120,
+                                height: 120,
+                                child: Image.network(
+                                  business.imgURL,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return _buildLoadingProgressIndicator(
+                                        loadingProgress);
+                                  },
+                                ))
+                            : DropCap(width: 0, height: 0, child: null))
+                    : (!isFieldEmpty(business.imgURL))
+                        ? Align(
+                            alignment: Alignment.topRight,
+                            child: Container(
+                                width: 120,
+                                height: 120,
+                                child: Image.network(
+                                  business.imgURL,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return _buildLoadingProgressIndicator(
+                                        loadingProgress);
+                                  },
+                                )))
+                        : Container(width: 0, height: 0),
+              ),
 
-              /// layout option 2: img above and description below
-              // (business.imgURL != "" && business.imgURL != null)
-              //     ? Container(
-              //         height: 120,
-              //         alignment: Alignment.center,
-              //         child:
-              //             Image.network(business.imgURL, fit: BoxFit.contain),
-              //       )
-              //     : Container(width: 0, height: 0),
-              // !(isFieldEmpty(business.description))
-              //     ? Padding(
-              //   padding: TEXT_INSET,
-              //   child: Text(
-              //     "${business.description}",
-              //     style: bodyTextStyle,
-              //   ),
-              // )
-              //     : Container(width: 0, height: 0),
+              if (business.description != null && secondHalf.isNotEmpty)
+                Padding(
+                  padding: SHOW_MORE_INSET,
+                  child: Column(
+                    children: <Widget>[
+                      InkWell(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              flag ? "show more" : "show less",
+                              style: new TextStyle(color: Colors.blue),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          setState(() {
+                            flag = !flag;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+              /// business category
               Padding(
                   padding: TEXT_INSET,
                   // Checks if the category's length is empty or not
@@ -201,263 +288,47 @@ class _BusinessCard extends State<BusinessCard> {
                           ),
                         ]))
                       : Container(width: 0, height: 0))),
-              (!isFieldEmpty(business.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: business.address,
-                        onPressed: () {
-                          _launchAddressURL(business.address);
-                        },
-                      ),
-                      Text('${parseLongField(business.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(business.phoneNumber))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.phone,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchPhoneURL(business.phoneNumber);
-                        },
-                      ),
-                      Text('${parseLongField(business.phoneNumber)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(business.email))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.email,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchMailURL(business.email);
-                        },
-                      ),
-                      Text('${parseLongField(business.email)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(business.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(business.website);
-                        },
-                      ),
-                      Text('${parseLongField(business.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
 
-              /// socialMedia layout 1: all icons in their own row, with labels
-              // (!isFieldEmpty(business.socialMedia['facebook']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.facebook,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchFacebookURL(business.socialMedia["facebook"]);
-              //           },
-              //         ),
-              //         Text(
-              //             '${parseLongField(business.socialMedia["facebook"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              // (!isFieldEmpty(business.socialMedia['instagram']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.instagram,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchInstaURL(business.socialMedia["instagram"]);
-              //           },
-              //         ),
-              //         Text(
-              //             '${parseLongField(business.socialMedia["instagram"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              // (!isFieldEmpty(business.socialMedia['twitter']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.twitter,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchTwitterURL(business.socialMedia["twitter"]);
-              //           },
-              //         ),
-              //         Text('${parseLongField(business.socialMedia["twitter"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              /// socialMedia layout 2: contained in 1 row, icon shows up when available
-              // Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-              //     Widget>[
-              //   (!isFieldEmpty(business.socialMedia['facebook']))
-              //       ? Padding(
-              //           padding: const EdgeInsets.only(right: 70),
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.facebook,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchFacebookURL(
-              //                   business.socialMedia["facebook"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              //   (!isFieldEmpty(business.socialMedia['instagram']))
-              //       ? Padding(
-              //           padding: const EdgeInsets.only(right: 70),
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.instagram,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchInstaURL(business.socialMedia["instagram"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              //   (!isFieldEmpty(business.socialMedia['twitter']))
-              //       ? Padding(
-              //           padding: EdgeInsets.zero,
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.twitter,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchTwitterURL(business.socialMedia["twitter"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              // ]),
+              /// business address
+              tappableIconWithText(business.address, Icons.location_on,
+                  _launchAddressURL, TEXT_INSET),
 
-              /// socialMedia layout 3: always shows up in 1 row, icon colour is grey when empty
+              /// business phone number
+              tappableIconWithText(business.phoneNumber, Icons.phone,
+                  _launchPhoneURL, TEXT_INSET),
+
+              /// business email
+              tappableIconWithText(
+                  business.email, Icons.email, _launchMailURL, TEXT_INSET),
+
+              /// business website
+              tappableIconWithText(business.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
+
+              SizedBox(
+                height: 20,
+              ),
+
+              /// business socialMedia buttons:
+              /// always shows up in 1 row, icon colour is grey when empty
               (!isFieldEmpty(business.socialMedia['facebook']) ||
                       !isFieldEmpty(business.socialMedia['instagram']) ||
                       !isFieldEmpty(business.socialMedia['twitter']))
-                  ? Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-                      Widget>[
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['facebook']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.facebook,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchFacebookURL(
-                                            business.socialMedia["facebook"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.facebook,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['instagram']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.instagram,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchInstaURL(
-                                            business.socialMedia["instagram"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.instagram,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['twitter']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.twitter,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchTwitterURL(
-                                            business.socialMedia["twitter"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.twitter,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                    ])
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                          /// Facebook button
+                          socialMediaButton(business.socialMedia['facebook'],
+                              FontAwesomeIcons.facebook, _launchFacebookURL),
+
+                          /// Instagram button
+                          socialMediaButton(business.socialMedia['instagram'],
+                              FontAwesomeIcons.instagram, _launchInstaURL),
+
+                          /// Twitter button
+                          socialMediaButton(business.socialMedia['twitter'],
+                              FontAwesomeIcons.twitter, _launchTwitterURL),
+                        ])
                   : Container(width: 0, height: 0),
             ]));
   }
@@ -519,6 +390,8 @@ class _ResourceCard extends State<ResourceCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// resource image
               !(isFieldEmpty(resource.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -529,18 +402,14 @@ class _ResourceCard extends State<ResourceCard> {
                         loadingBuilder: (BuildContext context, Widget child,
                             ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes
-                                  : null,
-                            ),
-                          );
+                          return _buildLoadingProgressIndicator(
+                              loadingProgress);
                         },
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// resource description
               !(isFieldEmpty(resource.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -550,23 +419,13 @@ class _ResourceCard extends State<ResourceCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(resource.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(resource.website);
-                        },
-                      ),
-                      Text('${parseLongField(resource.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// resource website
+              tappableIconWithText(resource.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
+              SizedBox(
+                height: 20,
+              ),
             ]));
   }
 }
@@ -673,6 +532,8 @@ class _EventCard extends State<EventCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// event image
               !(isFieldEmpty(event.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -683,18 +544,14 @@ class _EventCard extends State<EventCard> {
                         loadingBuilder: (BuildContext context, Widget child,
                             ImageChunkEvent loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes
-                                  : null,
-                            ),
-                          );
+                          return _buildLoadingProgressIndicator(
+                              loadingProgress);
                         },
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event description
               !(isFieldEmpty(event.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -704,6 +561,8 @@ class _EventCard extends State<EventCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event dateTime
               Padding(
                   padding: EdgeInsets.zero,
                   child: Row(children: <Widget>[
@@ -720,24 +579,14 @@ class _EventCard extends State<EventCard> {
                             '${formatDateTime(event.datetimeStart)} - ${formatTime(event.datetimeEnd)}',
                             style: headerTextStyle)),
                   ])),
-              (!isFieldEmpty(event.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: event.address,
-                        onPressed: () {
-                          _launchAddressURL(event.address);
-                        },
-                      ),
-                      Text('${parseLongField(event.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// event location
+              tappableIconWithText(event.address, Icons.location_on,
+                  _launchAddressURL, EdgeInsets.only(left: 8)),
+
+              SizedBox(
+                height: 20,
+              ),
             ]));
   }
 }
@@ -846,24 +695,11 @@ class _HikeCard extends State<HikeCard> {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           cardDivider,
-          (!isFieldEmpty(hikeTrail.address))
-              ? Row(children: <Widget>[
-                  IconButton(
-                    icon: DecoratedIcon(Icons.location_on,
-                        color: colorPrimary,
-                        size: ICON_SIZE,
-                        shadows: [
-                          iconShadow,
-                        ]),
-                    tooltip: hikeTrail.address,
-                    onPressed: () {
-                      _launchAddressURL(hikeTrail.address);
-                    },
-                  ),
-                  Text('${parseLongField(hikeTrail.address)}',
-                      style: headerTextStyle),
-                ])
-              : Container(width: 0, height: 0),
+
+          /// hike address
+          tappableIconWithText(hikeTrail.address, Icons.location_on,
+              _launchAddressURL, TEXT_INSET),
+
           Padding(
             padding: ICON_INSET,
             child: Row(
@@ -872,6 +708,7 @@ class _HikeCard extends State<HikeCard> {
               children: <Widget>[
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
                     Widget>[
+                  /// hike distance
                   !isFieldEmpty(hikeTrail.distance)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -892,6 +729,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike difficulty
                   !isFieldEmpty(hikeTrail.rating)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -915,6 +754,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike time
                   !isFieldEmpty(hikeTrail.time)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -934,6 +775,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike wheelchair accessibility
                   !isFieldEmpty(hikeTrail.wheelchair)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -958,6 +801,8 @@ class _HikeCard extends State<HikeCard> {
                         ])
                       : Container(width: 0, height: 0),
                 ]),
+
+                /// hikeInformation page button
                 buildInfoPageIcon(hikeTrail)
                     ? IconButton(
                         icon: DecoratedIcon(Icons.open_in_new_outlined,
@@ -1057,6 +902,8 @@ class _RecreationalCard extends State<RecreationalCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// recreation description
               !(isFieldEmpty(recreational.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -1066,75 +913,22 @@ class _RecreationalCard extends State<RecreationalCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: recreational.address,
-                        onPressed: () {
-                          _launchAddressURL(recreational.address);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.phoneNumber))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.phone,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchPhoneURL(recreational.phoneNumber);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.phoneNumber)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.email))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.email,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchMailURL(recreational.email);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.email)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(recreational.website);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// rec address
+              tappableIconWithText(recreational.address, Icons.location_on,
+                  _launchAddressURL, TEXT_INSET),
+
+              /// rec phone number
+              tappableIconWithText(recreational.phoneNumber, Icons.phone,
+                  _launchPhoneURL, TEXT_INSET),
+
+              /// rec email
+              tappableIconWithText(
+                  recreational.email, Icons.email, _launchMailURL, TEXT_INSET),
+
+              /// rec website
+              tappableIconWithText(recreational.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
             ]));
   }
 }
@@ -1142,6 +936,18 @@ class _RecreationalCard extends State<RecreationalCard> {
 //==================================
 // Helper Methods
 //==================================
+
+/// builds a Loading Indicator widget while images are loading
+Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
+  return Center(
+    child: CircularProgressIndicator(
+      value: loadingProgress.expectedTotalBytes != null
+          ? loadingProgress.cumulativeBytesLoaded /
+              loadingProgress.expectedTotalBytes
+          : null,
+    ),
+  );
+}
 
 /// Open URL in the default browser for [website]
 void _launchWebsiteURL(String website) async =>
