@@ -19,6 +19,7 @@ const double TITLE_SIZE = 22;
 const double BODY_SIZE = 16;
 const double ICON_SIZE = 30;
 const double ICON_SIZE_SMALL = 18;
+const int SHOW_MORE_TEXT_COUNT = 120;
 const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
 const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
@@ -119,10 +120,10 @@ class _BusinessCard extends State<BusinessCard> {
     super.initState();
     secondHalf = "";
     if (business.description != null) {
-      if (business.description.length > 150) {
-        firstHalf = business.description.substring(0, 150);
-        secondHalf =
-            business.description.substring(150, business.description.length);
+      if (business.description.length > SHOW_MORE_TEXT_COUNT) {
+        firstHalf = business.description.substring(0, SHOW_MORE_TEXT_COUNT);
+        secondHalf = business.description
+            .substring(SHOW_MORE_TEXT_COUNT, business.description.length);
       } else {
         firstHalf = business.description;
       }
