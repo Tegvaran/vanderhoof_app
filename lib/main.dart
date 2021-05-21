@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.all(12.0),
         child: Align(
           alignment: Alignment.center,
-          child: TextButton.icon(
+          child: ElevatedButton.icon(
               style: TextButton.styleFrom(
                   backgroundColor: colorPrimary,
                   primary: colorAccent,
