@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,6 +17,13 @@ MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
 MaterialColor colorText = createMaterialColor(Color(0xFF666666));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
 MaterialColor colorBackground = createMaterialColor(Color(0xFFF3F3F3));
+
+Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
+BoxShadow iconShadow = BoxShadow(
+    color: Colors.grey.withOpacity(0.5),
+    blurRadius: 3,
+    spreadRadius: 3,
+    offset: Offset(0, 4));
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,9 +81,46 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   bool isLandingPage = true;
+  AnimationController _controller;
+  Animation<Offset> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    Timer(Duration(milliseconds: 200), () => _controller.forward());
+
+    _animation = Tween<Offset>(
+      begin: Offset(-1, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOutBack,
+    ));
+  }
+
+  /// build for an action with a slide-in animation
+  /// button slides in from the right to it's original position
+  /// also has a slight face in
+  Widget buildAnimatedSlideInAction(Widget childWidget) {
+    return Builder(
+      builder: (context) => Center(
+        child: SlideTransition(
+          position: _animation,
+          transformHitTests: true,
+          textDirection: TextDirection.ltr,
+          child: FadeTransition(opacity: _controller, child: childWidget),
+        ),
+      ),
+    );
+  }
 
   /// build for a GoToPage button, will navigate to pageIndex when selected
   Widget buildGoToPageButton(Widget pageIcon, String pageName, int pageIndex) {
@@ -87,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: colorPrimary,
                   primary: colorAccent,
                   minimumSize: Size(230, 45),
+                  elevation: 3,
                   padding: EdgeInsets.symmetric(horizontal: 16),
                   alignment: Alignment.centerLeft,
                   shape: const RoundedRectangleBorder(
@@ -110,30 +157,40 @@ class _MyHomePageState extends State<MyHomePage> {
   /// build for a Landing Page, select a page to navigate out of it
   Widget buildLandingPage() {
     return Container(
+      // comment out 'decoration' argument to hide background image
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: AssetImage("assets/images/vanderhoof_chamber_background.jpg"),
+        fit: BoxFit.cover,
+      )),
       width: double.infinity,
       height: double.infinity,
-      child: ListView(children: [
-        Container(width: double.infinity, height: 100), //empty space
-        Image(
-            image:
-                AssetImage('assets/images/vanderhoof_chamber_logo_large.png')),
-        buildGoToPageButton(
-            Icon(MdiIcons.briefcaseVariant), 'Business Directory', 0),
-        buildGoToPageButton(
-            FaIcon(FontAwesomeIcons.infoCircle), 'Business Resources', 1),
-        buildGoToPageButton(Icon(Icons.event), 'Events', 2),
-        buildGoToPageButton(Icon(MdiIcons.hiking), 'Hiking Trails', 3),
-        buildGoToPageButton(Icon(Icons.directions_bike), 'Recreational', 4),
-        // todo - Admin App Statistics: add more widgets here
-        // for example, uncomment the 5 widgets below to see more buttons
-        // buildGoToPageButton(
-        //     Icon(MdiIcons.briefcaseVariant), 'Business Directory', 0),
-        // buildGoToPageButton(
-        //     FaIcon(FontAwesomeIcons.infoCircle), 'Business Resources', 1),
-        // buildGoToPageButton(Icon(Icons.event), 'Events', 2),
-        // buildGoToPageButton(Icon(MdiIcons.hiking), 'Hiking Trails', 3),
-        // buildGoToPageButton(Icon(Icons.directions_bike), 'Recreational', 4),
-      ]),
+      child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Padding(
+              padding: const EdgeInsets.only(top: 150),
+              child: buildAnimatedSlideInAction(
+                Column(
+                  children: [
+                    Container(
+                      decoration:
+                          BoxDecoration(color: Colors.white.withOpacity(0.8)),
+                      child: Image(
+                          image: AssetImage(
+                              'assets/images/vanderhoof_chamber_logo_large.png')),
+                    ),
+                    buildGoToPageButton(Icon(MdiIcons.briefcaseVariant),
+                        'Business Directory', 0),
+                    buildGoToPageButton(FaIcon(FontAwesomeIcons.infoCircle),
+                        'Business Resources', 1),
+                    buildGoToPageButton(Icon(Icons.event), 'Events', 2),
+                    buildGoToPageButton(
+                        Icon(MdiIcons.hiking), 'Hiking Trails', 3),
+                    buildGoToPageButton(
+                        Icon(Icons.directions_bike), 'Recreational', 4),
+                  ],
+                ),
+              ))),
     );
   }
 
