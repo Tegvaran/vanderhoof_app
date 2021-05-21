@@ -183,7 +183,7 @@ class _BusinessCard extends State<BusinessCard> {
             children: <Widget>[
               cardDivider,
 
-              /// layout option 1: description wrapped around img (top-right corner)
+              /// business description + image
               Padding(
                 padding: TEXT_INSET,
                 child: (!isFieldEmpty(business.description))
@@ -264,116 +264,7 @@ class _BusinessCard extends State<BusinessCard> {
                 height: 20,
               ),
 
-              /// business socialMedia buttons layout 1:
-              /// all icons in their own row, with labels
-              // (!isFieldEmpty(business.socialMedia['facebook']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.facebook,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchFacebookURL(business.socialMedia["facebook"]);
-              //           },
-              //         ),
-              //         Text(
-              //             '${parseLongField(business.socialMedia["facebook"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              // (!isFieldEmpty(business.socialMedia['instagram']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.instagram,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchInstaURL(business.socialMedia["instagram"]);
-              //           },
-              //         ),
-              //         Text(
-              //             '${parseLongField(business.socialMedia["instagram"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              // (!isFieldEmpty(business.socialMedia['twitter']))
-              //     ? Row(children: <Widget>[
-              //         IconButton(
-              //           icon: DecoratedIcon(FontAwesomeIcons.twitter,
-              //               color: colorPrimary,
-              //               size: ICON_SIZE,
-              //               shadows: [
-              //                 iconShadow,
-              //               ]),
-              //           onPressed: () {
-              //             _launchTwitterURL(business.socialMedia["twitter"]);
-              //           },
-              //         ),
-              //         Text('${parseLongField(business.socialMedia["twitter"])}',
-              //             style: headerTextStyle),
-              //       ])
-              //     : Container(width: 0, height: 0),
-              /// business socialMedia buttons layout 2:
-              /// contained in 1 row, icon shows up when available
-              // Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-              //     Widget>[
-              //   (!isFieldEmpty(business.socialMedia['facebook']))
-              //       ? Padding(
-              //           padding: const EdgeInsets.only(right: 70),
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.facebook,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchFacebookURL(
-              //                   business.socialMedia["facebook"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              //   (!isFieldEmpty(business.socialMedia['instagram']))
-              //       ? Padding(
-              //           padding: const EdgeInsets.only(right: 70),
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.instagram,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchInstaURL(business.socialMedia["instagram"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              //   (!isFieldEmpty(business.socialMedia['twitter']))
-              //       ? Padding(
-              //           padding: EdgeInsets.zero,
-              //           child: IconButton(
-              //             icon: DecoratedIcon(FontAwesomeIcons.twitter,
-              //                 color: colorPrimary,
-              //                 size: ICON_SIZE,
-              //                 shadows: [
-              //                   iconShadow,
-              //                 ]),
-              //             onPressed: () {
-              //               _launchTwitterURL(business.socialMedia["twitter"]);
-              //             },
-              //           ),
-              //         )
-              //       : Container(width: 0, height: 0),
-              // ]),
-              /// business socialMedia buttons layout 3:
+              /// business socialMedia buttons:
               /// always shows up in 1 row, icon colour is grey when empty
               (!isFieldEmpty(business.socialMedia['facebook']) ||
                       !isFieldEmpty(business.socialMedia['instagram']) ||
@@ -454,6 +345,8 @@ class _ResourceCard extends State<ResourceCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// resource image
               !(isFieldEmpty(resource.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -470,6 +363,8 @@ class _ResourceCard extends State<ResourceCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// resource description
               !(isFieldEmpty(resource.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -592,6 +487,8 @@ class _EventCard extends State<EventCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// event image
               !(isFieldEmpty(event.imgURL))
                   ? Container(
                       width: double.infinity,
@@ -608,6 +505,8 @@ class _EventCard extends State<EventCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event description
               !(isFieldEmpty(event.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -617,6 +516,8 @@ class _EventCard extends State<EventCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
+
+              /// event dateTime
               Padding(
                   padding: EdgeInsets.zero,
                   child: Row(children: <Widget>[
@@ -762,6 +663,7 @@ class _HikeCard extends State<HikeCard> {
               children: <Widget>[
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
                     Widget>[
+                  /// hike distance
                   !isFieldEmpty(hikeTrail.distance)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -782,6 +684,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike difficulty
                   !isFieldEmpty(hikeTrail.rating)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -805,6 +709,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike time
                   !isFieldEmpty(hikeTrail.time)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -824,6 +730,8 @@ class _HikeCard extends State<HikeCard> {
                           ]))),
                         ])
                       : Container(width: 0, height: 0),
+
+                  /// hike wheelchair accessibility
                   !isFieldEmpty(hikeTrail.wheelchair)
                       ? Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
                           IconButton(
@@ -848,6 +756,8 @@ class _HikeCard extends State<HikeCard> {
                         ])
                       : Container(width: 0, height: 0),
                 ]),
+
+                /// hikeInformation page button
                 buildInfoPageIcon(hikeTrail)
                     ? IconButton(
                         icon: DecoratedIcon(Icons.open_in_new_outlined,
@@ -947,6 +857,8 @@ class _RecreationalCard extends State<RecreationalCard> {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
+
+              /// recreation description
               !(isFieldEmpty(recreational.description))
                   ? Padding(
                       padding: TEXT_INSET,
@@ -980,6 +892,7 @@ class _RecreationalCard extends State<RecreationalCard> {
 // Helper Methods
 //==================================
 
+/// builds a Loading Indicator widget while images are loading
 Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
   return Center(
     child: CircularProgressIndicator(
