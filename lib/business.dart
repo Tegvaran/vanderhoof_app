@@ -64,8 +64,8 @@ class _BusinessPageState extends State<BusinessState> {
       await fireStore.get().then((QuerySnapshot snap) {
         businesses = filteredBusinesses = [];
         snap.docs.forEach((doc) {
-          String phone = _formatPhoneNumber(doc['phone']);
-          String website = _formatWebsiteURL(doc['website']);
+          String phone = formatPhoneNumber(doc['phone']);
+          String website = formatWebsiteURL(doc['website']);
           Business b = Business(
               name: doc['name'],
               address: doc['address'],
@@ -89,48 +89,6 @@ class _BusinessPageState extends State<BusinessState> {
     return businesses;
   }
 
-  /// async helper method - formats phone number to "(***) ***-****"
-  String _formatPhoneNumber(String phone) {
-    if (phone != null && phone.trim() != "" && phone != ".") {
-      phone = phone.replaceAll(RegExp("[^0-9]"), '');
-      String formatted = phone;
-      formatted = "(" +
-          phone.substring(0, 3) +
-          ") " +
-          phone.substring(3, 6) +
-          "-" +
-          phone.substring(6);
-      return formatted;
-    } else {
-      // phone is empty
-      return null;
-    }
-  }
-
-  /// async helper method - formats website to remove "http(s)://www."
-  ///
-  /// "http://" is required to correctly launch website URL
-  String _formatWebsiteURL(String website) {
-    if (website != null && website.trim() != "" && website != ".") {
-      String formatted = website.trim();
-      if (formatted.startsWith('http')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('s://')) {
-        formatted = formatted.substring(4);
-      }
-      if (formatted.startsWith('://')) {
-        formatted = formatted.substring(3);
-      }
-      if (formatted.startsWith('www.')) {
-        formatted = formatted.substring(4);
-      }
-      return formatted;
-    } else {
-      // website is empty
-      return null;
-    }
-  }
 
   /// this method gets firebase data and populates into list of businesses
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
