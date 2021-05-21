@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'fireStoreObjects.dart';
@@ -229,6 +230,26 @@ Widget showLoadingScreen() {
     color: colorPrimary,
     size: 50.0,
   );
+}
+
+Widget buildScrollToTopButton(isVisible, controller) {
+  return isVisible
+      ? Container(
+          child: FloatingActionButton(
+              // scroll to top of the list
+              child: FaIcon(FontAwesomeIcons.angleUp),
+              shape: RoundedRectangleBorder(),
+              foregroundColor: colorPrimary,
+              mini: true,
+              onPressed: () {
+                controller.scrollTo(
+                  index: 0,
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                );
+              }),
+        )
+      : null;
 }
 
 //=================================================

@@ -278,7 +278,7 @@ class _BusinessPageState extends State<BusinessState> {
   /// Widget build for Businesses ListView
   Widget _buildBusinessesList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -292,24 +292,6 @@ class _BusinessPageState extends State<BusinessState> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Assistance Methods + DismissibleTile Widget
@@ -447,7 +429,8 @@ class _BusinessPageState extends State<BusinessState> {
               index);
         },
       )),
-      floatingActionButton: _buildScrollToTopButton(),
+      floatingActionButton:
+          buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 

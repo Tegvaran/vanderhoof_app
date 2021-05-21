@@ -230,7 +230,7 @@ class _RecreationPageState extends State<Recreation> {
   /// Widget build for Rec ListView
   Widget _buildRecsList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -244,24 +244,6 @@ class _RecreationPageState extends State<Recreation> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Assistance Methods + DismissibleTile Widget
@@ -389,7 +371,7 @@ class _RecreationPageState extends State<Recreation> {
               index);
         },
       )),
-      floatingActionButton: _buildScrollToTopButton(),
+      floatingActionButton: buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 
