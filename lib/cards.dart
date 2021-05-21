@@ -33,12 +33,6 @@ TextStyle headerTextStyle = TextStyle(
     fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
 TextStyle header2TextStyle = TextStyle(
     fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
-Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
-BoxShadow iconShadow = BoxShadow(
-    color: Colors.grey.withOpacity(0.5),
-    blurRadius: 3,
-    spreadRadius: 3,
-    offset: Offset(0, 4));
 
 /// This function creates a tappable widget that has a icon followed by text.
 Widget tappableIconWithText(String field, icon, onPressed, padding) {
