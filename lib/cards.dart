@@ -38,6 +38,29 @@ BoxShadow iconShadow = BoxShadow(
     spreadRadius: 3,
     offset: Offset(0, 4));
 
+/// This function creates a tappable widget that has a icon followed by text.
+Widget tappableIconWithText(String field, icon, onPressed, padding) {
+  return (!isFieldEmpty(field))
+      ? Padding(
+          padding: padding,
+          child: InkWell(
+            onTap: () {
+              onPressed(field);
+            },
+            child: Row(children: <Widget>[
+              DecoratedIcon(icon,
+                  color: colorPrimary,
+                  size: ICON_SIZE,
+                  shadows: [
+                    iconShadow,
+                  ]),
+              Text('${parseLongField(field)}', style: headerTextStyle),
+            ]),
+          ),
+        )
+      : Container(width: 0, height: 0);
+}
+
 /// Represents a Business card that is displayed on the businesses page.
 /// Takes the values for Business which is a business object, scrollController, scrollIndex.
 class BusinessCard extends StatefulWidget {
@@ -96,6 +119,34 @@ class _BusinessCard extends State<BusinessCard> {
         categories = categories + business.category[i];
     }
     return categories;
+  }
+
+  /// Creates a social media button.
+  ///
+  /// This button is greyed(not tapable)  out if the social media field is
+  /// empty and blue(tapable) if it is not.
+  Widget socialMediaButton(String field, icon, onPressed) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 35),
+        child: (!isFieldEmpty(field))
+            ? IconButton(
+                icon: DecoratedIcon(icon,
+                    color: colorPrimary,
+                    size: ICON_SIZE,
+                    shadows: [
+                      iconShadow,
+                    ]),
+                onPressed: () {
+                  onPressed(field);
+                })
+            : IconButton(
+                icon: DecoratedIcon(
+                  icon,
+                  size: ICON_SIZE,
+                  color: Colors.grey[500],
+                ),
+                onPressed: null,
+              ));
   }
 
   @override
@@ -194,81 +245,24 @@ class _BusinessCard extends State<BusinessCard> {
                       : Container(width: 0, height: 0))),
 
               /// business address
-              (!isFieldEmpty(business.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: business.address,
-                        onPressed: () {
-                          _launchAddressURL(business.address);
-                        },
-                      ),
-                      Text('${parseLongField(business.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+              tappableIconWithText(business.address, Icons.location_on,
+                  _launchAddressURL, TEXT_INSET),
 
               /// business phone number
-              (!isFieldEmpty(business.phoneNumber))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.phone,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchPhoneURL(business.phoneNumber);
-                        },
-                      ),
-                      Text('${parseLongField(business.phoneNumber)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+              tappableIconWithText(business.phoneNumber, Icons.phone,
+                  _launchPhoneURL, TEXT_INSET),
 
               /// business email
-              (!isFieldEmpty(business.email))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.email,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchMailURL(business.email);
-                        },
-                      ),
-                      Text('${parseLongField(business.email)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+              tappableIconWithText(
+                  business.email, Icons.email, _launchMailURL, TEXT_INSET),
 
               /// business website
-              (!isFieldEmpty(business.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(business.website);
-                        },
-                      ),
-                      Text('${parseLongField(business.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+              tappableIconWithText(business.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
+
+              SizedBox(
+                height: 20,
+              ),
 
               /// business socialMedia buttons layout 1:
               /// all icons in their own row, with labels
@@ -384,81 +378,21 @@ class _BusinessCard extends State<BusinessCard> {
               (!isFieldEmpty(business.socialMedia['facebook']) ||
                       !isFieldEmpty(business.socialMedia['instagram']) ||
                       !isFieldEmpty(business.socialMedia['twitter']))
-                  ? Row(mainAxisAlignment: MainAxisAlignment.start, children: <
-                      Widget>[
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['facebook']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.facebook,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchFacebookURL(
-                                            business.socialMedia["facebook"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.facebook,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['instagram']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.instagram,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchInstaURL(
-                                            business.socialMedia["instagram"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.instagram,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 35),
-                          child:
-                              (!isFieldEmpty(business.socialMedia['twitter']))
-                                  ? IconButton(
-                                      icon: DecoratedIcon(
-                                          FontAwesomeIcons.twitter,
-                                          color: colorPrimary,
-                                          size: ICON_SIZE,
-                                          shadows: [
-                                            iconShadow,
-                                          ]),
-                                      onPressed: () {
-                                        _launchTwitterURL(
-                                            business.socialMedia["twitter"]);
-                                      })
-                                  : IconButton(
-                                      icon: DecoratedIcon(
-                                        FontAwesomeIcons.twitter,
-                                        size: ICON_SIZE,
-                                        color: Colors.grey[500],
-                                      ),
-                                      onPressed: null,
-                                    )),
-                    ])
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                          /// Facebook button
+                          socialMediaButton(business.socialMedia['facebook'],
+                              FontAwesomeIcons.facebook, _launchFacebookURL),
+
+                          /// Instagram button
+                          socialMediaButton(business.socialMedia['instagram'],
+                              FontAwesomeIcons.instagram, _launchInstaURL),
+
+                          /// Twitter button
+                          socialMediaButton(business.socialMedia['twitter'],
+                              FontAwesomeIcons.twitter, _launchTwitterURL),
+                        ])
                   : Container(width: 0, height: 0),
             ]));
   }
@@ -545,23 +479,13 @@ class _ResourceCard extends State<ResourceCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(resource.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(resource.website);
-                        },
-                      ),
-                      Text('${parseLongField(resource.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// resource website
+              tappableIconWithText(resource.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
+              SizedBox(
+                height: 20,
+              ),
             ]));
   }
 }
@@ -709,24 +633,14 @@ class _EventCard extends State<EventCard> {
                             '${formatDateTime(event.datetimeStart)} - ${formatTime(event.datetimeEnd)}',
                             style: headerTextStyle)),
                   ])),
-              (!isFieldEmpty(event.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: event.address,
-                        onPressed: () {
-                          _launchAddressURL(event.address);
-                        },
-                      ),
-                      Text('${parseLongField(event.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// event location
+              tappableIconWithText(event.address, Icons.location_on,
+                  _launchAddressURL, EdgeInsets.only(left: 8)),
+
+              SizedBox(
+                height: 20,
+              ),
             ]));
   }
 }
@@ -835,24 +749,11 @@ class _HikeCard extends State<HikeCard> {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           cardDivider,
-          (!isFieldEmpty(hikeTrail.address))
-              ? Row(children: <Widget>[
-                  IconButton(
-                    icon: DecoratedIcon(Icons.location_on,
-                        color: colorPrimary,
-                        size: ICON_SIZE,
-                        shadows: [
-                          iconShadow,
-                        ]),
-                    tooltip: hikeTrail.address,
-                    onPressed: () {
-                      _launchAddressURL(hikeTrail.address);
-                    },
-                  ),
-                  Text('${parseLongField(hikeTrail.address)}',
-                      style: headerTextStyle),
-                ])
-              : Container(width: 0, height: 0),
+
+          /// hike address
+          tappableIconWithText(hikeTrail.address, Icons.location_on,
+              _launchAddressURL, TEXT_INSET),
+
           Padding(
             padding: ICON_INSET,
             child: Row(
@@ -1055,75 +956,22 @@ class _RecreationalCard extends State<RecreationalCard> {
                       ),
                     )
                   : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.address))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.location_on,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        tooltip: recreational.address,
-                        onPressed: () {
-                          _launchAddressURL(recreational.address);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.address)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.phoneNumber))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.phone,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchPhoneURL(recreational.phoneNumber);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.phoneNumber)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.email))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.email,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchMailURL(recreational.email);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.email)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
-              (!isFieldEmpty(recreational.website))
-                  ? Row(children: <Widget>[
-                      IconButton(
-                        icon: DecoratedIcon(Icons.language,
-                            color: colorPrimary,
-                            size: ICON_SIZE,
-                            shadows: [
-                              iconShadow,
-                            ]),
-                        onPressed: () {
-                          _launchWebsiteURL(recreational.website);
-                        },
-                      ),
-                      Text('${parseLongField(recreational.website)}',
-                          style: headerTextStyle),
-                    ])
-                  : Container(width: 0, height: 0),
+
+              /// rec address
+              tappableIconWithText(recreational.address, Icons.location_on,
+                  _launchAddressURL, TEXT_INSET),
+
+              /// rec phone number
+              tappableIconWithText(recreational.phoneNumber, Icons.phone,
+                  _launchPhoneURL, TEXT_INSET),
+
+              /// rec email
+              tappableIconWithText(
+                  recreational.email, Icons.email, _launchMailURL, TEXT_INSET),
+
+              /// rec website
+              tappableIconWithText(recreational.website, Icons.language,
+                  _launchWebsiteURL, TEXT_INSET),
             ]));
   }
 }

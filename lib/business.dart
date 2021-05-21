@@ -44,7 +44,7 @@ class _BusinessPageState extends State<BusinessState> {
   Future future;
   // FireStore reference
   CollectionReference fireStore =
-      FirebaseFirestore.instance.collection('teg_businesses');
+      FirebaseFirestore.instance.collection('businesses');
   // Controllers to check scroll position of ListView
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
