@@ -19,7 +19,7 @@ const double TITLE_SIZE = 22;
 const double BODY_SIZE = 16;
 const double ICON_SIZE = 30;
 const double ICON_SIZE_SMALL = 18;
-const int SHOW_MORE_TEXT_COUNT = 120;
+const int SHOW_MORE_TEXT_COUNT = 150;
 const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
 const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
@@ -49,14 +49,14 @@ Widget tappableIconWithText(String field, icon, onPressed, padding) {
             onTap: () {
               onPressed(field);
             },
-            child: Row(children: <Widget>[
+            child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
               DecoratedIcon(icon,
                   color: colorPrimary,
                   size: ICON_SIZE,
                   shadows: [
                     iconShadow,
                   ]),
-              Text('${parseLongField(field)}', style: headerTextStyle),
+              Text('  ${parseLongField(field)}  ', style: headerTextStyle),
             ]),
           ),
         )
