@@ -220,7 +220,7 @@ class _HikePageState extends State<Hike> {
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
     //=================================================
-    // Scrolling Listener + ScrollToTop Button
+    // Scrolling Listener
     //=================================================
 
     // listener for the current scroll position
@@ -234,24 +234,6 @@ class _HikePageState extends State<Hike> {
             : _isScrollButtonVisible = false;
       });
     });
-
-    Widget _buildScrollToTopButton() {
-      return _isScrollButtonVisible
-          ? FloatingActionButton(
-              // scroll to top of the list
-              child: FaIcon(FontAwesomeIcons.angleUp),
-              shape: RoundedRectangleBorder(),
-              foregroundColor: colorPrimary,
-              mini: true,
-              onPressed: () {
-                _scrollController.scrollTo(
-                  index: 0,
-                  duration: Duration(seconds: 1),
-                  curve: Curves.easeInOut,
-                );
-              })
-          : null;
-    }
 
     //=================================================
     // Build Widget for HikesList
@@ -274,7 +256,8 @@ class _HikePageState extends State<Hike> {
                           listOfFireStoreObjects: filteredHikes),
                       index);
                 })),
-        floatingActionButton: _buildScrollToTopButton());
+        floatingActionButton:
+            buildScrollToTopButton(_isScrollButtonVisible, _scrollController));
   }
 
   ///=========================
