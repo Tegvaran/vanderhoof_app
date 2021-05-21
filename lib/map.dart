@@ -128,7 +128,7 @@ class GmapState extends State<Gmap> {
   ItemScrollController scrollController;
   GmapState(this.listOfFireStoreObjects, this._markers, this.scrollController);
 
-  static final double zoomVal = 17;
+  static final double zoomVal = 13;
   static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679);
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
@@ -250,7 +250,7 @@ class GmapState extends State<Gmap> {
               _isMapVisible = true;
             });
           },
-          zoomControlsEnabled: false,
+          zoomControlsEnabled: _isMapVisible ? true : false,
           myLocationEnabled: true,
           myLocationButtonEnabled: _isMapVisible ? true : false,
         ),
