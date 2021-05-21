@@ -23,7 +23,7 @@ const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
 const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
 const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
 const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
-const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 0, 21, 0);
+const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
 
 TextStyle titleTextStyle = TextStyle(
     fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
