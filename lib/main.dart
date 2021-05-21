@@ -87,6 +87,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _animation;
 
+  final List<Widget> _children = [
+    BusinessState(),
+    ResourceState(),
+    EventState(),
+    Hike(),
+    Recreation(),
+  ];
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -192,20 +206,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ),
               ))),
     );
-  }
-
-  final List<Widget> _children = [
-    BusinessState(),
-    ResourceState(),
-    EventState(),
-    Hike(),
-    Recreation(),
-  ];
-
-  void _onTabTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   @override
