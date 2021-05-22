@@ -203,7 +203,7 @@ class _AddHikePageSate extends State<AddHikePage> {
                                           (hike == null) ? null : hike.time),
                                   SizedBox(height: 20),
                                   Text(
-                                    "Points of Interest",
+                                    "Highlights",
                                     style: TextStyle(
                                       decoration: TextDecoration.underline,
                                     ),
