@@ -37,29 +37,30 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Vanderhoof App Flutter Demo',
-        theme: ThemeData(
-          // This is the theme of your application.
-          primarySwatch: colorPrimary,
-          primaryColor: colorPrimary,
-          accentColor: colorAccent,
-          // canvasColor: colorBackground,
-        ),
-        home: FutureBuilder(
-            future: _initialization,
-            builder: (context, snapshot) {
-              // Check for errors
-              if (snapshot.hasError) {
-                return Text("Something went wrong: ${snapshot.hasError}");
-                // Once complete, show your application
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                return MyHomePage(title: 'Landing Page');
-              } else {
-                // Otherwise, show something whilst waiting for initialization to complete
-                return Center(child: CircularProgressIndicator());
-              }
-            }));
+    return FutureBuilder(
+        // Replace the 3 second delay with your initialization code:
+        future: _initialization,
+        builder: (context, AsyncSnapshot snapshot) {
+          // Show splash screen while waiting for app resources to load:
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return MaterialApp(home: Splash());
+          } else if (snapshot.hasError) {
+            // Check for errors
+            return Text("Something went wrong: ${snapshot.error}");
+          }
+          // Once complete, show your application
+          else {
+            // Loading is done, return the app:
+            return MaterialApp(
+                title: "Vanderhoof Chamber Admin App",
+                theme: ThemeData(
+                  primarySwatch: colorPrimary,
+                  primaryColor: colorPrimary,
+                  accentColor: colorAccent,
+                ),
+                home: MyHomePage(title: 'Landing Page'));
+          }
+        });
   }
 }
 
@@ -252,6 +253,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               selectedItemColor: colorAccent,
               unselectedItemColor: Colors.white,
             ),
+    );
+  }
+}
+
+/// The Secondary Splash screen that appears after the app has loaded. This is
+/// the screen that shows up when firebase is being initialized.
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+          child: Image.asset("assets/images/vanderhoof_chamber_logo_only.png")
+          // Icon(
+          //   Icons.apartment_outlined,
+          //   size: MediaQuery.of(context).size.width * 0.785,
+          // ),
+          ),
     );
   }
 }
