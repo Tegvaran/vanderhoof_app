@@ -962,6 +962,8 @@ void _launchInstaURL(String username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.instagram.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)
@@ -975,6 +977,8 @@ void _launchFacebookURL(String username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.facebook.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)
@@ -988,6 +992,8 @@ void _launchTwitterURL(username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.twitter.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)
