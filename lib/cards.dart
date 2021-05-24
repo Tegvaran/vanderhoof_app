@@ -50,7 +50,7 @@ Widget tappableIconWithText(String field, icon, onPressed, padding) {
                   shadows: [
                     iconShadow,
                   ]),
-              Text('  ${parseLongField(field)}  ', style: headerTextStyle),
+              Text('  ${parseLongField(field)}', style: headerTextStyle),
             ]),
           ),
         )
@@ -939,12 +939,15 @@ class _RecreationalCard extends State<RecreationalCard> {
 
 /// builds a Loading Indicator widget while images are loading
 Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
-  return Center(
-    child: CircularProgressIndicator(
-      value: loadingProgress.expectedTotalBytes != null
-          ? loadingProgress.cumulativeBytesLoaded /
-              loadingProgress.expectedTotalBytes
-          : null,
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Center(
+      child: CircularProgressIndicator(
+        value: loadingProgress.expectedTotalBytes != null
+            ? loadingProgress.cumulativeBytesLoaded /
+                loadingProgress.expectedTotalBytes
+            : null,
+      ),
     ),
   );
 }
