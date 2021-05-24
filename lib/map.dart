@@ -13,6 +13,8 @@ import 'main.dart';
 
 bool _isMapVisible = true;
 
+/// Uses [scrollController] to scroll listView to the expandedTile of [index]
+/// Is used in Business, Recreation and hikes pages
 void scrollToIndex(ItemScrollController scrollController, int index) {
   scrollController.scrollTo(
     index: index,
@@ -21,6 +23,7 @@ void scrollToIndex(ItemScrollController scrollController, int index) {
   );
 }
 
+/// Converts [objList] to list of Markers
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
   for (int i = 0; i < objList.length; i++) {
@@ -36,7 +39,9 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   }
   return outList;
 }
-
+/// Clears [markers] and repopulates it using [filteredFireStoreObjects]
+/// [scrollController] is used to apply scrollToIndex and changeMarkerColor
+/// to the marker's onTap
 HashSet<Marker> resetMarkers(
     markers, filteredFireStoreObjects, scrollController) {
   markers.clear();
@@ -64,10 +69,13 @@ HashSet<Marker> resetMarkers(
   return markers;
 }
 
+/// replicates marker in [markers] of [index] using [fireStoreObjects] as source
+/// [scrollController] used to add scrollToIndex to marker's onTap
 void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   //remove marker at expansion card index
   //markers.remove(markers.elementAt(index));
 
+  // Colour of new marker
   BitmapDescriptor selectedIconParams = BitmapDescriptor.defaultMarkerWithHue(
       HSVColor.fromColor(colorPrimary).hue);
 
@@ -92,11 +100,15 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   return markers;
 }
 
+// Global mapController used to provide extended access
 GoogleMapController mapController;
+
+/// Used to animate and change the Google Maps camera position of [pos]
 void changeCamera(LatLng pos) {
   mapController.animateCamera(CameraUpdate.newLatLng(pos));
 }
 
+/// Uses [addr] value to return LatLng value
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
   var first = address.first;
@@ -107,6 +119,7 @@ Future<LatLng> toLatLng(String addr) async {
   return ll;
 }
 
+/// Base Gmap StatefulWidget inherits from StatefulWidget
 class Gmap extends StatefulWidget {
   List<FireStoreObject> listOfFireStoreObjects;
   Set<Marker> _markers = HashSet<Marker>();
@@ -119,6 +132,8 @@ class Gmap extends StatefulWidget {
       GmapState(listOfFireStoreObjects, _markers, scrollController);
 }
 
+/// Gmap active State initialized in Gmap
+/// returns Widget with Google Map Node
 class GmapState extends State<Gmap> {
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
@@ -133,6 +148,7 @@ class GmapState extends State<Gmap> {
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
 
+  /// returns the current location of the users phone
   _getLocation() async {
     var location = new Location();
     try {
@@ -150,12 +166,16 @@ class GmapState extends State<Gmap> {
     }
   }
 
+  /// Uses _getLocation to grab the initial location of the users phone
   @override
   void initState() {
     _getLocation();
     super.initState();
   }
 
+  /// Sets up the parameters for the map
+  /// sets [_mapController] to be GoogleMapController and sets up
+  /// initial [_markers] list of Markers
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
     mapController = _mapController;
@@ -198,6 +218,8 @@ class GmapState extends State<Gmap> {
     });
   }
 
+  /// Returns map visability button that appears on map.
+  /// onPressed sets _isMapVisible to false
   Widget _buildMapVisibilityButton() {
     return Container(
       height: 38,
@@ -231,6 +253,8 @@ class GmapState extends State<Gmap> {
     );
   }
 
+  /// Returns AnimatedContainer that has GoogleMap as child
+  /// GoogleMap's onTap contains: resetMarkers and sets _isMapVisible to true
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
