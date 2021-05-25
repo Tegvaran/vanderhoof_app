@@ -12,13 +12,39 @@ import 'hike.dart';
 import 'recreation.dart';
 import 'resource.dart';
 
-// ThemeData Colors
+/// ThemeData Colors
 MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
 MaterialColor colorText = createMaterialColor(Color(0xFF666666));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
 MaterialColor colorBackground = createMaterialColor(Color(0xFFF3F3F3));
 
+/// ThemeData Padding
+const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
+const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
+const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
+const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
+
+/// ThemeData Text + Icon Sizes
+const double TITLE_SIZE = 22;
+const double BODY_SIZE = 16;
+const double ICON_SIZE = 30;
+const double ICON_SIZE_SMALL = 18;
+const int SHOW_MORE_TEXT_COUNT = 150;
+
+/// ThemeData TextStyles
+TextStyle titleTextStyle = TextStyle(
+    fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
+TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
+TextStyle headerTextStyle = TextStyle(
+    fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
+TextStyle header2TextStyle = TextStyle(
+    fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
+
+/// ThemeData Divider
 Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
+
+/// ThemeData Shadows for icon
 BoxShadow iconShadow = BoxShadow(
     color: Colors.grey.withOpacity(0.5),
     blurRadius: 3,
@@ -37,29 +63,30 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Vanderhoof App Flutter Demo',
-        theme: ThemeData(
-          // This is the theme of your application.
-          primarySwatch: colorPrimary,
-          primaryColor: colorPrimary,
-          accentColor: colorAccent,
-          // canvasColor: colorBackground,
-        ),
-        home: FutureBuilder(
-            future: _initialization,
-            builder: (context, snapshot) {
-              // Check for errors
-              if (snapshot.hasError) {
-                return Text("Something went wrong: ${snapshot.hasError}");
-                // Once complete, show your application
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                return MyHomePage(title: 'Landing Page');
-              } else {
-                // Otherwise, show something whilst waiting for initialization to complete
-                return Center(child: CircularProgressIndicator());
-              }
-            }));
+    return FutureBuilder(
+        // Replace the 3 second delay with your initialization code:
+        future: _initialization,
+        builder: (context, AsyncSnapshot snapshot) {
+          // Show splash screen while waiting for app resources to load:
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return MaterialApp(home: Splash());
+          } else if (snapshot.hasError) {
+            // Check for errors
+            return Text("Something went wrong: ${snapshot.error}");
+          }
+          // Once complete, show your application
+          else {
+            // Loading is done, return the app:
+            return MaterialApp(
+                title: "Vanderhoof Chamber Admin App",
+                theme: ThemeData(
+                  primarySwatch: colorPrimary,
+                  primaryColor: colorPrimary,
+                  accentColor: colorAccent,
+                ),
+                home: MyHomePage(title: 'Landing Page'));
+          }
+        });
   }
 }
 
@@ -252,6 +279,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               selectedItemColor: colorAccent,
               unselectedItemColor: Colors.white,
             ),
+    );
+  }
+}
+
+/// The Secondary Splash screen that appears after the app has loaded. This is
+/// the screen that shows up when firebase is being initialized.
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+          child: Image.asset("assets/images/vanderhoof_chamber_logo_only.png")
+          // Icon(
+          //   Icons.apartment_outlined,
+          //   size: MediaQuery.of(context).size.width * 0.785,
+          // ),
+          ),
     );
   }
 }

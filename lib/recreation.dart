@@ -3,18 +3,13 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'map.dart';
-import 'addRecPage.dart';
 import 'cards.dart';
 import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
-import 'addBusinessPage.dart';
-import 'addEventPage.dart';
 import 'main.dart';
-import 'map.dart';
 
 bool hasReadDataFirstTime = false;
 
@@ -78,7 +73,6 @@ class _RecreationPageState extends State<Recreation> {
     return recs;
   }
 
-
   /// this method gets firebase data and populates into list of businesses
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   @override
@@ -97,49 +91,6 @@ class _RecreationPageState extends State<Recreation> {
           .toList();
       resetMarkers(_markers, filteredRecs, _scrollController);
     });
-  }
-
-  /// Widget build for Admin Menu Hamburger Drawer
-  Widget _buildAdminDrawer() {
-    return Drawer(
-        child: ListView(
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        Container(
-          height: 100,
-          margin: EdgeInsets.all(0),
-          padding: EdgeInsets.all(0),
-          child: DrawerHeader(
-            child: Text("Admin Menu"),
-            decoration: BoxDecoration(color: colorPrimary),
-          ),
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add a Business"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddBusinessPage(),
-                ));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add an Event"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddEventPage(),
-                ));
-          },
-        ),
-      ],
-    ));
   }
 
   /// Widget build for AppBar with Search
@@ -204,109 +155,6 @@ class _RecreationPageState extends State<Recreation> {
     });
 
     //=================================================
-    // Assistance Methods + DismissibleTile Widget
-    //=================================================
-
-    void _deleteRec(String recName, int index) {
-      {
-        // Remove the item from the data source.
-        setState(() {
-          filteredRecs.removeAt(index);
-        });
-        FirebaseFirestore.instance
-            .collection("recreation")
-            .where("name", isEqualTo: recName)
-            .get()
-            .then((value) {
-          value.docs.forEach((element) {
-            FirebaseFirestore.instance
-                .collection("recreation")
-                .doc(element.id)
-                .delete()
-                .then((value) => print("$recName Deleted"))
-                .catchError((error) => print("Failed to delete user: $error"));
-          });
-        });
-        // Then show a snackbar.
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("$recName deleted")));
-      }
-    }
-
-    Widget _dismissibleTile(Widget child, int index) {
-      final item = filteredRecs[index];
-      return Dismissible(
-          // direction: DismissDirection.endToStart,
-          // Each Dismissible must contain a Key. Keys allow Flutter to
-          // uniquely identify widgets.
-          key: Key(item.name),
-          // Provide a function that tells the app
-          // what to do after an item has been swiped away.
-          confirmDismiss: (direction) async {
-            String confirm = 'Confirm Deletion';
-            String bodyMsg = 'Are you sure you want to delete:';
-            var function = () {
-              // _deleteBusiness(item.name, index);
-              deleteCardHikeRec(index, this, context, filteredRecs, fireStore,
-                  "recreation", item.name);
-              Navigator.of(context).pop(true);
-            };
-            if (direction == DismissDirection.startToEnd) {
-              confirm = 'Confirm to go to edit page';
-              bodyMsg = "Would you like to edit this item?";
-              function = () {
-                // Navigator.of(context).pop(false);
-                print(item);
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddRecPage(rec: item),
-                    ));
-                //
-                //
-              };
-            }
-            return await showDialog(
-                context: context,
-                barrierDismissible: false, // user must tap button!
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(confirm),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          Text(bodyMsg),
-                          Center(
-                              child: Text(item.name,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('Yes'),
-                        onPressed: () {
-                          function();
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                    ],
-                  );
-                });
-          },
-          background: slideRightEditBackground(),
-          secondaryBackground: slideLeftDeleteBackground(),
-          child: child);
-    }
-
-    //=================================================
     // Build Widget for RecreationsList
     //=================================================
     return new Scaffold(
@@ -319,17 +167,16 @@ class _RecreationPageState extends State<Recreation> {
         itemCount: filteredRecs.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return _dismissibleTile(
-              RecreationalCard(
-                  recreational: filteredRecs[index],
-                  scrollController: _scrollController,
-                  scrollIndex: index,
-                  mapMarkers: _markers,
-                  listOfFireStoreObjects: filteredRecs),
-              index);
+          return RecreationalCard(
+              recreational: filteredRecs[index],
+              scrollController: _scrollController,
+              scrollIndex: index,
+              mapMarkers: _markers,
+              listOfFireStoreObjects: filteredRecs);
         },
       )),
-      floatingActionButton: buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
+      floatingActionButton:
+          buildScrollToTopButton(_isScrollButtonVisible, _scrollController),
     );
   }
 
@@ -339,8 +186,6 @@ class _RecreationPageState extends State<Recreation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Drawer: Hamburger menu for Admin
-      drawer: _buildAdminDrawer(),
       appBar: _buildSearchAppBar(),
       body: Container(
         padding: EdgeInsets.all(0.0),

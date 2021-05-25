@@ -11,8 +11,15 @@ import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 
+/// Toggle to determine whether map is visible
+///
+/// Set by Widget _buildMapVisibilityButton()
+/// Used by Widget AnimatedContainer()
+/// -- height: _isMapVisible ? 217.0 : 62.0
 bool _isMapVisible = true;
 
+/// Uses [scrollController] to scroll listView to the expandedTile of [index]
+/// Is used in Business, Recreation and Hikes pages.
 void scrollToIndex(ItemScrollController scrollController, int index) {
   scrollController.scrollTo(
     index: index,
@@ -21,6 +28,7 @@ void scrollToIndex(ItemScrollController scrollController, int index) {
   );
 }
 
+/// Converts [objList] list of FireStoreObjects to list of Google Maps Markers
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
   for (int i = 0; i < objList.length; i++) {
@@ -37,6 +45,11 @@ Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   return outList;
 }
 
+/// Resets HashSet<Markers> using list of FireStoreObjects
+///
+/// Clears [markers] and repopulates it using [filteredFireStoreObjects]
+/// [scrollController] is used to apply scrollToIndex and changeMarkerColor
+/// to the marker's onTap
 HashSet<Marker> resetMarkers(
     markers, filteredFireStoreObjects, scrollController) {
   markers.clear();
@@ -44,14 +57,18 @@ HashSet<Marker> resetMarkers(
     // Checks if the location of the object is null,
     // if it is not then it is added to the marker list.
     if (filteredFireStoreObjects[i].location != null) {
+      // Adds Google Maps Marker to markers HashSet<Marker>
       markers.add(
         Marker(
             markerId: MarkerId(filteredFireStoreObjects[i].name),
             position: filteredFireStoreObjects[i].location,
             onTap: () {
+              // Scrolls matching ExpansionTile to top of listView
               scrollToIndex(scrollController, i);
+              // Changes color of Marker
               changeMarkerColor(
                   i, markers, filteredFireStoreObjects, scrollController);
+              // Bool sets: Google Map container height -> height: _isMapVisible ? 217.0 : 62.0,
               _isMapVisible = true;
             },
             infoWindow: InfoWindow(
@@ -64,10 +81,13 @@ HashSet<Marker> resetMarkers(
   return markers;
 }
 
+/// Replicates Marker in HashSet [markers] of [index] using [fireStoreObjects] as source.
+/// [scrollController] used to add scrollToIndex to marker's onTap.
 void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   //remove marker at expansion card index
   //markers.remove(markers.elementAt(index));
 
+  // Colour of new marker
   BitmapDescriptor selectedIconParams = BitmapDescriptor.defaultMarkerWithHue(
       HSVColor.fromColor(colorPrimary).hue);
 
@@ -81,6 +101,7 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
           position: fireStoreObjects[index].location,
           icon: selectedIconParams,
           onTap: () {
+            // Scrolls matching ExpansionTile to top of listView
             scrollToIndex(scrollController, index);
           },
           infoWindow: InfoWindow(
@@ -92,11 +113,15 @@ void changeMarkerColor(index, markers, fireStoreObjects, scrollController) {
   return markers;
 }
 
+// Global mapController used to provide extended access
 GoogleMapController mapController;
+
+/// Used to animate and change the Google Maps camera position to [pos]
 void changeCamera(LatLng pos) {
   mapController.animateCamera(CameraUpdate.newLatLng(pos));
 }
 
+/// Uses [addr] value to return LatLng value
 Future<LatLng> toLatLng(String addr) async {
   var address = await Geocoder.local.findAddressesFromQuery(addr);
   var first = address.first;
@@ -107,6 +132,9 @@ Future<LatLng> toLatLng(String addr) async {
   return ll;
 }
 
+/// Base [Gmap] StatefulWidget
+///
+/// Creates State: GmapState
 class Gmap extends StatefulWidget {
   List<FireStoreObject> listOfFireStoreObjects;
   Set<Marker> _markers = HashSet<Marker>();
@@ -119,7 +147,11 @@ class Gmap extends StatefulWidget {
       GmapState(listOfFireStoreObjects, _markers, scrollController);
 }
 
+/// Gmap active State initialized in [Gmap]
+///
+/// State of  StatefulWidget [Gmap]
 class GmapState extends State<Gmap> {
+  ///
   Set<Marker> _markers;
   MapType mapType = MapType.normal;
   List<FireStoreObject> listOfFireStoreObjects;
@@ -133,6 +165,13 @@ class GmapState extends State<Gmap> {
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
 
+  /// Sets map to phones location.
+  ///
+  /// Sets [currentLocation] to phone's LatLng using [Location()]
+  /// Sets [_initialCameraPosition] ->
+  /// CameraPosition(target: [currentLocation], zoom: [zoomVal])
+  /// On Exception [currentLocation] to null
+  /// Used by [initState()]
   _getLocation() async {
     var location = new Location();
     try {
@@ -150,12 +189,19 @@ class GmapState extends State<Gmap> {
     }
   }
 
+  /// Uses [_getLocation()] to set Google Maps Camera to the location
+  /// of the users phone.
   @override
   void initState() {
     _getLocation();
     super.initState();
   }
 
+  /// Sets up GoogleMapController and Markers for the map
+  ///
+  /// Sets [_mapController] to be GoogleMapController and builds
+  /// initial [_markers] HashSet<Markers> from [listOfFireStoreObjects]
+  /// _isMapVisible is set to true
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
     mapController = _mapController;
@@ -198,6 +244,11 @@ class GmapState extends State<Gmap> {
     });
   }
 
+  /// Returns map visibility button that appears on map.
+  ///
+  /// If [_isMapVisible] FloatingActionButton is child, else null
+  /// onPressed sets [_isMapVisible] to false
+  /// Used in Widget build
   Widget _buildMapVisibilityButton() {
     return Container(
       height: 38,
@@ -213,6 +264,7 @@ class GmapState extends State<Gmap> {
                 ),
                 onPressed: () {
                   setState(() {
+                    // Sets bool that determines whether map is expanded
                     _isMapVisible = false;
                   });
                 },
@@ -223,6 +275,7 @@ class GmapState extends State<Gmap> {
                   borderRadius: BorderRadius.all(Radius.circular(3))),
               onPressed: () {
                 setState(() {
+                  // Sets bool that determines whether map is expanded
                   _isMapVisible = false;
                 });
               },
@@ -231,6 +284,10 @@ class GmapState extends State<Gmap> {
     );
   }
 
+  /// Returns AnimatedContainer that has GoogleMap as child.
+  ///
+  /// GoogleMap's onTap contains: [resetMarkers()] and sets [_isMapVisible] to true
+  /// floatingActionButton: [_buildMapVisibilityButton()] -> [_isMapVisible] = true
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -245,8 +302,10 @@ class GmapState extends State<Gmap> {
           markers: _markers,
           onMapCreated: _onMapCreated,
           onTap: (value) {
+            // Resets HashSet<Markers> to the state defined by [listOfFireStoreObjects]
             resetMarkers(_markers, listOfFireStoreObjects, scrollController);
             setState(() {
+              // Sets bool that determines whether map is expanded
               _isMapVisible = true;
             });
           },

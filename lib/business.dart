@@ -3,20 +3,13 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'addHikePage.dart';
-import 'addRecPage.dart';
-import 'addBusinessPage.dart';
-import 'addEventPage.dart';
 import 'cards.dart';
 import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
-import 'scraper.dart';
-// import 'main.dart';
 import 'data.dart';
 
 bool hasReadDataFirstTime = false;
@@ -49,7 +42,6 @@ class _BusinessPageState extends State<BusinessState> {
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isScrollButtonVisible = false;
-  bool _isMapVisible = true;
 
   // GoogleMap markers
   Set<Marker> _markers = HashSet<Marker>();
@@ -89,7 +81,6 @@ class _BusinessPageState extends State<BusinessState> {
     return businesses;
   }
 
-
   /// this method gets firebase data and populates into list of businesses
   // reference: https://github.com/bitfumes/flutter-country-house/blob/master/lib/Screens/AllCountries.dart
   @override
@@ -116,78 +107,6 @@ class _BusinessPageState extends State<BusinessState> {
       duration: Duration(seconds: 1),
       curve: Curves.easeInOut,
     );
-  }
-
-  /// Widget build for Admin Menu Hamburger Drawer
-  Widget _buildAdminDrawer() {
-    return Drawer(
-        child: ListView(
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        Container(
-          height: 100,
-          margin: EdgeInsets.all(0),
-          padding: EdgeInsets.all(0),
-          child: DrawerHeader(
-            child: Text("Admin Menu"),
-            decoration: BoxDecoration(color: colorPrimary),
-          ),
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add a Business"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddBusinessPage(),
-                ));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add an Event"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddEventPage(),
-                ));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add a Hike/Trail"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddHikePage(),
-                ));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text("Add a Rec"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddRecPage(),
-                ));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.ac_unit),
-          title: Text("Test Scraper"),
-          onTap: () => scrap(true),
-        ),
-      ],
-    ));
   }
 
   /// Widget build for AppBar with Search
@@ -251,118 +170,6 @@ class _BusinessPageState extends State<BusinessState> {
       });
     });
 
-    //=================================================
-    // Assistance Methods + DismissibleTile Widget
-    //=================================================
-
-    // void _deleteBusiness(String businessName, String docID, int index) {
-    //   {
-    //     // Remove the item from the data source.
-    //     setState(() {
-    //       filteredBusinesses.removeAt(index);
-    //     });
-    //     // Delete from fireStore
-    //     // String docID = businessName.replaceAll('/', '|');
-    //     fireStore
-    //         .doc(docID)
-    //         .delete()
-    //         .then((value) => print("$docID Deleted"))
-    //         .catchError((error) => print("Failed to delete user: $error"));
-    //
-    //     // Then show a snackbar.
-    //     ScaffoldMessenger.of(context)
-    //         .showSnackBar(SnackBar(content: Text("$businessName deleted")));
-    //   }
-    // }
-
-    Widget _dismissibleTile(Widget child, int index) {
-      final item = filteredBusinesses[index];
-      return Dismissible(
-          // Each Dismissible must contain a Key. Keys allow Flutter to
-          // uniquely identify widgets.
-          key: Key(item.name),
-          // Provide a function that tells the app
-          // what to do after an item has been swiped away.
-          confirmDismiss: (direction) async {
-            String confirm = 'Confirm Deletion';
-            String bodyMsg = 'Are you sure you want to delete:';
-            var function = () {
-              deleteCard(item.name, item.id, index, fireStore).then((v) {
-                // Remove the item from the data source.
-                setState(() {
-                  filteredBusinesses.removeAt(index);
-                });
-                // Delete the Image from firebase storage (filename is ID, folder is 'businesses'
-                deleteFileFromID(item.id, 'businesses');
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${item.name} deleted")));
-
-                Navigator.of(context).pop(true);
-              });
-            };
-            if (direction == DismissDirection.startToEnd) {
-              confirm = 'Confirm to go to edit page';
-              bodyMsg = "Would you like to edit this item?";
-              function = () {
-                // Navigator.of(context).pop(false);
-                Navigator.pop(context);
-                Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddBusinessPage(business: item),
-                        ))
-                    //     .then((v) => setState(() {
-                    //       // _getEvents();
-                    //     }
-                    //     )
-                    // )
-                    ;
-                //
-                //
-              };
-            }
-            print(item.name);
-            return await showDialog(
-                context: context,
-                barrierDismissible: false, // user must tap button!
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(confirm),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          Text(bodyMsg),
-                          Center(
-                              child: Text(item.name,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('Yes'),
-                        onPressed: () {
-                          function();
-                          // _deleteBusiness(item.name, item.id, index);
-                          // Navigator.of(context).pop(true);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                    ],
-                  );
-                });
-          },
-          background: slideRightEditBackground(),
-          secondaryBackground: slideLeftDeleteBackground(),
-          child: child);
-    }
 
     //=================================================
     // Build Widget for BusinessesList
@@ -377,14 +184,13 @@ class _BusinessPageState extends State<BusinessState> {
         itemCount: filteredBusinesses.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return _dismissibleTile(
+          return
               BusinessCard(
                   business: filteredBusinesses[index],
                   scrollController: _scrollController,
                   scrollIndex: index,
                   mapMarkers: _markers,
-                  listOfFireStoreObjects: filteredBusinesses),
-              index);
+                  listOfFireStoreObjects: filteredBusinesses);
         },
       )),
       floatingActionButton:
@@ -453,7 +259,6 @@ class _BusinessPageState extends State<BusinessState> {
   Widget build(BuildContext context) {
     return Scaffold(
       // Drawer: Hamburger menu for Admin
-      drawer: _buildAdminDrawer(),
       appBar: _buildSearchAppBar(),
       body: Container(
         padding: EdgeInsets.all(0.0),
