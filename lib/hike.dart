@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -11,7 +10,6 @@ import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
 import 'map.dart';
-import 'addHikePage.dart';
 
 bool hasReadDataFirstTime = false;
 
@@ -145,77 +143,6 @@ class _HikePageState extends State<Hike> {
     );
   }
 
-  Widget _dismissibleTile(Widget child, int index) {
-    final item = filteredHikes[index];
-    return Dismissible(
-        // direction: DismissDirection.endToStart,
-        // Each Dismissible must contain a Key. Keys allow Flutter to
-        // uniquely identify widgets.
-        key: Key(item.name),
-        // Provide a function that tells the app
-        // what to do after an item has been swiped away.
-        confirmDismiss: (direction) async {
-          String confirm = 'Confirm Deletion';
-          String bodyMsg = 'Are you sure you want to delete:';
-          var function = () {
-            // _deleteBusiness(item.name, index);
-            deleteCardHikeRec(index, this, context, filteredHikes, fireStore,
-                "trails", item.name);
-            Navigator.of(context).pop(true);
-          };
-          if (direction == DismissDirection.startToEnd) {
-            confirm = 'Confirm to go to edit page';
-            bodyMsg = "Would you like to edit this item?";
-            function = () {
-              // Navigator.of(context).pop(false);
-              print(item);
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddHikePage(hike: item),
-                  ));
-              //
-              //
-            };
-          }
-          return await showDialog(
-              context: context,
-              barrierDismissible: false, // user must tap button!
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text(confirm),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text(bodyMsg),
-                        Center(
-                            child: Text(item.name,
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('Yes'),
-                      onPressed: () {
-                        function();
-                      },
-                    ),
-                    TextButton(
-                      child: Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                  ],
-                );
-              });
-        },
-        background: slideRightEditBackground(),
-        secondaryBackground: slideLeftDeleteBackground(),
-        child: child);
-  }
 
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
@@ -247,14 +174,13 @@ class _HikePageState extends State<Hike> {
                 itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return _dismissibleTile(
+                  return
                       HikeCard(
                           hikeTrail: filteredHikes[index],
                           scrollController: _scrollController,
                           scrollIndex: index,
                           mapMarkers: _markers,
-                          listOfFireStoreObjects: filteredHikes),
-                      index);
+                          listOfFireStoreObjects: filteredHikes);
                 })),
         floatingActionButton:
             buildScrollToTopButton(_isScrollButtonVisible, _scrollController));
