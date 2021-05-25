@@ -2,8 +2,7 @@
 Please visit https://www.vanderhoofchamber.com/
 
 Technology used:
-Flutter SDK
-Firebase: FlutterFire, Firestore database, Firebase Storage. 
+Flutter SDK, Firebase: FlutterFire, Firestore database, Firebase Storage. 
 
 ## Introduction
 The Vanderhoof Chamber of Commerce App consists of two apps: the User App, and the Manager App.
