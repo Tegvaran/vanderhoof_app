@@ -1,6 +1,10 @@
 # Vanderhoof Chamber of Commerce App
 Please visit https://www.vanderhoofchamber.com/
 
+Technology used:
+Flutter SDK
+Firebase: FlutterFire, Firestore database, Firebase Storage. 
+
 ## Introduction
 The Vanderhoof Chamber of Commerce App consists of two apps: the User App, and the Manager App.
 This Readme file is for the User App. 
@@ -39,4 +43,22 @@ and point of interests on the trail.
 Recreational facilities in the town of Vanderhoof.
 
 ## Technical
-The
+This app was developed first with the User App, then the addition and deletion features of the app
+was separated and migrated to the Manager App.
+
+- Each of the Category has its own dart file: business.dart, resource.dart, event.dart, hike.dart, 
+and recreation.dart. 
+- The map.dart is used by Business Directory Page, Hiking Trails Page, and Recreational Page to 
+display a GoogleMap of Town of Vanderhoof. 
+- The cards.dart contains the Card UI Classes for each page. 
+- The hikeInformation.dart contains details of hiking trails displayed by hike.dart.
+- The fireStoreObjects.dart contains Object Classes for each page for the purpose of easy 
+communication with Firebase.
+- The commonFunciton.dart contains some shared functions.
+- The data.dart contains hard-coded data of all the business categories (from the Vanderhoof Chamber
+website).
+- Scraper.dart is no longer used.
+
+The five main pages: business.dart, resource.dart, event.dart, hike.dart, and recreation.dart are 
+not connected with one another, but they share similar architecture, and use the other support 
+dart files: map.dart, cards.dart, fireStoreObjects.dart, commonFunctions.dart.
