@@ -15,24 +15,9 @@ import 'hikeInformation.dart';
 import 'main.dart';
 import 'map.dart';
 
-const double TITLE_SIZE = 22;
-const double BODY_SIZE = 16;
-const double ICON_SIZE = 30;
-const double ICON_SIZE_SMALL = 18;
+/// Theme for 'Show More' text button
 const int SHOW_MORE_TEXT_COUNT = 150;
-const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
-const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
-const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
-const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
 const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
-
-TextStyle titleTextStyle = TextStyle(
-    fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
-TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
-TextStyle headerTextStyle = TextStyle(
-    fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
-TextStyle header2TextStyle = TextStyle(
-    fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
 
 /// This function creates a tappable widget that has a icon followed by text.
 Widget tappableIconWithText(String field, icon, onPressed, padding) {
@@ -50,7 +35,7 @@ Widget tappableIconWithText(String field, icon, onPressed, padding) {
                   shadows: [
                     iconShadow,
                   ]),
-              Text('  ${parseLongField(field)}  ', style: headerTextStyle),
+              Text('  ${parseLongField(field)}', style: headerTextStyle),
             ]),
           ),
         )
@@ -939,12 +924,15 @@ class _RecreationalCard extends State<RecreationalCard> {
 
 /// builds a Loading Indicator widget while images are loading
 Widget _buildLoadingProgressIndicator(ImageChunkEvent loadingProgress) {
-  return Center(
-    child: CircularProgressIndicator(
-      value: loadingProgress.expectedTotalBytes != null
-          ? loadingProgress.cumulativeBytesLoaded /
-              loadingProgress.expectedTotalBytes
-          : null,
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Center(
+      child: CircularProgressIndicator(
+        value: loadingProgress.expectedTotalBytes != null
+            ? loadingProgress.cumulativeBytesLoaded /
+                loadingProgress.expectedTotalBytes
+            : null,
+      ),
     ),
   );
 }
@@ -962,6 +950,8 @@ void _launchInstaURL(String username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.instagram.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)
@@ -975,6 +965,8 @@ void _launchFacebookURL(String username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.facebook.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)
@@ -988,6 +980,8 @@ void _launchTwitterURL(username) async {
   String url = username;
   if (!username.contains('.com/')) {
     url = "https://www.twitter.com/$username/";
+  } else if (!username.startsWith('http')) {
+    url = "https://$username/";
   }
   await canLaunch(url)
       ? launch(url)

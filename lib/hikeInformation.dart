@@ -28,18 +28,12 @@ class _HikeInformationState extends State<HikeInformation> {
   // Used in Interactive Viewer to bring the image back to its original position.
   TransformationController c = TransformationController();
 
+  // different ThemeData for InfoPage vs default ThemeData from main.dart
   static const double TITLE_SIZE = 28;
-  static const double BODY_SIZE = 16;
-  static const double ICON_SIZE = 30;
-  static const double ICON_SIZE_SMALL = 18;
-  static const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
-  static const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
   static const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(0, 5, 0, 0);
 
   static final TextStyle titleTextStyle = TextStyle(
       fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
-  static final TextStyle bodyTextStyle =
-      TextStyle(fontSize: BODY_SIZE, color: colorText);
   static final TextStyle headerTextStyle = TextStyle(
       fontSize: BODY_SIZE + 2, color: colorText, fontWeight: FontWeight.bold);
   static final TextStyle header2TextStyle = TextStyle(

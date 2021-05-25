@@ -12,13 +12,39 @@ import 'hike.dart';
 import 'recreation.dart';
 import 'resource.dart';
 
-// ThemeData Colors
+/// ThemeData Colors
 MaterialColor colorPrimary = createMaterialColor(Color(0xFF01579b));
 MaterialColor colorText = createMaterialColor(Color(0xFF666666));
 MaterialColor colorAccent = createMaterialColor(Color(0xFFf4a024));
 MaterialColor colorBackground = createMaterialColor(Color(0xFFF3F3F3));
 
+/// ThemeData Padding
+const EdgeInsets HEADER_INSET = EdgeInsets.fromLTRB(0, 20, 0, 0);
+const EdgeInsets CARD_INSET = EdgeInsets.fromLTRB(12, 6, 12, 6);
+const EdgeInsets TEXT_INSET = EdgeInsets.fromLTRB(21, 16, 21, 0);
+const EdgeInsets ICON_INSET = EdgeInsets.fromLTRB(12, 0, 0, 0);
+const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
+
+/// ThemeData Text + Icon Sizes
+const double TITLE_SIZE = 22;
+const double BODY_SIZE = 16;
+const double ICON_SIZE = 30;
+const double ICON_SIZE_SMALL = 18;
+const int SHOW_MORE_TEXT_COUNT = 150;
+
+/// ThemeData TextStyles
+TextStyle titleTextStyle = TextStyle(
+    fontSize: TITLE_SIZE, color: colorPrimary, fontWeight: FontWeight.bold);
+TextStyle bodyTextStyle = TextStyle(fontSize: BODY_SIZE, color: colorText);
+TextStyle headerTextStyle = TextStyle(
+    fontSize: BODY_SIZE, color: colorText, fontWeight: FontWeight.bold);
+TextStyle header2TextStyle = TextStyle(
+    fontSize: BODY_SIZE - 2, color: colorText, fontWeight: FontWeight.bold);
+
+/// ThemeData Divider
 Divider cardDivider = Divider(height: 5, thickness: 4, color: colorAccent);
+
+/// ThemeData Shadows for icon
 BoxShadow iconShadow = BoxShadow(
     color: Colors.grey.withOpacity(0.5),
     blurRadius: 3,
