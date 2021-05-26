@@ -94,5 +94,5 @@ Summary report which includes information such as:
   Unimplemented Features,
   Next Steps,
   Deployment Instructions,
-  Troubleshooting.
+  and Troubleshooting.
 

@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'cards.dart';
 import 'commonFunction.dart';
 import 'fireStoreObjects.dart';
 import 'main.dart';
@@ -148,27 +149,9 @@ class _HikeInformationState extends State<HikeInformation> {
                   // cardDivider,
 
                   /// address
-                  !isFieldEmpty(hikeTrail.address)
-                      ? Padding(
-                          padding: HEADER_INSET + EdgeInsets.only(left: 5),
-                          child: Row(children: <Widget>[
-                            IconButton(
-                              icon: DecoratedIcon(Icons.location_on,
-                                  color: colorPrimary,
-                                  size: ICON_SIZE,
-                                  shadows: [
-                                    iconShadow,
-                                  ]),
-                              onPressed: () {
-                                _launchAddressURL(hikeTrail.address);
-                              },
-                            ),
-                            Flexible(
-                                child: Text('${hikeTrail.address}',
-                                    style: bodyTextStyle)),
-                            // Text('${hikeTrail.address}', style: bodyTextStyle),
-                          ]))
-                      : Container(width: 0, height: 0),
+                  /// hike address
+                  tappableIconWithText(hikeTrail.address, Icons.location_on,
+                      _launchAddressURL, TEXT_INSET),
 
                   /// trail details
                   (hikeTrail.rating != null ||

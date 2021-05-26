@@ -840,6 +840,9 @@ class _HikeCard extends State<HikeCard> {
               ],
             ),
           ),
+          SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
@@ -890,64 +893,69 @@ class _RecreationalCard extends State<RecreationalCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-        elevation: 3,
-        color: colorBackground,
-        margin: CARD_INSET,
-        child: ExpansionTile(
-            onExpansionChanged: (_isExpanded) {
-              if (_isExpanded) {
-                // highlight map marker by changing its color
-                changeMarkerColor(scrollIndex, mapMarkers,
-                    listOfFireStoreObjects, scrollController);
-                // highlight map marker by moving camera to rec location
-                if (recreational.location != null) {
-                  changeCamera(recreational.location);
-                }
-                // scroll recreational list to expanded tile
-                Future.delayed(Duration(milliseconds: 250)).then((value) {
-                  scrollController.scrollTo(
-                    index: scrollIndex,
-                    duration: Duration(milliseconds: 250),
-                    curve: Curves.easeInOut,
-                  );
-                });
-              } else {
-                resetMarkers(
-                    mapMarkers, listOfFireStoreObjects, scrollController);
+      elevation: 3,
+      color: colorBackground,
+      margin: CARD_INSET,
+      child: ExpansionTile(
+          onExpansionChanged: (_isExpanded) {
+            if (_isExpanded) {
+              // highlight map marker by changing its color
+              changeMarkerColor(scrollIndex, mapMarkers, listOfFireStoreObjects,
+                  scrollController);
+              // highlight map marker by moving camera to rec location
+              if (recreational.location != null) {
+                changeCamera(recreational.location);
               }
-            },
-            title: Text(recreational.name, style: titleTextStyle),
-            expandedCrossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              cardDivider,
+              // scroll recreational list to expanded tile
+              Future.delayed(Duration(milliseconds: 250)).then((value) {
+                scrollController.scrollTo(
+                  index: scrollIndex,
+                  duration: Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                );
+              });
+            } else {
+              resetMarkers(
+                  mapMarkers, listOfFireStoreObjects, scrollController);
+            }
+          },
+          title: Text(recreational.name, style: titleTextStyle),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            cardDivider,
 
-              /// recreation description
-              !(isFieldEmpty(recreational.description))
-                  ? Padding(
-                      padding: TEXT_INSET,
-                      child: Text(
-                        "${recreational.description}",
-                        style: bodyTextStyle,
-                      ),
-                    )
-                  : Container(width: 0, height: 0),
+            /// recreation description
+            !(isFieldEmpty(recreational.description))
+                ? Padding(
+                    padding: TEXT_INSET,
+                    child: Text(
+                      "${recreational.description}",
+                      style: bodyTextStyle,
+                    ),
+                  )
+                : Container(width: 0, height: 0),
 
-              /// rec address
-              tappableIconWithText(recreational.address, Icons.location_on,
-                  _launchAddressURL, TEXT_INSET),
+            /// rec address
+            tappableIconWithText(recreational.address, Icons.location_on,
+                _launchAddressURL, TEXT_INSET),
 
-              /// rec phone number
-              tappableIconWithText(recreational.phoneNumber, Icons.phone,
-                  _launchPhoneURL, TEXT_INSET),
+            /// rec phone number
+            tappableIconWithText(recreational.phoneNumber, Icons.phone,
+                _launchPhoneURL, TEXT_INSET),
 
-              /// rec email
-              tappableIconWithText(
-                  recreational.email, Icons.email, _launchMailURL, TEXT_INSET),
+            /// rec email
+            tappableIconWithText(
+                recreational.email, Icons.email, _launchMailURL, TEXT_INSET),
 
-              /// rec website
-              tappableIconWithText(recreational.website, Icons.language,
-                  _launchWebsiteURL, TEXT_INSET),
-            ]));
+            /// rec website
+            tappableIconWithText(recreational.website, Icons.language,
+                _launchWebsiteURL, TEXT_INSET),
+
+            SizedBox(
+              height: 20,
+            ),
+          ]),
+    );
   }
 }
 
