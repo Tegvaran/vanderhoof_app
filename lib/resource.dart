@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -145,92 +145,6 @@ class _ResourcePageState extends State<ResourceState> {
     });
 
     //=================================================
-    // Assistance Methods + DismissibleTile Widget
-    //=================================================
-
-    Widget _dismissibleTile(Widget child, int index) {
-      final item = filteredResources[index];
-      return Dismissible(
-          // direction: DismissDirection.endToStart,
-          // Each Dismissible must contain a Key. Keys allow Flutter to
-          // uniquely identify widgets.
-          key: Key(item.name),
-          // Provide a function that tells the app
-          // what to do after an item has been swiped away.
-          confirmDismiss: (direction) async {
-            String confirm = 'Confirm Deletion';
-            String bodyMsg = 'Are you sure you want to delete:';
-            var function = () {
-              // _deleteBusiness(item.name, index);
-              deleteCard(item.name, item.id, index, fireStore).then((v) {
-                // Remove the item from the data source.
-                setState(() {
-                  filteredResources.removeAt(index);
-                });
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("${item.name} deleted")));
-
-                Navigator.of(context).pop(true);
-              });
-            };
-            //// todo: AddResourcePage.dart and uncomment this edit feature
-            // if (direction == DismissDirection.startToEnd) {
-            //   confirm = 'Confirm to go to edit page';
-            //   bodyMsg = "Would you like to edit this item?";
-            //   function = () {
-            //     // Navigator.of(context).pop(false);
-            //     Navigator.pop(context);
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => AddResourcePage(Resource: item),
-            //         ));
-            //     //
-            //     //
-            //   };
-            // }
-            print(item.name);
-            return await showDialog(
-                context: context,
-                barrierDismissible: false, // user must tap button!
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(confirm),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          Text(bodyMsg),
-                          Center(
-                              child: Text(item.name,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('Yes'),
-                        onPressed: () {
-                          function();
-                        },
-                      ),
-                      TextButton(
-                        child: Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                    ],
-                  );
-                });
-          },
-          background: slideRightEditBackground(),
-          secondaryBackground: slideLeftDeleteBackground(),
-          child: child);
-    }
-
-    //=================================================
     // Build Widget for ResourcesList
     //=================================================
     return new Scaffold(
@@ -243,12 +157,10 @@ class _ResourcePageState extends State<ResourceState> {
         itemCount: filteredResources.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return _dismissibleTile(
-              ResourceCard(
-                  resource: filteredResources[index],
-                  scrollController: _scrollController,
-                  scrollIndex: index),
-              index);
+          return ResourceCard(
+              resource: filteredResources[index],
+              scrollController: _scrollController,
+              scrollIndex: index);
         },
       )),
       floatingActionButton:
