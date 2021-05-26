@@ -41,8 +41,8 @@ bool isFieldEmpty(String toCheck) {
 /// parses a long string & appends "..."
 String parseLongField(String toCheck) {
   String result = toCheck.trim();
-  if (toCheck.length > 30) {
-    result = toCheck.substring(0, 30) + "...";
+  if (toCheck.length > 25) {
+    result = toCheck.substring(0, 25) + "...";
   }
   return result;
 }
