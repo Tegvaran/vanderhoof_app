@@ -1,4 +1,4 @@
-package com.example.vanderhoof_app
+package com.vanderhoof.vanderhoof_app
 
 import io.flutter.embedding.android.FlutterActivity
 
