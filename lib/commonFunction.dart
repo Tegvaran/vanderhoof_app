@@ -1,15 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'fireStoreObjects.dart';
 
-// import 'cards.dart';
 import 'main.dart';
-// import 'map.dart';
 
 /// uses an address String and returns a LatLng geopoint
 Future<GeoPoint> toLatLng(String addr) async {
@@ -38,172 +33,6 @@ bool isFieldEmpty(String toCheck) {
       toCheck == "null");
 }
 
-/// parses a long string & appends "..."
-String parseLongField(String toCheck) {
-  String result = toCheck.trim();
-  if (toCheck.length > 25) {
-    result = toCheck.substring(0, 25) + "...";
-  }
-  return result;
-}
-
-//=========================================
-//Method to add business to FireStore
-//=========================================
-CollectionReference businessFireStore =
-    FirebaseFirestore.instance.collection('businesses');
-
-Future<void> addBusiness(Map<String, dynamic> businessInfo, {File imageFile}) {
-// Used to add businesses
-  return businessFireStore
-      .add(businessInfo)
-      .then((value) => {
-            print("Business Added:  ${value.id}, ${businessInfo['name']}"),
-            businessFireStore.doc(value.id).update({"id": value.id}),
-            if (imageFile != null)
-              {
-                uploadFile(imageFile, value.id, "businesses").then((v) =>
-                    downloadURL(value.id, "businesses").then((imgURL) =>
-                        businessFireStore
-                            .doc(value.id)
-                            .update({"imgURL": imgURL}))),
-              }
-          })
-      .catchError((error) => print("Failed to add Business: $error"));
-}
-
-Future<void> editBusiness(Map<String, dynamic> form, Business business,
-    {File imageFile}) {
-  if (imageFile != null) {
-    uploadFile(imageFile, business.id, "events").then((v) =>
-        downloadURL(business.id, "events").then((imgURL) =>
-            businessFireStore.doc(business.id).update({"imgURL": imgURL})));
-  }
-  toLatLng(form['address']).then((geopoint) {
-    businessFireStore
-        .doc(business.id)
-        .update({
-          'name': form['name'],
-          'address': form['address'],
-          'description': form['description'],
-          'email': form['email'],
-          'website': form['website'],
-          'category': form['category'],
-          'phone': form['phone'],
-          'LatLng': geopoint
-        })
-        .then((value) => {
-              print("Event updated: ${business.id} : ${business.name}"),
-              businessFireStore.doc(business.id).update({"id": business.id})
-            })
-        .catchError((error) => print("Failed to add Event: $error"));
-  });
-}
-
-Future<void> deleteCard(
-    String cardName, String docID, int index, CollectionReference fireStore) {
-  // Delete from fireStore
-  return fireStore
-      .doc(docID)
-      .delete()
-      .then((value) => print("$docID Deleted"))
-      .catchError((error) => print("Failed to delete: $error"));
-}
-
-void deleteCardHikeRec(
-    int index,
-    State thisContext,
-    BuildContext context,
-    List filteredList,
-    CollectionReference fireStore,
-    String collectionName,
-    String itemName) {
-  {
-    // Remove the item from the data source.
-    thisContext.setState(() {
-      filteredList.removeAt(index);
-    });
-    // Delete from fireStore
-    // String docID = businessName.replaceAll('/', '|');
-    FirebaseFirestore.instance
-        .collection(collectionName)
-        .where("name", isEqualTo: itemName)
-        .get()
-        .then((value) {
-      value.docs.forEach((element) {
-        FirebaseFirestore.instance
-            .collection(collectionName)
-            .doc(element.id)
-            .delete()
-            .then((value) => print("$itemName Deleted"))
-            .catchError((error) => print("Failed to delete user: $error"));
-      });
-    });
-    // Then show a snackbar.
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("$itemName deleted")));
-  }
-}
-
-DateTime addDateTime({DateTime dateTime, String repeatType}) {
-  if (repeatType == 'Daily') {
-    return DateTime(dateTime.year, dateTime.month, dateTime.day + 1,
-        dateTime.hour, dateTime.minute);
-  } else if (repeatType == 'Weekly') {
-    return DateTime(dateTime.year, dateTime.month, dateTime.day + 7,
-        dateTime.hour, dateTime.minute);
-  } else if (repeatType == 'Monthly') {
-    return DateTime(dateTime.year, dateTime.month + 1, dateTime.day,
-        dateTime.hour, dateTime.minute);
-  } else {
-    return DateTime(dateTime.year + 1, dateTime.month, dateTime.day,
-        dateTime.hour, dateTime.minute);
-  }
-}
-
-Future<void> addEvent(event, CollectionReference fireStore, {File imageFile}) {
-  print("adding to firebase: $event");
-  return fireStore
-      .add(event)
-      .then((value) => {
-            print("Event Added: ${value.id} : ${event['title']}"),
-            fireStore.doc(value.id).update({"id": value.id}),
-            if (imageFile != null)
-              {
-                uploadFile(imageFile, value.id, "events").then((v) =>
-                    downloadURL(value.id, "events").then((imgURL) =>
-                        fireStore.doc(value.id).update({"imgURL": imgURL}))),
-              }
-          })
-      .catchError((error) => print("Failed to add Event: $error"));
-}
-
-Future<void> uploadFile(File file, String filename, String folderName) async {
-  try {
-    await firebase_storage.FirebaseStorage.instance
-        .ref('$folderName/$filename.png')
-        .putFile(file);
-  } on FirebaseException catch (e) {
-    print("upload fail: $e");
-    // e.g, e.code == 'canceled'
-  }
-}
-
-Future<String> downloadURL(String filename, String folderName) async {
-  return await firebase_storage.FirebaseStorage.instance
-      .ref('$folderName/$filename.png')
-      .getDownloadURL();
-}
-
-///filename is the ID of the document
-Future<void> deleteFileFromID(String filename, String folderName) async {
-  return await firebase_storage.FirebaseStorage.instance
-      .ref()
-      .child('$folderName/$filename.png')
-      .delete()
-      .then((_) => print('Successfully deleted $filename storage item'));
-}
-
 /// uses a Color with a hex code and returns a MaterialColor object
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
@@ -225,6 +54,7 @@ MaterialColor createMaterialColor(Color color) {
   return MaterialColor(color.value, swatch);
 }
 
+/// Returns a loading Wave widget.
 Widget showLoadingScreen() {
   return SpinKitWave(
     color: colorPrimary,
@@ -232,6 +62,7 @@ Widget showLoadingScreen() {
   );
 }
 
+///Returns a floating action button widget.
 Widget buildScrollToTopButton(isVisible, controller) {
   return isVisible
       ? Container(
@@ -294,61 +125,3 @@ String formatPhoneNumber(String phone) {
     return null;
   }
 }
-
-//***************************Same as below************************************
-// Widget buildBody(isFirstTime, future, filteredItem, markers, buildList,
-//     {buildChips}) {
-//   return Container(
-//     padding: EdgeInsets.all(0.0),
-//     child: isFirstTime
-//         ? FutureBuilder(
-//             future: future,
-//             builder: (context, snapshot) {
-//               switch (snapshot.connectionState) {
-//                 case ConnectionState.none:
-//                   return Text('non');
-//                 case ConnectionState.active:
-//                 case ConnectionState.waiting:
-//                   return showLoadingScreen();
-//                 case ConnectionState.done:
-//                   {
-//                     print(buildChips);
-//                     return _buildBody(filteredItem, markers, buildList,
-//                         buildChips: buildChips);
-//                   }
-//                 default:
-//                   return Text("Default");
-//               }
-//             },
-//           )
-//         : _buildBody(filteredItem, markers, buildList, buildChips: buildChips),
-//   );
-// }
-
-// ************Saving for later can be deleted if we don't end up doing this.
-// Widget _buildBody(filteredItem, markers, buildList, {buildChips}) {
-//   return Column(
-//     crossAxisAlignment: CrossAxisAlignment.start,
-//     children: [
-//       // insert widgets here wrapped in `Expanded` as a child
-//       // note: play around with flex int value to adjust vertical spaces between widgets
-//       Expanded(
-//         flex: 9,
-//         child: Gmap(filteredItem, markers),
-//       ),
-//       (buildChips != null && buildChips != "")
-//           ? Expanded(flex: 2, child: buildChips())
-//           : Container(),
-//       Expanded(
-//         flex: 14,
-//         child: filteredItem.length != 0
-//             ? buildList()
-//             : Container(
-//                 child: Center(
-//                   child: Text("No results found", style: titleTextStyle),
-//                 ),
-//               ),
-//       ),
-//     ],
-//   );
-// }

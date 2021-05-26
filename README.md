@@ -1,20 +1,26 @@
 # Vanderhoof Chamber of Commerce App
-Please visit https://www.vanderhoofchamber.com/
-
-Technologies used:  
-Flutter SDK 2.2.0,   
-Firebase: FlutterFire, Firestore database, Firebase Storage. 
 
 ## Introduction
-The Vanderhoof Chamber of Commerce App consists of two apps: the User App, and the Manager App.
-This Readme file is for the User App. 
-
 The Vanderhoof Chamber User App is intended for the general public. This app presents to the user 
 information regarding the town of Vanderhoof, BC, which includes a business directory, events, 
 hiking trails, recreational information, and additional business resources.
 
+The Vanderhoof Chamber of Commerce App consists of two apps: the User App, and the Manager App.
+This Readme file is for the User App.
+
 The users of the User App are only able to view contents while the manager app allows for the 
 addition, modification, and deletion of contents.
+
+All information presented in the app are from the Vanderhoof Chamber of Commerce Website.
+Please visit https://www.vanderhoofchamber.com/ for more details.
+
+## GitHub
+https://github.com/jasc618/vanderhoof_app/
+
+## Technologies Used
+Flutter SDK 2.2.0, see: https://flutter.dev  
+  
+Firebase: FlutterFire, Firestore database, Firebase Storage, see: https://firebase.flutter.dev/docs/overview
 
 ## Navigation within the App
 There is no login feature in the User App.
@@ -23,7 +29,7 @@ the bottom navigation bar.
 
 Information in each category are displayed in a expandable list.
 
-- Business Directory: 
+- Business Directory:
 Hideable Map of the town at the top of page. Icons represent the businesses 
 in Vanderhoof. Clicking on a business expands the tile and reveals more information. Business Email,
 Website, Phone number, and Social Media Icons can be clicked. 
@@ -32,14 +38,14 @@ Website, Phone number, and Social Media Icons can be clicked.
 Additional resources about the Chamber of Commerce and also information for prospective business 
 owners on how to become a member.
 
-- Events
+- Events:
 Upcoming Events in the Town of Vanderhoof. 
 
-- Hiking Trails
+- Hiking Trails:
 Trail information near the Town of Vanderhoof. Each Trail can be clicked to display additional details
 and point of interests on the trail.
 
-- Recreational
+- Recreational:
 Recreational facilities in the town of Vanderhoof.
 
 ## Technical
@@ -62,3 +68,23 @@ website).
 The five main pages: business.dart, resource.dart, event.dart, hike.dart, and recreation.dart are 
 not connected with one another, but they share similar architecture, and use the other support 
 dart files: map.dart, cards.dart, fireStoreObjects.dart, commonFunctions.dart.
+
+## Documentation
+- Instruction Video:
+A Video explaining how to use the User App and the Manager App.
+- UI/UX Design Language Document:
+Detailed explanation of the UI/UX of the app and the logic behind.
+- Vanderhoof Chamber App Documentation Report:
+Summary report which includes information such as:
+  Introduction,
+  App Features,
+  Navigation Within the App,
+  Database,
+  Security,
+  Testing,
+  Known Bugs,
+  Unimplemented Features,
+  Next Steps,
+  Deployment Instructions,
+  Troubleshooting.
+

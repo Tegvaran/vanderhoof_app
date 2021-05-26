@@ -19,7 +19,7 @@ import 'map.dart';
 const int SHOW_MORE_TEXT_COUNT = 150;
 const EdgeInsets SHOW_MORE_INSET = EdgeInsets.fromLTRB(21, 5, 21, 0);
 
-/// This function creates a tappable widget that has a icon followed by text.
+/// Creates a clickable widget that has an icon and text
 Widget tappableIconWithText(String field, icon, onPressed, padding) {
   return (!isFieldEmpty(field))
       ? Padding(
@@ -35,7 +35,17 @@ Widget tappableIconWithText(String field, icon, onPressed, padding) {
                   shadows: [
                     iconShadow,
                   ]),
-              Text('  ${parseLongField(field)}', style: headerTextStyle),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    '$field',
+                    style: headerTextStyle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
             ]),
           ),
         )
@@ -67,6 +77,7 @@ class BusinessCard extends StatefulWidget {
       listOfFireStoreObjects: listOfFireStoreObjects);
 }
 
+/// Business Card state
 class _BusinessCard extends State<BusinessCard> {
   Business business;
   ItemScrollController scrollController;
@@ -84,7 +95,7 @@ class _BusinessCard extends State<BusinessCard> {
       this.mapMarkers,
       this.listOfFireStoreObjects});
 
-  // preload images
+  /// Preload images
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -94,6 +105,7 @@ class _BusinessCard extends State<BusinessCard> {
     }
   }
 
+  /// Initialize class state and insert object to tree
   @override
   void initState() {
     super.initState();
@@ -109,6 +121,7 @@ class _BusinessCard extends State<BusinessCard> {
     }
   }
 
+  /// Get all chip categories as a single string
   String categoryText() {
     String categories = "";
     for (var i = 0; i < business.category.length; i++) {
@@ -122,8 +135,8 @@ class _BusinessCard extends State<BusinessCard> {
 
   /// Creates a social media button.
   ///
-  /// This button is greyed(not tapable)  out if the social media field is
-  /// empty and blue(tapable) if it is not.
+  /// This button is greyed out (not clickable) if the social media field is
+  /// empty and blue (clickable) if it is not.
   Widget socialMediaButton(String field, icon, onPressed) {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -148,6 +161,7 @@ class _BusinessCard extends State<BusinessCard> {
               ));
   }
 
+  /// Final build widget for a Business Card
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -232,6 +246,7 @@ class _BusinessCard extends State<BusinessCard> {
                         : Container(width: 0, height: 0),
               ),
 
+              /// show more/less text button
               if (business.description != null && secondHalf.isNotEmpty)
                 Padding(
                   padding: SHOW_MORE_INSET,
@@ -335,6 +350,7 @@ class ResourceCard extends StatefulWidget {
       scrollIndex: scrollIndex);
 }
 
+/// Resource Card state
 class _ResourceCard extends State<ResourceCard> {
   Resource resource;
   ItemScrollController scrollController;
@@ -342,7 +358,7 @@ class _ResourceCard extends State<ResourceCard> {
 
   _ResourceCard({this.resource, this.scrollController, this.scrollIndex});
 
-  // preload images
+  /// Preload images
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -352,6 +368,7 @@ class _ResourceCard extends State<ResourceCard> {
     }
   }
 
+  /// Final build widget for a Resource Card
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -431,6 +448,7 @@ class EventCard extends StatefulWidget {
       scrollIndex: scrollIndex);
 }
 
+/// Event Card state
 class _EventCard extends State<EventCard> {
   Event event;
   ItemScrollController scrollController;
@@ -438,7 +456,7 @@ class _EventCard extends State<EventCard> {
 
   _EventCard({this.event, this.scrollController, this.scrollIndex});
 
-  // preload images
+  /// Preload images
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -448,23 +466,27 @@ class _EventCard extends State<EventCard> {
     }
   }
 
+  /// format a [dateTime] to display Month & Day
   String formatDate(DateTime dateTime) {
     String formattedDate = DateFormat('MMM d').format(dateTime);
     return formattedDate;
   }
 
+  /// format a [dateTime] to display Month, Day & Time
   String formatDateTime(DateTime dateTime) {
     String formattedDateTime = DateFormat('MMM d ').format(dateTime) +
         DateFormat('jm').format(dateTime);
     return formattedDateTime;
   }
 
+  /// format a [dateTime] to display Time
   String formatTime(DateTime dateTime) {
     String formattedTime = DateFormat('jm').format(dateTime);
     return formattedTime;
   }
 
-  Widget _buildDateButton(DateTime dateTime) {
+  /// format a [dateTime] to build a date widget with Month, Day, & Weekday
+  Widget _buildDateWidget(DateTime dateTime) {
     String formattedDay = DateFormat('d').format(dateTime);
     String formattedMonth = DateFormat('MMM').format(dateTime);
     String formattedWeekday = DateFormat('EEE').format(dateTime);
@@ -493,6 +515,7 @@ class _EventCard extends State<EventCard> {
             ])));
   }
 
+  /// Final build widget for an Event Card
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -513,7 +536,7 @@ class _EventCard extends State<EventCard> {
               }
             },
             title: Text(event.name, style: titleTextStyle),
-            leading: _buildDateButton(event.datetimeStart),
+            leading: _buildDateWidget(event.datetimeStart),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               cardDivider,
@@ -601,6 +624,7 @@ class HikeCard extends StatefulWidget {
       listOfFireStoreObjects: listOfFireStoreObjects);
 }
 
+/// Hike Card state
 class _HikeCard extends State<HikeCard> {
   HikeTrail hikeTrail;
   ItemScrollController scrollController;
@@ -615,10 +639,12 @@ class _HikeCard extends State<HikeCard> {
       this.mapMarkers,
       this.listOfFireStoreObjects});
 
+  // difficulty and accessibility colors
   final Color greenColor = Colors.lightGreen[700];
   final Color orangeColor = colorAccent;
   final Color redColor = Colors.red[600];
 
+  /// change text color to match hike difficulty
   Color getDifficultyColor() {
     Color difficultyColor;
     if (hikeTrail.rating == "Easy") {
@@ -631,6 +657,7 @@ class _HikeCard extends State<HikeCard> {
     return difficultyColor;
   }
 
+  /// change text color to match hike accessibility
   Color getAccessibilityColor() {
     Color accessibilityColor;
     if (hikeTrail.wheelchair == "Accessible") {
@@ -641,10 +668,14 @@ class _HikeCard extends State<HikeCard> {
     return accessibilityColor;
   }
 
-  bool buildInfoPageIcon(HikeTrail hike) {
+  /// checks if there should be a detailed Information Page on this hike
+  ///
+  /// if true, build will include an 'expand' icon, otherwise there won't be an icon
+  bool isThereInfoPage(HikeTrail hike) {
     return (hike.description != null || hike.pointsOfInterest != null);
   }
 
+  /// Final build widget for a Hike Card
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -787,8 +818,8 @@ class _HikeCard extends State<HikeCard> {
                       : Container(width: 0, height: 0),
                 ]),
 
-                /// hikeInformation page button
-                buildInfoPageIcon(hikeTrail)
+                /// hikeInformation page 'expand' button
+                isThereInfoPage(hikeTrail)
                     ? IconButton(
                         icon: DecoratedIcon(Icons.open_in_new_outlined,
                             color: colorPrimary,
@@ -843,6 +874,7 @@ class RecreationalCard extends StatefulWidget {
       listOfFireStoreObjects: listOfFireStoreObjects);
 }
 
+/// Recreational Card state
 class _RecreationalCard extends State<RecreationalCard> {
   Recreational recreational;
   ItemScrollController scrollController;
@@ -857,6 +889,7 @@ class _RecreationalCard extends State<RecreationalCard> {
       this.mapMarkers,
       this.listOfFireStoreObjects});
 
+  /// Final build widget for Recreational Card
   @override
   Widget build(BuildContext context) {
     return Card(
