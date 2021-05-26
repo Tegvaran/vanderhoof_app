@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -113,6 +114,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   bool isLandingPage = true;
   AnimationController _controller;
   Animation<Offset> _animation;
+  Image backgroundImage;
+
+  final List<String> _imagePaths = [
+    'assets/images/background_Denys_Poirier.jpg',
+    'assets/images/background_Liam_Dauphinais.jpg',
+    'assets/images/background_Nicole_Dawn_Michels.jpg',
+    'assets/images/background_Tammy_Zacharias.jpg',
+    'assets/images/background_Tanya_Morris.jpg',
+  ];
 
   final List<Widget> _children = [
     BusinessState(),
@@ -145,6 +155,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       parent: _controller,
       curve: Curves.easeInOutBack,
     ));
+
+    backgroundImage = getRandomBackgroundImage();
+  }
+
+  /// preload background image
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(backgroundImage.image, context);
+  }
+
+  /// get random background image from [assets/images/background_***]
+  Image getRandomBackgroundImage() {
+    Random random = new Random();
+    int randomNumber = random.nextInt(5);
+    String imagePath = _imagePaths[randomNumber];
+    return Image.asset(imagePath);
   }
 
   /// build for an action with a slide-in animation
@@ -201,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       // comment out 'decoration' argument to hide background image
       decoration: BoxDecoration(
           image: DecorationImage(
-        image: AssetImage("assets/images/vanderhoof_chamber_background.jpg"),
+        image: backgroundImage.image,
         fit: BoxFit.cover,
       )),
       width: double.infinity,
