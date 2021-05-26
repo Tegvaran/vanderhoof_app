@@ -18,7 +18,8 @@ Please visit https://www.vanderhoofchamber.com/ for more details.
 https://github.com/jasc618/vanderhoof_app/
 
 ## Technologies Used
-Flutter SDK 2.2.0, see: https://flutter.dev
+Flutter SDK 2.2.0, see: https://flutter.dev  
+  
 Firebase: FlutterFire, Firestore database, Firebase Storage, see: https://firebase.flutter.dev/docs/overview
 
 ## Navigation within the App
