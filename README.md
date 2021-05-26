@@ -11,11 +11,15 @@ This Readme file is for the User App.
 The users of the User App are only able to view contents while the manager app allows for the 
 addition, modification, and deletion of contents.
 
-All information presented in the app are from the Vanderhoof Chamber of Commerce Website.
+All information presented in the app is from the Vanderhoof Chamber of Commerce Website.
 Please visit https://www.vanderhoofchamber.com/ for more details.
 
 ## GitHub
 https://github.com/jasc618/vanderhoof_app/
+To get developer access, contact the Vanderhoof Chamber of Commerce manager.
+They will provide you account access for vanderhoofpracticum@gmail.com.
+Other access links are found in Documentation - Summary Report,
+see: https://drive.google.com/drive/folders/1kAsm_4663UEqUzQMqI1eI6m9ptPI_aNW?usp=sharing
 
 ## Technologies Used
 Flutter SDK 2.2.0, see: https://flutter.dev  
@@ -60,7 +64,7 @@ display a GoogleMap of Town of Vanderhoof.
 - The hikeInformation.dart contains details of hiking trails displayed by hike.dart.
 - The fireStoreObjects.dart contains Object Classes for each page for the purpose of easy 
 communication with Firebase.
-- The commonFunciton.dart contains some shared functions.
+- The commonFunction.dart contains some shared functions.
 - The data.dart contains hard-coded data of all the business categories (from the Vanderhoof Chamber
 website).
 - Scraper.dart is no longer used.
@@ -70,12 +74,12 @@ not connected with one another, but they share similar architecture, and use the
 dart files: map.dart, cards.dart, fireStoreObjects.dart, commonFunctions.dart.
 
 ## Documentation
-- Manager App README:  
-Readme file for the Manager App, you are here right now.
-- User App README:  
-Readme file for the User App.
-- Instruction Video:  
-A Video explaining how to use the User App and the Manager App.
+- User App README:
+Readme file for the User App, you are here right now.
+- Manager App README:
+Readme file for the Manager App.
+- Instruction Video:
+A Video explaining how to use the Manager App.
 - UI/UX Design Language Document:
 Detailed explanation of the UI/UX of the app and the logic behind.
 - Vanderhoof Chamber App Documentation Report:
