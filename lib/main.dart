@@ -52,11 +52,13 @@ BoxShadow iconShadow = BoxShadow(
     spreadRadius: 3,
     offset: Offset(0, 4));
 
+/// root function to run and initialize app
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
+/// root class that has the root application
 class MyApp extends StatelessWidget {
   // Create the initialization Future outside of `build`:
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
@@ -65,7 +67,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        // Replace the 3 second delay with your initialization code:
         future: _initialization,
         builder: (context, AsyncSnapshot snapshot) {
           // Show splash screen while waiting for app resources to load:
@@ -73,7 +74,8 @@ class MyApp extends StatelessWidget {
             return MaterialApp(home: Splash());
           } else if (snapshot.hasError) {
             // Check for errors
-            return Text("Something went wrong: ${snapshot.error}", textDirection: TextDirection.ltr);
+            return Text("Something went wrong: ${snapshot.error}",
+                textDirection: TextDirection.ltr);
           }
           // Once complete, show your application
           else {
@@ -91,6 +93,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// Landing Page
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
@@ -109,6 +112,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+/// Landing Page State
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   bool isLandingPage = true;
@@ -116,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Animation<Offset> _animation;
   Image backgroundImage;
 
+  // different background images
   final List<String> _imagePaths = [
     'assets/images/background_Denys_Poirier.jpg',
     'assets/images/background_Liam_Dauphinais.jpg',
@@ -124,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     'assets/images/background_Tanya_Morris.jpg',
   ];
 
+  // list of other pages to navigate to
   final List<Widget> _children = [
     BusinessState(),
     ResourceState(),
@@ -132,12 +138,14 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     Recreation(),
   ];
 
+  /// navigate to selected page at _children [index]
   void _onTabTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  /// init class and insert object to tree
   @override
   void initState() {
     super.initState();
@@ -209,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   )),
               icon: pageIcon,
               label: Text('$pageName',
-                textDirection: TextDirection.ltr,
+                  textDirection: TextDirection.ltr,
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -263,6 +271,10 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
+  /// Final Build Widget
+  /// =========================
+  /// this widget contains the body of the other pages,
+  /// and a persistent bottom navigation bar to navigate to the other pages
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called.
