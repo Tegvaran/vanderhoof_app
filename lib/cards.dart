@@ -35,7 +35,17 @@ Widget tappableIconWithText(String field, icon, onPressed, padding) {
                   shadows: [
                     iconShadow,
                   ]),
-              Text('  ${parseLongField(field)}', style: headerTextStyle),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    '$field',
+                    style: headerTextStyle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
             ]),
           ),
         )
