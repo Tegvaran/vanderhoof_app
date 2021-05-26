@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
             return MaterialApp(home: Splash());
           } else if (snapshot.hasError) {
             // Check for errors
-            return Text("Something went wrong: ${snapshot.error}");
+            return Text("Something went wrong: ${snapshot.error}", textDirection: TextDirection.ltr);
           }
           // Once complete, show your application
           else {
@@ -182,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   )),
               icon: pageIcon,
               label: Text('$pageName',
+                textDirection: TextDirection.ltr,
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
