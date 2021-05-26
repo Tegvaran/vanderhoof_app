@@ -11,8 +11,7 @@ This Readme file is for the User App.
 The users of the User App are only able to view contents while the manager app allows for the 
 addition, modification, and deletion of contents.
 
-All information presented in the app is from the Vanderhoof Chamber of Commerce Website.
-Please visit https://www.vanderhoofchamber.com/ for more details.
+For more information about the Vanderhoof Chamber of Commerce, please visit https://www.vanderhoofchamber.com/
 
 ## GitHub
 https://github.com/jasc618/vanderhoof_app/
