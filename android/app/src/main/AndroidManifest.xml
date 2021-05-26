@@ -1,8 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vanderhoof_app">
+    package="com.vanderhoof.vanderhoof_app">
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
+        </intent>
+    </queries>
+
    <application
-        android:label="vanderhoof_app"
+        android:label="Vanderhoof Chamber"
         android:icon="@mipmap/ic_launcher">
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyAhsQrVxFGMXYq4b6t8WPbfeiPaxQBdTBw"/>
+
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -38,4 +59,5 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
