@@ -13,7 +13,7 @@ import 'main.dart';
 
 /// Toggle to determine whether map is visible
 ///
-/// Set by Widget _buildMapVisibilityButton()
+/// Set by Widget [_buildMapVisibilityButton()]
 /// Used by Widget AnimatedContainer()
 /// -- height: _isMapVisible ? 217.0 : 62.0
 bool _isMapVisible = true;
@@ -29,6 +29,8 @@ void scrollToIndex(ItemScrollController scrollController, int index) {
 }
 
 /// Converts [objList] list of FireStoreObjects to list of Google Maps Markers
+/// template for [resetMarkers] and [changeMarkerColor]
+/// Functional
 Set<Marker> MarkerAdapter(List<FireStoreObject> objList) {
   Set<Marker> outList = HashSet<Marker>();
   for (int i = 0; i < objList.length; i++) {
