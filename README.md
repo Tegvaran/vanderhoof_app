@@ -70,7 +70,11 @@ not connected with one another, but they share similar architecture, and use the
 dart files: map.dart, cards.dart, fireStoreObjects.dart, commonFunctions.dart.
 
 ## Documentation
-- Instruction Video:
+- Manager App README:  
+Readme file for the Manager App, you are here right now.
+- User App README:  
+Readme file for the User App.
+- Instruction Video:  
 A Video explaining how to use the User App and the Manager App.
 - UI/UX Design Language Document:
 Detailed explanation of the UI/UX of the app and the logic behind.
@@ -86,5 +90,5 @@ Summary report which includes information such as:
   Unimplemented Features,
   Next Steps,
   Deployment Instructions,
-  Troubleshooting.
+  and Troubleshooting.
 
