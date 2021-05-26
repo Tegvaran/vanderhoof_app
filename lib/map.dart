@@ -153,17 +153,25 @@ class Gmap extends StatefulWidget {
 ///
 /// State of  StatefulWidget [Gmap]
 class GmapState extends State<Gmap> {
-  ///
+  /// Set of Google Map Markers
   Set<Marker> _markers;
+  /// MapType for Google Maps
   MapType mapType = MapType.normal;
+  /// List of FireStoreObjects from firebase
   List<FireStoreObject> listOfFireStoreObjects;
+  /// Current location of the phone
   LocationData currentLocation;
+  /// Controller for adjusting Google Map
   GoogleMapController _mapController;
+  /// Controller for scrolling items in ListView
   ItemScrollController scrollController;
   GmapState(this.listOfFireStoreObjects, this._markers, this.scrollController);
 
+  /// Initial map zoom level
   static final double zoomVal = 13;
+  /// Initial location of the map
   static final LatLng vanderhoofLatLng = LatLng(54.0117956, -124.0177679);
+  /// Camera position at [vanderhoofLatLng]
   static CameraPosition _initialCameraPosition =
       CameraPosition(target: vanderhoofLatLng, zoom: zoomVal);
 
@@ -223,18 +231,6 @@ class GmapState extends State<Gmap> {
                 changeMarkerColor(
                     i, _markers, listOfFireStoreObjects, scrollController);
                 _isMapVisible = true;
-
-                // resetMarkers(
-                //     _markers, listOfFireStoreObjects, scrollController);
-                // HashSet<Marker> temp = _markers;
-                // temp.forEach((element) {
-                //   print("marker length before " + _markers.length.toString());
-                //   if (element.markerId.toString().compareTo(listOfFireStoreObjects[i].name) == 0) {
-                //     _markers.remove(element);
-                //     print('in reset' + element.markerId.toString());
-                //   }
-                // });
-                // print("marker length after " + _markers.length.toString());
               },
               infoWindow: InfoWindow(
                 title: listOfFireStoreObjects[i].name,
