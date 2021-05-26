@@ -17,8 +17,7 @@ Please visit https://www.vanderhoofchamber.com/ for more details.
 ## GitHub
 https://github.com/jasc618/vanderhoof_app/
 To get developer access, contact the Vanderhoof Chamber of Commerce manager.
-They will provide you account access for vanderhoofpracticum@gmail.com.
-Other access links are found in Documentation - Summary Report,
+They will provide you account access for the links under Developer Access in Documentation - Summary Report,
 see: https://drive.google.com/drive/folders/1kAsm_4663UEqUzQMqI1eI6m9ptPI_aNW?usp=sharing
 
 ## Technologies Used
