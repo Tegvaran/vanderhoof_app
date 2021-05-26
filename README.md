@@ -75,15 +75,15 @@ A Video explaining how to use the User App and the Manager App.
 Detailed explanation of the UI/UX of the app and the logic behind.
 - Vanderhoof Chamber App Documentation Report:
 Summary report which includes information such as:
-  Introduction
-  App Features
-  Navigation Within the App
-  Database
-  Security
-  Testing
-  Known Bugs
-  Unimplemented Features
-  Next Steps
-  Deployment Instructions
+  Introduction,
+  App Features,
+  Navigation Within the App,
+  Database,
+  Security,
+  Testing,
+  Known Bugs,
+  Unimplemented Features,
+  Next Steps,
+  Deployment Instructions,
   Troubleshooting
 
