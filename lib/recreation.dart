@@ -167,12 +167,15 @@ class _RecreationPageState extends State<Recreation> {
         itemCount: filteredRecs.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return RecreationalCard(
-              recreational: filteredRecs[index],
-              scrollController: _scrollController,
-              scrollIndex: index,
-              mapMarkers: _markers,
-              listOfFireStoreObjects: filteredRecs);
+          return Dismissible(
+              direction: DismissDirection.none,
+              key: Key(filteredRecs[index].id),
+              child: RecreationalCard(
+                  recreational: filteredRecs[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredRecs));
         },
       )),
       floatingActionButton:

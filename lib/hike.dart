@@ -143,7 +143,6 @@ class _HikePageState extends State<Hike> {
     );
   }
 
-
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
     //=================================================
@@ -174,13 +173,15 @@ class _HikePageState extends State<Hike> {
                 itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return
-                      HikeCard(
+                  return Dismissible(
+                      direction: DismissDirection.none,
+                      key: Key(filteredHikes[index].id),
+                      child: HikeCard(
                           hikeTrail: filteredHikes[index],
                           scrollController: _scrollController,
                           scrollIndex: index,
                           mapMarkers: _markers,
-                          listOfFireStoreObjects: filteredHikes);
+                          listOfFireStoreObjects: filteredHikes));
                 })),
         floatingActionButton:
             buildScrollToTopButton(_isScrollButtonVisible, _scrollController));
