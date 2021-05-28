@@ -168,6 +168,8 @@ class _EventPageState extends State<EventState> {
           return Card(
               margin: EdgeInsets.all(0),
               elevation: 0,
+          return Dismissible(
+              direction: DismissDirection.startToEnd,
               key: Key(filteredEvents[index].id),
               child: EventCard(
                   event: filteredEvents[index],
