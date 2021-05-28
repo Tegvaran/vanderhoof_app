@@ -174,7 +174,7 @@ class _HikePageState extends State<Hike> {
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Dismissible(
-                      direction: DismissDirection.none,
+                      direction: DismissDirection.startToEnd,
                       key: Key(filteredHikes[index].id),
                       child: HikeCard(
                           hikeTrail: filteredHikes[index],

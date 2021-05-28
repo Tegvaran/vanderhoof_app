@@ -184,14 +184,15 @@ class _BusinessPageState extends State<BusinessState> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return Dismissible(
-              direction: DismissDirection.none,
+              direction: DismissDirection.startToEnd,
               key: Key(filteredBusinesses[index].id),
               child: BusinessCard(
-                  business: filteredBusinesses[index],
-                  scrollController: _scrollController,
-                  scrollIndex: index,
-                  mapMarkers: _markers,
-                  listOfFireStoreObjects: filteredBusinesses));
+                business: filteredBusinesses[index],
+                scrollController: _scrollController,
+                scrollIndex: index,
+                mapMarkers: _markers,
+                listOfFireStoreObjects: filteredBusinesses,
+              ));
         },
       )),
       floatingActionButton:

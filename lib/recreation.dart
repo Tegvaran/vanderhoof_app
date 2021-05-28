@@ -168,7 +168,7 @@ class _RecreationPageState extends State<Recreation> {
         itemBuilder: (BuildContext context, int index) {
           //======================
           return Dismissible(
-              direction: DismissDirection.none,
+              direction: DismissDirection.startToEnd,
               key: Key(filteredRecs[index].id),
               child: RecreationalCard(
                   recreational: filteredRecs[index],
