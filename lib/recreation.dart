@@ -167,8 +167,9 @@ class _RecreationPageState extends State<Recreation> {
         itemCount: filteredRecs.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return Dismissible(
-              direction: DismissDirection.none,
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
               key: Key(filteredRecs[index].id),
               child: RecreationalCard(
                   recreational: filteredRecs[index],

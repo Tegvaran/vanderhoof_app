@@ -173,8 +173,9 @@ class _HikePageState extends State<Hike> {
                 itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Dismissible(
-                      direction: DismissDirection.none,
+                  return Card(
+                      margin: EdgeInsets.all(0),
+                      elevation: 0,
                       key: Key(filteredHikes[index].id),
                       child: HikeCard(
                           hikeTrail: filteredHikes[index],

@@ -183,8 +183,9 @@ class _BusinessPageState extends State<BusinessState> {
         itemCount: filteredBusinesses.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return Dismissible(
-              direction: DismissDirection.none,
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
               key: Key(filteredBusinesses[index].id),
               child: BusinessCard(
                   business: filteredBusinesses[index],

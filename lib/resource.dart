@@ -154,8 +154,9 @@ class _ResourcePageState extends State<ResourceState> {
         itemCount: filteredResources.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return Dismissible(
-              direction: DismissDirection.none,
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
               key: Key(filteredResources[index].id),
               child: ResourceCard(
                   resource: filteredResources[index],
