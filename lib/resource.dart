@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import 'commonFunction.dart';
 import 'cards.dart';
 import 'fireStoreObjects.dart';
-import 'main.dart';
-import 'recreation.dart';
 
 bool hasReadDataFirstTime = false;
 
@@ -157,10 +154,17 @@ class _ResourcePageState extends State<ResourceState> {
         itemCount: filteredResources.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return ResourceCard(
-              resource: filteredResources[index],
-              scrollController: _scrollController,
-              scrollIndex: index);
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              key: Key(filteredResources[index].id),
+              child: ResourceCard(
+                  resource: filteredResources[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index));
         },
       )),
       floatingActionButton:

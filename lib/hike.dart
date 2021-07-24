@@ -37,47 +37,46 @@ class _HikePageState extends State<Hike> {
 
   /// firebase async method to get data
   Future _getHikes() async {
-    if (!hasReadDataFirstTime) {
-      print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
-      CollectionReference fireStore =
-          FirebaseFirestore.instance.collection('trails');
+    // if (!hasReadDataFirstTime) {
+    print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
+    CollectionReference fireStore =
+        FirebaseFirestore.instance.collection('trails');
 
-      await fireStore.get().then((QuerySnapshot snap) {
-        hikes = filteredHikes = [];
-        snap.docs.forEach((doc) {
-          // print("/////////////////////////////////////////////");
-          // print(doc['name']);
-          // print(doc['address']);
-          // print(doc['location']);
-          // print(doc['description']);
-          // print(doc['id']);
-          // print(doc['distance']);
-          // print(doc.get('difficulty'));
-          // print('Time ${doc['time']}');
-          // print(doc['wheelchair']);
-          // print(doc['pointsOfInterest']);
-          // print(doc['imgURL']);
+    await fireStore.get().then((QuerySnapshot snap) {
+      hikes = filteredHikes = [];
+      snap.docs.forEach((doc) {
+        // print("/////////////////////////////////////////////");
+        // print(doc['name']);
+        // print(doc['address']);
+        // print(doc['location']);
+        // print(doc['description']);
+        // print(doc['id']);
+        // print(doc['distance']);
+        // print(doc.get('difficulty'));
+        // print('Time ${doc['time']}');
+        // print(doc['wheelchair']);
+        // print(doc['pointsOfInterest']);
+        // print(doc['imgURL']);
 
-          HikeTrail h = HikeTrail(
-            name: doc['name'],
-            address: doc['address'],
-            location: doc['location'],
-            description: doc['description'],
-            id: doc['id'],
-            distance: doc['distance'],
-            rating: doc.get('difficulty'),
-            time: doc['time'],
-            wheelchair: doc['wheelchair'],
-            pointsOfInterest: doc['pointsOfInterest'],
-            imgURL: doc['imgURL'],
-          );
-          hikes.add(h);
-        });
+        HikeTrail h = HikeTrail(
+          name: doc['name'],
+          address: doc['address'],
+          location: doc['location'],
+          description: doc['description'],
+          id: doc['id'],
+          distance: doc['distance'],
+          rating: doc.get('difficulty'),
+          time: doc['time'],
+          wheelchair: doc['wheelchair'],
+          pointsOfInterest: doc['pointsOfInterest'],
+          imgURL: doc['imgURL'],
+        );
+        hikes.add(h);
       });
-      print(
-          "_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
-      hasReadDataFirstTime = true;
-    }
+    });
+    print("_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
+    //   hasReadDataFirstTime = true;
+    // }
     return hikes;
   }
 
@@ -143,7 +142,6 @@ class _HikePageState extends State<Hike> {
     );
   }
 
-
   /// Widget build for Hikes ListView
   Widget _buildHikesList() {
     //=================================================
@@ -174,13 +172,19 @@ class _HikePageState extends State<Hike> {
                 itemPositionsListener: _itemPositionsListener,
                 itemCount: filteredHikes.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return
-                      HikeCard(
+                  return Card(
+                      margin: EdgeInsets.all(0),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      key: Key(filteredHikes[index].id),
+                      child: HikeCard(
                           hikeTrail: filteredHikes[index],
                           scrollController: _scrollController,
                           scrollIndex: index,
                           mapMarkers: _markers,
-                          listOfFireStoreObjects: filteredHikes);
+                          listOfFireStoreObjects: filteredHikes));
                 })),
         floatingActionButton:
             buildScrollToTopButton(_isScrollButtonVisible, _scrollController));

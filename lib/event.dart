@@ -165,10 +165,17 @@ class _EventPageState extends State<EventState> {
         itemCount: filteredEvents.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return EventCard(
-              event: filteredEvents[index],
-              scrollController: _scrollController,
-              scrollIndex: index);
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              key: Key(filteredEvents[index].id),
+              child: EventCard(
+                  event: filteredEvents[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index));
         },
       )),
       floatingActionButton:

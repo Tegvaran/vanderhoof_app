@@ -170,7 +170,6 @@ class _BusinessPageState extends State<BusinessState> {
       });
     });
 
-
     //=================================================
     // Build Widget for BusinessesList
     //=================================================
@@ -184,13 +183,19 @@ class _BusinessPageState extends State<BusinessState> {
         itemCount: filteredBusinesses.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return
-              BusinessCard(
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              key: Key(filteredBusinesses[index].id),
+              child: BusinessCard(
                   business: filteredBusinesses[index],
                   scrollController: _scrollController,
                   scrollIndex: index,
                   mapMarkers: _markers,
-                  listOfFireStoreObjects: filteredBusinesses);
+                  listOfFireStoreObjects: filteredBusinesses));
         },
       )),
       floatingActionButton:

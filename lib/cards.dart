@@ -8,8 +8,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:map_launcher/map_launcher.dart' as map_launcher;
 
 import 'commonFunction.dart';
+import 'package:geocoder/geocoder.dart';
 import 'fireStoreObjects.dart';
 import 'hikeInformation.dart';
 import 'main.dart';
@@ -315,19 +317,19 @@ class _BusinessCard extends State<BusinessCard> {
                       !isFieldEmpty(business.socialMedia['instagram']) ||
                       !isFieldEmpty(business.socialMedia['twitter']))
                   ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                           /// Facebook button
-                          socialMediaButton(business.socialMedia['facebook'],
-                              FontAwesomeIcons.facebook, _launchFacebookURL),
+                        Flexible(child:
+                        socialMediaButton(business.socialMedia['facebook'],
+                            FontAwesomeIcons.facebook, _launchFacebookURL),),
 
                           /// Instagram button
-                          socialMediaButton(business.socialMedia['instagram'],
-                              FontAwesomeIcons.instagram, _launchInstaURL),
+                          Flexible(child: socialMediaButton(business.socialMedia['instagram'],
+                              FontAwesomeIcons.instagram, _launchInstaURL)),
 
                           /// Twitter button
-                          socialMediaButton(business.socialMedia['twitter'],
-                              FontAwesomeIcons.twitter, _launchTwitterURL),
+                          Flexible(child: socialMediaButton(business.socialMedia['twitter'],
+                              FontAwesomeIcons.twitter, _launchTwitterURL)),
                         ])
                   : Container(width: 0, height: 0),
             ]));
@@ -1032,12 +1034,14 @@ void _launchTwitterURL(username) async {
 }
 
 /// Make a phone call to [phoneNumber]
-void _launchPhoneURL(String phoneNumber) async =>
-    await canLaunch('tel:$phoneNumber')
-        ? launch('tel:$phoneNumber')
-        : Fluttertoast.showToast(
-            msg: "Could not set up a call for $phoneNumber",
-            toastLength: Toast.LENGTH_SHORT);
+void _launchPhoneURL(String phoneNumber) async {
+  phoneNumber = phoneNumber.replaceAll(new RegExp(r'[^0-9]'),'');
+  await canLaunch('tel:$phoneNumber')
+      ? await launch('tel:$phoneNumber')
+      : Fluttertoast.showToast(
+      msg: "Could not set up a call for $phoneNumber",
+      toastLength: Toast.LENGTH_SHORT);
+}
 
 /// Create email to [email]
 void _launchMailURL(String email) async => await canLaunch('mailto:$email')
@@ -1047,9 +1051,36 @@ void _launchMailURL(String email) async => await canLaunch('mailto:$email')
         toastLength: Toast.LENGTH_SHORT);
 
 /// Open URL in GoogleMaps for [address]
-void _launchAddressURL(address) async =>
-    await canLaunch('https://www.google.com/maps/search/?api=1&query=$address')
-        ? launch('https://www.google.com/maps/search/?api=1&query=$address')
-        : Fluttertoast.showToast(
-            msg: "Could not open directions for $address.",
-            toastLength: Toast.LENGTH_SHORT);
+// void _launchAddressURL(address) async =>
+//     await canLaunch('https://www.google.com/maps/search/?api=1&query=$address')
+//         ? launch('https://www.google.com/maps/search/?api=1&query=$address')
+//         : Fluttertoast.showToast(
+//             msg: "Could not open directions for $address.",
+//             toastLength: Toast.LENGTH_SHORT);
+
+
+/// Open URL in AppleMaps for [address]
+void _launchAddressURL(address) async {
+  String name = address;
+  if (await map_launcher.MapLauncher.isMapAvailable(map_launcher.MapType.apple)) {
+    try {
+      address = await Geocoder.local.findAddressesFromQuery(address);
+    } catch (e) {
+   Fluttertoast.showToast(
+  msg: "Could not set up navigation for $address",
+  toastLength: Toast.LENGTH_SHORT);
+      return address;
+    }
+    var first = address.first;
+    var coor = first.coordinates;
+    var lat = coor.latitude;
+    var lng = coor.longitude;
+    print(address.first);
+    await map_launcher.MapLauncher.showMarker(
+      mapType: map_launcher.MapType.apple,
+      coords: map_launcher.Coords(lat, lng),
+      title: "$name",
+    );
+  }
+}
+

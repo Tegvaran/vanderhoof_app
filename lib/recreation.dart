@@ -109,7 +109,7 @@ class _RecreationPageState extends State<Recreation> {
                     Icons.search,
                     color: Colors.white,
                   ),
-                  hintText: "Search Businesses",
+                  hintText: "Search Recreations",
                   hintStyle: TextStyle(color: Colors.white70)),
             ),
       actions: <Widget>[
@@ -167,12 +167,19 @@ class _RecreationPageState extends State<Recreation> {
         itemCount: filteredRecs.length,
         itemBuilder: (BuildContext context, int index) {
           //======================
-          return RecreationalCard(
-              recreational: filteredRecs[index],
-              scrollController: _scrollController,
-              scrollIndex: index,
-              mapMarkers: _markers,
-              listOfFireStoreObjects: filteredRecs);
+          return Card(
+              margin: EdgeInsets.all(0),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              key: Key(filteredRecs[index].id),
+              child: RecreationalCard(
+                  recreational: filteredRecs[index],
+                  scrollController: _scrollController,
+                  scrollIndex: index,
+                  mapMarkers: _markers,
+                  listOfFireStoreObjects: filteredRecs));
         },
       )),
       floatingActionButton:
