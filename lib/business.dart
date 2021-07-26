@@ -15,9 +15,10 @@ import 'data.dart';
 bool hasReadDataFirstTime = false;
 // Businesses populated from firebase
 List<Business> businesses = [];
-
 // Businesses after filtering search - this is whats shown in ListView
 List<Business> filteredBusinesses = [];
+bool isSearching = false;
+String searchValue;
 
 List<Widget> chips2;
 
@@ -31,10 +32,9 @@ class BusinessState extends StatefulWidget {
 }
 
 class _BusinessPageState extends State<BusinessState> {
-  bool isSearching = false;
-
   // Async Future variable that holds FireStore's data and functions
   Future future;
+  bool newPage = true;
   // FireStore reference
   CollectionReference fireStore =
       FirebaseFirestore.instance.collection('businesses');
@@ -115,9 +115,18 @@ class _BusinessPageState extends State<BusinessState> {
       title: !isSearching
           ? Text(widget.title)
           : TextField(
+              controller: (() {
+                if (newPage) {
+                  newPage = false;
+                  return TextEditingController()..text = searchValue;
+                } else {
+                  return null;
+                }
+              }()),
               onChanged: (value) {
                 // search logic here
                 _filterSearchItems(value);
+                searchValue = value;
               },
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -135,8 +144,9 @@ class _BusinessPageState extends State<BusinessState> {
                 onPressed: () {
                   _filterSearchItems("");
                   setState(() {
-                    this.isSearching = false;
+                    isSearching = false;
                     filteredBusinesses = businesses;
+                    searchValue = null;
                   });
                 },
               )
@@ -144,7 +154,7 @@ class _BusinessPageState extends State<BusinessState> {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   setState(() {
-                    this.isSearching = true;
+                    isSearching = true;
                   });
                 },
               )

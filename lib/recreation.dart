@@ -15,9 +15,10 @@ bool hasReadDataFirstTime = false;
 
 // Businesses populated from firebase
 List<Recreational> recs = [];
-
 // Businesses after filtering search - this is whats shown in ListView
 List<Recreational> filteredRecs = [];
+bool isSearching = false;
+String searchValue;
 
 class Recreation extends StatefulWidget {
   Recreation({Key key}) : super(key: key);
@@ -29,10 +30,9 @@ class Recreation extends StatefulWidget {
 }
 
 class _RecreationPageState extends State<Recreation> {
-  bool isSearching = false;
-
   // Async Future variable that holds FireStore's data and functions
   Future future;
+  bool newPage = true;
   // FireStore reference
   CollectionReference fireStore =
       FirebaseFirestore.instance.collection('recreation');
@@ -99,9 +99,18 @@ class _RecreationPageState extends State<Recreation> {
       title: !isSearching
           ? Text(widget.title)
           : TextField(
+              controller: (() {
+                if (newPage) {
+                  newPage = false;
+                  return TextEditingController()..text = searchValue;
+                } else {
+                  return null;
+                }
+              }()),
               onChanged: (value) {
                 // search logic here
                 _filterSearchItems(value);
+                searchValue = value;
               },
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -109,7 +118,7 @@ class _RecreationPageState extends State<Recreation> {
                     Icons.search,
                     color: Colors.white,
                   ),
-                  hintText: "Search Recreations",
+                  hintText: "Search Recreationals",
                   hintStyle: TextStyle(color: Colors.white70)),
             ),
       actions: <Widget>[
@@ -119,8 +128,9 @@ class _RecreationPageState extends State<Recreation> {
                 onPressed: () {
                   _filterSearchItems("");
                   setState(() {
-                    this.isSearching = false;
+                    isSearching = false;
                     filteredRecs = recs;
+                    searchValue = null;
                   });
                 },
               )
@@ -128,7 +138,7 @@ class _RecreationPageState extends State<Recreation> {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   setState(() {
-                    this.isSearching = true;
+                    isSearching = true;
                   });
                 },
               )

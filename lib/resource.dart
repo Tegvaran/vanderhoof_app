@@ -10,9 +10,10 @@ bool hasReadDataFirstTime = false;
 
 // Events populated from firebase
 List<Resource> resources = [];
-
 // Events after filtering search - this is whats shown in ListView
 List<Resource> filteredResources = [];
+bool isSearching = false;
+String searchValue;
 
 class ResourceState extends StatefulWidget {
   ResourceState({Key key}) : super(key: key);
@@ -24,10 +25,9 @@ class ResourceState extends StatefulWidget {
 }
 
 class _ResourcePageState extends State<ResourceState> {
-  bool isSearching = false;
-
   // Async Future variable that holds FireStore's data and functions
   Future future;
+  bool newPage = true;
   // FireStore reference
   CollectionReference fireStore =
       FirebaseFirestore.instance.collection('resources');
@@ -86,9 +86,18 @@ class _ResourcePageState extends State<ResourceState> {
       title: !isSearching
           ? Text(widget.title)
           : TextField(
+              controller: (() {
+                if (newPage) {
+                  newPage = false;
+                  return TextEditingController()..text = searchValue;
+                } else {
+                  return null;
+                }
+              }()),
               onChanged: (value) {
                 // search logic here
                 _filterSearchItems(value);
+                searchValue = value;
               },
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -106,8 +115,9 @@ class _ResourcePageState extends State<ResourceState> {
                 onPressed: () {
                   _filterSearchItems("");
                   setState(() {
-                    this.isSearching = false;
+                    isSearching = false;
                     filteredResources = resources;
+                    searchValue = null;
                   });
                 },
               )
@@ -115,7 +125,7 @@ class _ResourcePageState extends State<ResourceState> {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   setState(() {
-                    this.isSearching = true;
+                    isSearching = true;
                   });
                 },
               )

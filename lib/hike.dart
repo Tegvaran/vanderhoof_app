@@ -15,10 +15,11 @@ bool hasReadDataFirstTime = false;
 
 List<HikeTrail> hikes = [];
 List<HikeTrail> filteredHikes = [];
+bool isSearching = false;
+String searchValue;
 
 class Hike extends StatefulWidget {
   Hike({Key key}) : super(key: key);
-
   final title = "Hiking Trails";
 
   @override
@@ -26,8 +27,8 @@ class Hike extends StatefulWidget {
 }
 
 class _HikePageState extends State<Hike> {
-  bool isSearching = false;
   Future future;
+  bool newPage = true;
   ItemScrollController _scrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
   bool _isScrollButtonVisible = false;
@@ -37,46 +38,47 @@ class _HikePageState extends State<Hike> {
 
   /// firebase async method to get data
   Future _getHikes() async {
-    // if (!hasReadDataFirstTime) {
-    print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
-    CollectionReference fireStore =
-        FirebaseFirestore.instance.collection('trails');
+    if (!hasReadDataFirstTime) {
+      // print("*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/");
+      CollectionReference fireStore =
+          FirebaseFirestore.instance.collection('trails');
 
-    await fireStore.get().then((QuerySnapshot snap) {
-      hikes = filteredHikes = [];
-      snap.docs.forEach((doc) {
-        // print("/////////////////////////////////////////////");
-        // print(doc['name']);
-        // print(doc['address']);
-        // print(doc['location']);
-        // print(doc['description']);
-        // print(doc['id']);
-        // print(doc['distance']);
-        // print(doc.get('difficulty'));
-        // print('Time ${doc['time']}');
-        // print(doc['wheelchair']);
-        // print(doc['pointsOfInterest']);
-        // print(doc['imgURL']);
+      await fireStore.get().then((QuerySnapshot snap) {
+        hikes = filteredHikes = [];
+        snap.docs.forEach((doc) {
+          // print("/////////////////////////////////////////////");
+          // print(doc['name']);
+          // print(doc['address']);
+          // print(doc['location']);
+          // print(doc['description']);
+          // print(doc['id']);
+          // print(doc['distance']);
+          // print(doc.get('difficulty'));
+          // print('Time ${doc['time']}');
+          // print(doc['wheelchair']);
+          // print(doc['pointsOfInterest']);
+          // print(doc['imgURL']);
 
-        HikeTrail h = HikeTrail(
-          name: doc['name'],
-          address: doc['address'],
-          location: doc['location'],
-          description: doc['description'],
-          id: doc['id'],
-          distance: doc['distance'],
-          rating: doc.get('difficulty'),
-          time: doc['time'],
-          wheelchair: doc['wheelchair'],
-          pointsOfInterest: doc['pointsOfInterest'],
-          imgURL: doc['imgURL'],
-        );
-        hikes.add(h);
+          HikeTrail h = HikeTrail(
+            name: doc['name'],
+            address: doc['address'],
+            location: doc['location'],
+            description: doc['description'],
+            id: doc['id'],
+            distance: doc['distance'],
+            rating: doc.get('difficulty'),
+            time: doc['time'],
+            wheelchair: doc['wheelchair'],
+            pointsOfInterest: doc['pointsOfInterest'],
+            imgURL: doc['imgURL'],
+          );
+          hikes.add(h);
+        });
       });
-    });
-    print("_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
-    //   hasReadDataFirstTime = true;
-    // }
+      print(
+          "_getHikes(): FINISHED READ. Stopped async method to reduce reads.");
+      hasReadDataFirstTime = true;
+    }
     return hikes;
   }
 
@@ -105,9 +107,18 @@ class _HikePageState extends State<Hike> {
       title: !isSearching
           ? Text(widget.title)
           : TextField(
+              controller: (() {
+                if (newPage) {
+                  newPage = false;
+                  return TextEditingController()..text = searchValue;
+                } else {
+                  return null;
+                }
+              }()),
               onChanged: (value) {
                 // search logic here
                 _filterSearchItems(value);
+                searchValue = value;
               },
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
@@ -125,8 +136,9 @@ class _HikePageState extends State<Hike> {
                 onPressed: () {
                   _filterSearchItems("");
                   setState(() {
-                    this.isSearching = false;
+                    isSearching = false;
                     filteredHikes = hikes;
+                    searchValue = null;
                   });
                 },
               )
@@ -134,7 +146,7 @@ class _HikePageState extends State<Hike> {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   setState(() {
-                    this.isSearching = true;
+                    isSearching = true;
                   });
                 },
               )
